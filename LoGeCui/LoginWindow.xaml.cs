@@ -22,8 +22,8 @@ namespace LoGeCui
             InitializeComponent();
 
             // ⚠️ REMPLACE PAR TES VRAIES CLÉS !
-            string url = "https://wzctiypsadqktzcnswri.supabase.co";
-            string key = "sb_publishable_ZFk8ONON5qMA0vZ3V0nVAg_TZZrO1F1";
+            string url = ConfigurationHelper.GetSupabaseUrl();
+            string key = ConfigurationHelper.GetSupabaseKey();
 
             _supabase = new SupabaseService(url, key);
         }
