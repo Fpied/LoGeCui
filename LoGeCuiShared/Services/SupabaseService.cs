@@ -6,15 +6,26 @@ using LoGeCuiShared.Models;
 using Supabase.Postgrest;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace LoGeCuiShared.Services
 {
     public class SupabaseService
     {
+        private readonly HttpClient _httpClient;
+        private readonly string _supabaseUrl;
+        private readonly string _supabaseKey;
+        private string? _accessToken;
         private readonly Client _client;
 
         public SupabaseService(string url, string key)
         {
+            _supabaseUrl = url;
+            _supabaseKey = key;
+            _httpClient = new HttpClient();
+
             var options = new ClientOptions
             {
                 Headers = new Dictionary<string, string>
@@ -25,6 +36,85 @@ namespace LoGeCuiShared.Services
             };
 
             _client = new Client($"{url}/rest/v1", options);
+        }
+
+        // === MÉTHODES D'AUTHENTIFICATION REST ===
+
+        public async Task<(bool success, string? userId, string? error)> SignUpAsync(string email, string password)
+        {
+            try
+            {
+                var request = new
+                {
+                    email = email,
+                    password = password
+                };
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
+
+                var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/signup", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = JsonDocument.Parse(content);
+                    var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
+                    return (true, userId, null);
+                }
+                else
+                {
+                    return (false, null, "Erreur lors de l'inscription");
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, null, ex.Message);
+            }
+        }
+
+        public async Task<(bool success, string? accessToken, string? userId, string? error)> SignInAsync(string email, string password)
+        {
+            try
+            {
+                var request = new
+                {
+                    email = email,
+                    password = password
+                };
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
+
+                var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/token?grant_type=password", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = JsonDocument.Parse(content);
+                    _accessToken = json.RootElement.GetProperty("access_token").GetString();
+                    var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
+
+                    // Mettre à jour les headers du client Postgrest
+                    _client.Options.Headers["Authorization"] = $"Bearer {_accessToken}";
+
+                    return (true, _accessToken, userId, null);
+                }
+                else
+                {
+                    return (false, null, null, "Email ou mot de passe incorrect");
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, null, null, ex.Message);
+            }
+        }
+
+        public string? GetCurrentUserId()
+        {
+            // Pour l'instant on ne stocke pas le userId, on le retournera lors du SignIn
+            return null;
         }
 
         // Récupérer tous les articles
