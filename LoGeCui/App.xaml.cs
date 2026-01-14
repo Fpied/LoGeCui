@@ -8,9 +8,9 @@ namespace LoGeCui
         {
             base.OnStartup(e);
 
-            // Temporaire : ouvrir MainWindow directement
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
+            // Ouvrir la fenêtre de connexion en premier
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
         }
     }
 }
