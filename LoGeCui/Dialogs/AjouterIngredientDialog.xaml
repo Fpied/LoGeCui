@@ -1,0 +1,136 @@
+﻿<Window x:Class="LoGeCui.Dialogs.AjouterIngredientDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ajouter un ingrédient" 
+        Height="700" 
+        Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#ECF0F1">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Titre -->
+        <TextBlock Grid.Row="0"
+                   Text="➕ Nouvel ingrédient"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   Margin="0,0,0,20"/>
+        
+        <!-- Nom -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <TextBlock Text="Nom de l'ingrédient *"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#34495E"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtNom"
+                     Height="35"
+                     FontSize="14"
+                     Padding="8"
+                     BorderBrush="#BDC3C7"
+                     BorderThickness="1"/>
+        </StackPanel>
+        
+        <!-- Quantité -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <TextBlock Text="Quantité *"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#34495E"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtQuantite"
+                     Height="35"
+                     FontSize="14"
+                     Padding="8"
+                     BorderBrush="#BDC3C7"
+                     BorderThickness="1"/>
+        </StackPanel>
+        
+        <!-- Unité -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,15">
+            <TextBlock Text="Unité *"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#34495E"
+                       Margin="0,0,0,5"/>
+            <ComboBox x:Name="CmbUnite"
+                      Height="35"
+                      FontSize="14"
+                      Padding="8,5"
+                      BorderBrush="#BDC3C7"
+                      BorderThickness="1">
+                <ComboBoxItem Content="kg" IsSelected="True"/>
+                <ComboBoxItem Content="g"/>
+                <ComboBoxItem Content="L"/>
+                <ComboBoxItem Content="ml"/>
+                <ComboBoxItem Content="pièces"/>
+                <ComboBoxItem Content="sachets"/>
+                <ComboBoxItem Content="boîtes"/>
+            </ComboBox>
+        </StackPanel>
+        
+        <!-- Boutons -->
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            
+            <Button Content="❌ Annuler"
+                    Width="120"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnAnnuler_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#95A5A6"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#7F8C8D"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            
+            <Button Content="✅ Ajouter"
+                    Width="120"
+                    Height="40"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnAjouter_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#27AE60"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#229954"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            
+        </StackPanel>
+        
+    </Grid>
+    
+</Window>

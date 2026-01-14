@@ -1,0 +1,191 @@
+﻿<Window x:Class="LoGeCui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LoGeCui"
+        xmlns:views="clr-namespace:LoGeCui.Views"
+        mc:Ignorable="d"
+        Title="LoGeCui" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#ECF0F1">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- En Tête (sur toute la largeur -->
+        <Border Grid.Row="0"
+                Grid.ColumnSpan="2"
+                Background="#2C3E50">
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="20 , 0">
+                <TextBlock Text="🍳"
+                           FontSize="40"
+                           Margin="0, 0,15,0"/>
+                <StackPanel>
+                    <TextBlock Text="LoGeCui"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+                    <TextBlock Text=" Logiciel de Gestion de Cuisine"
+                           FontSize="12"
+                           Foreground="#BDC3C7"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- MENU GAUCHE -->
+        <Border Grid.Row="1" 
+                Grid.Column="0"
+                Background="#34495E"
+                BorderBrush="#2C3E50"
+                BorderThickness="0,0,1,0">
+
+            <StackPanel Margin="0,20,0,0">
+
+                <!-- Bouton Ingrédients -->
+                <Button Content="📦 Mes Ingrédients"
+                        Height="60"
+                        Background="#3498DB"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnIngredients_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#3498DB"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#2980B9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Bouton Recettes -->
+                <Button Content="📖 Mes Recettes"
+                        Height="60"
+                        Background="#2ECC71"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnRecettes_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#2ECC71"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#27AE60"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Bouton Ajouter Recette -->
+                <Button Content="➕ Ajouter Recette"
+                        Height="60"
+                        Background="#F39C12"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnAjouterRecette_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#F39C12"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E67E22"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <!-- Bouton Menu Aléatoire -->
+                <Button Content="🎲 Menu Aléatoire"
+                        Height="60"
+                        Background="#9B59B6"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnMenuAleatoire_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#9B59B6"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#8E44AD"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Bouton Liste de Courses -->
+                <Button Content="🛒 Liste de Courses"
+                        Height="60"
+                        Background="#E74C3C"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnListeCourses_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#E74C3C"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#C0392B"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </StackPanel>
+        </Border>
+
+        <!-- ZONE DE CONTENU PRINCIPAL -->
+        <Border Grid.Row="1" 
+        Grid.Column="1"
+        Background="White"
+        Margin="10">
+
+            <ContentControl x:Name="MainContent">
+                <TextBlock Text="Bienvenue dans LoGeCui ! 🍳&#x0a;&#x0a;Sélectionnez une option dans le menu."
+                   FontSize="24"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Foreground="#7F8C8D"/>
+            </ContentControl>
+
+        </Border>
+
+
+
+    </Grid>
+</Window>

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="LoGeCui/LoGeCui.csproj" />
+  <Project Path="LoGeCuiMobile/LoGeCuiMobile.csproj" Id="b01a8ab1-a37e-48a1-aad4-26ebd0105369">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="LoGeCuiShared/LoGeCuiShared.csproj" Id="aecbd0fc-6a9f-4c47-936d-792e1f00ee84" />
+</Solution>

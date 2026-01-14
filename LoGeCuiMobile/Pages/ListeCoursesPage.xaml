@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LoGeCuiMobile.Pages.ListeCoursesPage"
+             Title="🛒 Liste de Courses">
+
+    <Grid Padding="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- En-tête -->
+        <Label Grid.Row="0"
+           Text="Ma liste de courses"
+           FontSize="24"
+           FontAttributes="Bold"
+           HorizontalOptions="Center"
+           Margin="0,10,0,10"/>
+
+        <!-- Bouton Ajouter -->
+        <Button Grid.Row="1"
+            Text="➕ Ajouter un article"
+            BackgroundColor="#27AE60"
+            TextColor="White"
+            FontAttributes="Bold"
+            Clicked="BtnAjouter_Clicked"
+            Margin="0,0,0,10"/>
+
+        <!-- Liste des courses -->
+        <CollectionView Grid.Row="2"
+                    x:Name="ListeCourses"
+                    SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="5"
+                       Padding="15"
+                       BackgroundColor="White"
+                       BorderColor="LightGray"
+                       CornerRadius="10"
+                       HasShadow="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- CheckBox -->
+                            <CheckBox Grid.Column="0"
+                                 IsChecked="{Binding EstAchete}"
+                                 VerticalOptions="Center"
+                                 CheckedChanged="CheckBox_CheckedChanged"/>
+
+                            <!-- Informations -->
+                            <StackLayout Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding Nom}"
+                                   FontSize="18"
+                                   FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                Binding="{Binding EstAchete}"
+                                                Value="True">
+                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            <Setter Property="TextColor" Value="Gray"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Label TextColor="Gray" FontSize="14">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding Quantite}"/>
+                                            <Span Text=" "/>
+                                            <Span Text="{Binding Unite}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </StackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>
