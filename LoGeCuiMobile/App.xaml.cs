@@ -8,7 +8,8 @@ namespace LoGeCuiMobile
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new Pages.ListeCoursesPage());
+            // Ouvrir la page de connexion en premier
+            MainPage = new NavigationPage(new Pages.LoginPage());
         }
     }
 }
