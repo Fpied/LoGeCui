@@ -39,6 +39,9 @@ namespace LoGeCuiMobile.Pages
 
                 if (success)
                 {
+                    // Vérifier les mises à jour
+                    await CheckForUpdatesAsync();
+
                     // Connexion réussie !
                     Application.Current.MainPage = new NavigationPage(new ListeCoursesPage());
                 }
@@ -105,6 +108,38 @@ namespace LoGeCuiMobile.Pages
                 TxtMessage.Text = $"Erreur : {ex.Message}";
                 TxtMessage.TextColor = Colors.Red;
                 TxtMessage.IsVisible = true;
+            }
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                string url = ConfigurationHelper.GetSupabaseUrl();
+                string key = ConfigurationHelper.GetSupabaseKey();
+
+                var updateService = new LoGeCuiShared.Services.UpdateService(url, key);
+                var updateInfo = await updateService.CheckForUpdateAsync("mobile", "1.0.0");
+
+                if (updateInfo != null)
+                {
+                    bool answer = await DisplayAlert(
+                        "Mise à jour disponible",
+                        $"Une nouvelle version {updateInfo.Version} est disponible !\n\n" +
+                        $"Notes de version :\n{updateInfo.ReleaseNotes}\n\n" +
+                        $"Voulez-vous télécharger la mise à jour ?",
+                        "Oui",
+                        "Plus tard");
+
+                    if (answer)
+                    {
+                        await Launcher.OpenAsync(new Uri(updateInfo.DownloadUrl));
+                    }
+                }
+            }
+            catch
+            {
+                // Erreur silencieuse
             }
         }
     }

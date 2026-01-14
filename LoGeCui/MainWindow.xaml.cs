@@ -67,5 +67,48 @@ namespace LoGeCui
         {
             MainContent.Content = new Views.ListeCoursesView();
         }
+
+        /* private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await CheckForUpdatesAsync();
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                string url = ConfigurationHelper.GetSupabaseUrl();
+                string key = ConfigurationHelper.GetSupabaseKey();
+
+                var updateService = new LoGeCuiShared.Services.UpdateService(url, key);
+                var updateInfo = await updateService.CheckForUpdateAsync("wpf", "0.9.0");
+
+                if (updateInfo != null)
+                {
+                    var result = MessageBox.Show(
+                        $"Une nouvelle version {updateInfo.Version} est disponible !\n\n" +
+                        $"Notes de version :\n{updateInfo.ReleaseNotes}\n\n" +
+                        $"Voulez-vous télécharger la mise à jour ?",
+                        "Mise à jour disponible",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = updateInfo.DownloadUrl,
+                            UseShellExecute = true
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                // Erreur silencieuse, ne pas bloquer l'app
+            }
+        } */
     }
+
+
 }

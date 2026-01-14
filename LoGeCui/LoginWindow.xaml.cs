@@ -49,6 +49,9 @@ namespace LoGeCui
 
                 if (success)
                 {
+                    // Vérifier les mises à jour
+                    await CheckForUpdatesAsync();
+
                     // Connexion réussie !
                     var mainWindow = new MainWindow();
                     mainWindow.Show();
@@ -115,6 +118,42 @@ namespace LoGeCui
             {
                 TxtMessage.Text = $"Erreur : {ex.Message}";
                 TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+            }
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                string url = ConfigurationHelper.GetSupabaseUrl();
+                string key = ConfigurationHelper.GetSupabaseKey();
+
+                var updateService = new LoGeCuiShared.Services.UpdateService(url, key);
+                var updateInfo = await updateService.CheckForUpdateAsync("wpf", "1.0.0");
+
+                if (updateInfo != null)
+                {
+                    var result = MessageBox.Show(
+                        $"Une nouvelle version {updateInfo.Version} est disponible !\n\n" +
+                        $"Notes de version :\n{updateInfo.ReleaseNotes}\n\n" +
+                        $"Voulez-vous télécharger la mise à jour ?",
+                        "Mise à jour disponible",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = updateInfo.DownloadUrl,
+                            UseShellExecute = true
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                // Erreur silencieuse
             }
         }
     }
