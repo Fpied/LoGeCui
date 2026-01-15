@@ -43,7 +43,8 @@ namespace LoGeCuiMobile.Pages
                     await CheckForUpdatesAsync();
 
                     // Connexion réussie !
-                    Application.Current.MainPage = new NavigationPage(new ListeCoursesPage());
+                    Application.Current.MainPage = new NavigationPage(new ListeCoursesPage(_supabase));
+
                 }
                 else
                 {

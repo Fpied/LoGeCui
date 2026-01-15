@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LoGeCuiShared.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LoGeCuiMobile
 {

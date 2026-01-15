@@ -6,17 +6,13 @@ namespace LoGeCuiMobile.Pages
 {
     public partial class ListeCoursesPage : ContentPage
     {
-        private ObservableCollection<ArticleCourse> _articles = new ObservableCollection<ArticleCourse>();
-        private SupabaseService _supabase;
+        private ObservableCollection<ArticleCourse> _articles = new();
+        private readonly SupabaseService _supabase;
 
-        public ListeCoursesPage()
+        public ListeCoursesPage(SupabaseService supabase)
         {
             InitializeComponent();
-
-            string url = ConfigurationHelper.GetSupabaseUrl();
-            string key = ConfigurationHelper.GetSupabaseKey();
-            _supabase = new SupabaseService(url, key);
-
+            _supabase = supabase;
             ChargerDonnees();
         }
 
@@ -69,6 +65,7 @@ namespace LoGeCuiMobile.Pages
 
         private async void BtnAjouter_Clicked(object sender, EventArgs e)
         {
+
             string nom = await DisplayPromptAsync("Ajouter", "Nom de l'article :");
             if (string.IsNullOrWhiteSpace(nom))
                 return;
@@ -90,6 +87,7 @@ namespace LoGeCuiMobile.Pages
                     Unite = unite,
                     EstAchete = false
                 };
+
 
                 var added = await _supabase.AddArticleAsync(article);
                 if (added != null)
