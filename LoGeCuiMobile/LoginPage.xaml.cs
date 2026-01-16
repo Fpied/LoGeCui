@@ -91,11 +91,14 @@ namespace LoGeCuiMobile.Pages
                 {
                     await DisplayAlert(
                         "Inscription réussie",
-                        "Compte créé avec succès !\n\nVous pouvez maintenant vous connecter.",
+                        "Compte créé avec succès !\n\n" +
+                        "⚠️ IMPORTANT : Un email de confirmation a été envoyé à votre adresse.\n" +
+                        "Veuillez cliquer sur le lien dans l'email avant de vous connecter.\n\n" +
+                        "Vérifiez aussi vos spams si vous ne le voyez pas.",
                         "OK");
 
                     TxtPassword.Text = "";
-                    TxtMessage.Text = "Compte créé ! Connectez-vous.";
+                    TxtMessage.Text = "✅ Compte créé ! Confirmez votre email puis connectez-vous.";
                     TxtMessage.TextColor = Colors.Green;
                 }
                 else

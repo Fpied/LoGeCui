@@ -24,7 +24,10 @@ namespace LoGeCuiShared.Services
         {
             _supabaseUrl = url;
             _supabaseKey = key;
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(30) // Ajout d'un timeout
+            };
 
             var options = new ClientOptions
             {
@@ -44,32 +47,143 @@ namespace LoGeCuiShared.Services
         {
             try
             {
+                // Validation de base
+                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                {
+                    return (false, null, "Adresse email invalide");
+                }
+
+                if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+                {
+                    return (false, null, "Le mot de passe doit contenir au moins 6 caractères");
+                }
+
                 var request = new
                 {
-                    email = email,
+                    email = email.Trim(),
                     password = password
                 };
 
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
 
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Tentative d'inscription pour: {email}");
+
                 var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/signup", request);
                 var content = await response.Content.ReadAsStringAsync();
 
+                // Logs détaillés
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Status Code: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Response Content: {content}");
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Response Headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}={string.Join(",", h.Value)}"))}");
+
                 if (response.IsSuccessStatusCode)
                 {
-                    var json = JsonDocument.Parse(content);
-                    var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
-                    return (true, userId, null);
+                    try
+                    {
+                        var json = JsonDocument.Parse(content);
+                        string? userId = null;
+                        bool needsConfirmation = false;
+
+                        // Dans la vraie réponse Supabase, l'utilisateur est à la racine
+                        // et l'ID est directement accessible
+                        if (json.RootElement.TryGetProperty("id", out var idElement))
+                        {
+                            userId = idElement.GetString();
+                        }
+
+                        // Vérifier si une confirmation est nécessaire
+                        if (json.RootElement.TryGetProperty("confirmation_sent_at", out var confirmElement) &&
+                            confirmElement.ValueKind != JsonValueKind.Null)
+                        {
+                            needsConfirmation = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(userId))
+                        {
+                            if (needsConfirmation)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[SignUp] Inscription réussie ! UserId: {userId} (confirmation email requise)");
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[SignUp] Inscription réussie ! UserId: {userId}");
+                            }
+                            return (true, userId, null);
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[SignUp] Inscription réussie mais ID non trouvé");
+                            return (true, "unknown", null);
+                        }
+                    }
+                    catch (Exception parseEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[SignUp] Erreur de parsing: {parseEx.Message}");
+                        System.Diagnostics.Debug.WriteLine($"[SignUp] Stack trace: {parseEx.StackTrace}");
+                        System.Diagnostics.Debug.WriteLine($"[SignUp] Contenu reçu: {content}");
+                        // Si on a un succès HTTP mais qu'on ne peut pas parser, on considère quand même comme réussi
+                        return (true, "unknown", null);
+                    }
                 }
                 else
                 {
-                    return (false, null, "Erreur lors de l'inscription");
+                    // Extraction du message d'erreur de Supabase
+                    string errorMessage = "Erreur lors de l'inscription";
+
+                    try
+                    {
+                        var json = JsonDocument.Parse(content);
+
+                        // Supabase peut retourner différents formats d'erreur
+                        if (json.RootElement.TryGetProperty("msg", out var msgProperty))
+                        {
+                            errorMessage = msgProperty.GetString() ?? errorMessage;
+                        }
+                        else if (json.RootElement.TryGetProperty("error_description", out var errorDesc))
+                        {
+                            errorMessage = errorDesc.GetString() ?? errorMessage;
+                        }
+                        else if (json.RootElement.TryGetProperty("message", out var message))
+                        {
+                            errorMessage = message.GetString() ?? errorMessage;
+                        }
+                        else if (json.RootElement.TryGetProperty("error", out var error))
+                        {
+                            errorMessage = error.GetString() ?? errorMessage;
+                        }
+                    }
+                    catch
+                    {
+                        // Si on ne peut pas parser, on utilise le contenu brut
+                        if (!string.IsNullOrEmpty(content) && content.Length < 200)
+                        {
+                            errorMessage = content;
+                        }
+                        else
+                        {
+                            errorMessage = $"Erreur {response.StatusCode}";
+                        }
+                    }
+
+                    System.Diagnostics.Debug.WriteLine($"[SignUp] Échec: {errorMessage}");
+                    return (false, null, errorMessage);
                 }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Erreur réseau: {httpEx.Message}");
+                return (false, null, "Erreur de connexion au serveur. Vérifiez votre connexion internet.");
+            }
+            catch (TaskCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Timeout");
+                return (false, null, "La requête a expiré. Vérifiez votre connexion internet.");
             }
             catch (Exception ex)
             {
-                return (false, null, ex.Message);
+                System.Diagnostics.Debug.WriteLine($"[SignUp] Exception: {ex}");
+                return (false, null, $"Erreur inattendue : {ex.Message}");
             }
         }
 
@@ -77,37 +191,100 @@ namespace LoGeCuiShared.Services
         {
             try
             {
+                // Validation de base
+                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                {
+                    return (false, null, null, "Adresse email invalide");
+                }
+
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    return (false, null, null, "Le mot de passe est requis");
+                }
+
                 var request = new
                 {
-                    email = email,
+                    email = email.Trim(),
                     password = password
                 };
 
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
 
+                System.Diagnostics.Debug.WriteLine($"[SignIn] Tentative de connexion pour: {email}");
+
                 var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/token?grant_type=password", request);
                 var content = await response.Content.ReadAsStringAsync();
 
+                // Logs détaillés
+                System.Diagnostics.Debug.WriteLine($"[SignIn] Status Code: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"[SignIn] Response Content: {content}");
+
                 if (response.IsSuccessStatusCode)
                 {
-                    var json = JsonDocument.Parse(content);
-                    _accessToken = json.RootElement.GetProperty("access_token").GetString();
-                    var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
+                    try
+                    {
+                        var json = JsonDocument.Parse(content);
+                        _accessToken = json.RootElement.GetProperty("access_token").GetString();
+                        var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
 
-                    // Mettre à jour les headers du client Postgrest
-                    _client.Options.Headers["Authorization"] = $"Bearer {_accessToken}";
+                        // Mettre à jour les headers du client Postgrest
+                        _client.Options.Headers["Authorization"] = $"Bearer {_accessToken}";
 
-                    return (true, _accessToken, userId, null);
+                        System.Diagnostics.Debug.WriteLine($"[SignIn] Connexion réussie ! UserId: {userId}");
+                        return (true, _accessToken, userId, null);
+                    }
+                    catch (Exception parseEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[SignIn] Erreur de parsing: {parseEx.Message}");
+                        return (false, null, null, "Erreur lors du traitement de la réponse");
+                    }
                 }
                 else
                 {
-                    return (false, null, null, "Email ou mot de passe incorrect");
+                    // Extraction du message d'erreur
+                    string errorMessage = "Email ou mot de passe incorrect";
+
+                    try
+                    {
+                        var json = JsonDocument.Parse(content);
+
+                        if (json.RootElement.TryGetProperty("error_description", out var errorDesc))
+                        {
+                            errorMessage = errorDesc.GetString() ?? errorMessage;
+                        }
+                        else if (json.RootElement.TryGetProperty("message", out var message))
+                        {
+                            errorMessage = message.GetString() ?? errorMessage;
+                        }
+                        else if (json.RootElement.TryGetProperty("msg", out var msg))
+                        {
+                            errorMessage = msg.GetString() ?? errorMessage;
+                        }
+                    }
+                    catch
+                    {
+                        // Utiliser le message par défaut
+                    }
+
+                    System.Diagnostics.Debug.WriteLine($"[SignIn] Échec: {errorMessage}");
+                    return (false, null, null, errorMessage);
                 }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SignIn] Erreur réseau: {httpEx.Message}");
+                return (false, null, null, "Erreur de connexion au serveur. Vérifiez votre connexion internet.");
+            }
+            catch (TaskCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SignIn] Timeout");
+                return (false, null, null, "La requête a expiré. Vérifiez votre connexion internet.");
             }
             catch (Exception ex)
             {
-                return (false, null, null, ex.Message);
+                System.Diagnostics.Debug.WriteLine($"[SignIn] Exception: {ex}");
+                return (false, null, null, $"Erreur inattendue : {ex.Message}");
             }
         }
 
@@ -120,90 +297,130 @@ namespace LoGeCuiShared.Services
         // Récupérer tous les articles
         public async Task<List<ArticleCourse>> GetArticlesAsync()
         {
-            var response = await _client
-                .Table<ArticleCourseDb>()
-                .Get();
-
-            return response.Models.Select(db => new ArticleCourse
+            try
             {
-                Id = db.Id,
-                Nom = db.Nom ?? "",
-                Quantite = db.Quantite ?? "",
-                Unite = db.Unite ?? "",
-                EstAchete = db.EstAchete
-            }).ToList();
+                var response = await _client
+                    .Table<ArticleCourseDb>()
+                    .Get();
+
+                return response.Models.Select(db => new ArticleCourse
+                {
+                    Id = db.Id,
+                    Nom = db.Nom ?? "",
+                    Quantite = db.Quantite ?? "",
+                    Unite = db.Unite ?? "",
+                    EstAchete = db.EstAchete
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GetArticles] Erreur: {ex.Message}");
+                throw;
+            }
         }
 
         // Ajouter un article
         public async Task<ArticleCourse?> AddArticleAsync(ArticleCourse article)
         {
-            var dbArticle = new ArticleCourseDb
+            try
             {
-                Nom = article.Nom,
-                Quantite = article.Quantite,
-                Unite = article.Unite,
-                EstAchete = article.EstAchete
-            };
-
-            var response = await _client
-                .Table<ArticleCourseDb>()
-                .Insert(dbArticle);
-
-            var inserted = response.Models.FirstOrDefault();
-            if (inserted != null)
-            {
-                return new ArticleCourse
+                var dbArticle = new ArticleCourseDb
                 {
-                    Id = inserted.Id,
-                    Nom = inserted.Nom ?? "",
-                    Quantite = inserted.Quantite ?? "",
-                    Unite = inserted.Unite ?? "",
-                    EstAchete = inserted.EstAchete
+                    Nom = article.Nom,
+                    Quantite = article.Quantite,
+                    Unite = article.Unite,
+                    EstAchete = article.EstAchete
                 };
-            }
 
-            return null;
+                var response = await _client
+                    .Table<ArticleCourseDb>()
+                    .Insert(dbArticle);
+
+                var inserted = response.Models.FirstOrDefault();
+                if (inserted != null)
+                {
+                    return new ArticleCourse
+                    {
+                        Id = inserted.Id,
+                        Nom = inserted.Nom ?? "",
+                        Quantite = inserted.Quantite ?? "",
+                        Unite = inserted.Unite ?? "",
+                        EstAchete = inserted.EstAchete
+                    };
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AddArticle] Erreur: {ex.Message}");
+                throw;
+            }
         }
 
         // Mettre à jour un article
         public async Task<bool> UpdateArticleAsync(int id, ArticleCourse article)
         {
-            var dbArticle = new ArticleCourseDb
+            try
             {
-                Id = id,
-                Nom = article.Nom,
-                Quantite = article.Quantite,
-                Unite = article.Unite,
-                EstAchete = article.EstAchete
-            };
+                var dbArticle = new ArticleCourseDb
+                {
+                    Id = id,
+                    Nom = article.Nom,
+                    Quantite = article.Quantite,
+                    Unite = article.Unite,
+                    EstAchete = article.EstAchete
+                };
 
-            await _client
-                .Table<ArticleCourseDb>()
-                .Update(dbArticle);
+                await _client
+                    .Table<ArticleCourseDb>()
+                    .Update(dbArticle);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[UpdateArticle] Erreur: {ex.Message}");
+                throw;
+            }
         }
 
         // Supprimer un article par ID
         public async Task<bool> DeleteArticleAsync(int id)
         {
-            await _client
-                .Table<ArticleCourseDb>()
-                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id)
-                .Delete();
+            try
+            {
+                await _client
+                    .Table<ArticleCourseDb>()
+                    .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id)
+                    .Delete();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DeleteArticle] Erreur: {ex.Message}");
+                throw;
+            }
         }
 
         // Supprimer tous les articles achetés
         public async Task<bool> DeleteAchetesAsync()
         {
-            await _client
-                .Table<ArticleCourseDb>()
-                .Filter("est_achete", Supabase.Postgrest.Constants.Operator.Equals, true)
-                .Delete();
+            try
+            {
+                await _client
+                    .Table<ArticleCourseDb>()
+                    .Filter("est_achete", Supabase.Postgrest.Constants.Operator.Equals, true)
+                    .Delete();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DeleteAchetes] Erreur: {ex.Message}");
+                throw;
+            }
         }
     }
 
