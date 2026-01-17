@@ -6,11 +6,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
+	  <ApplicationIcon>postriticone.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="postriticone.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LoGeCuiShared\LoGeCuiShared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="postriticone.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
