@@ -18,6 +18,7 @@ namespace LoGeCuiShared.Services
         private readonly string _supabaseUrl;
         private readonly string _supabaseKey;
         private string? _accessToken;
+        private string? _currentUserId; // AJOUTÉ
         private readonly Client _client;
 
         public SupabaseService(string url, string key)
@@ -26,7 +27,7 @@ namespace LoGeCuiShared.Services
             _supabaseKey = key;
             _httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(30) // Ajout d'un timeout
+                Timeout = TimeSpan.FromSeconds(30)
             };
 
             var options = new ClientOptions
@@ -101,6 +102,9 @@ namespace LoGeCuiShared.Services
 
                         if (!string.IsNullOrEmpty(userId))
                         {
+                            // AJOUTÉ : Stocker le userId après inscription
+                            _currentUserId = userId;
+
                             if (needsConfirmation)
                             {
                                 System.Diagnostics.Debug.WriteLine($"[SignUp] Inscription réussie ! UserId: {userId} (confirmation email requise)");
@@ -228,6 +232,9 @@ namespace LoGeCuiShared.Services
                         _accessToken = json.RootElement.GetProperty("access_token").GetString();
                         var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
 
+                        // AJOUTÉ : Stocker le userId
+                        _currentUserId = userId;
+
                         // Mettre à jour les headers du client Postgrest
                         _client.Options.Headers["Authorization"] = $"Bearer {_accessToken}";
 
@@ -290,8 +297,8 @@ namespace LoGeCuiShared.Services
 
         public string? GetCurrentUserId()
         {
-            // Pour l'instant on ne stocke pas le userId, on le retournera lors du SignIn
-            return null;
+            // MODIFIÉ : Retourner le userId stocké
+            return _currentUserId;
         }
 
         // Récupérer tous les articles
@@ -324,12 +331,19 @@ namespace LoGeCuiShared.Services
         {
             try
             {
+                // AJOUTÉ : Vérifier que l'utilisateur est connecté
+                if (string.IsNullOrEmpty(_currentUserId))
+                {
+                    throw new InvalidOperationException("Utilisateur non connecté. Veuillez vous connecter avant d'ajouter un article.");
+                }
+
                 var dbArticle = new ArticleCourseDb
                 {
                     Nom = article.Nom,
                     Quantite = article.Quantite,
                     Unite = article.Unite,
-                    EstAchete = article.EstAchete
+                    EstAchete = article.EstAchete,
+                    UserId = _currentUserId  // AJOUTÉ : Inclure le user_id
                 };
 
                 var response = await _client
@@ -442,6 +456,9 @@ namespace LoGeCuiShared.Services
 
         [Column("est_achete")]
         public bool EstAchete { get; set; }
+
+        [Column("user_id")]  // AJOUTÉ
+        public string? UserId { get; set; }  // AJOUTÉ
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }

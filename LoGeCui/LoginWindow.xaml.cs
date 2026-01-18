@@ -15,17 +15,14 @@ namespace LoGeCui
 {
     public partial class LoginWindow : Window
     {
-        private readonly SupabaseService _supabase;
+        // SUPPRIMÉ : private readonly SupabaseService _supabase;
 
         public LoginWindow()
         {
             InitializeComponent();
 
-            // ⚠️ REMPLACE PAR TES VRAIES CLÉS !
-            string url = ConfigurationHelper.GetSupabaseUrl();
-            string key = ConfigurationHelper.GetSupabaseKey();
-
-            _supabase = new SupabaseService(url, key);
+            // SUPPRIMÉ : Création d'une nouvelle instance
+            // _supabase = new SupabaseService(url, key);
         }
 
         private async void BtnConnexion_Click(object sender, RoutedEventArgs e)
@@ -45,7 +42,8 @@ namespace LoGeCui
                     return;
                 }
 
-                var (success, accessToken, userId, error) = await _supabase.SignInAsync(email, password);
+                // MODIFIÉ : Utiliser le singleton App.SupabaseService
+                var (success, accessToken, userId, error) = await App.SupabaseService.SignInAsync(email, password);
 
                 if (success)
                 {
@@ -94,7 +92,8 @@ namespace LoGeCui
                     return;
                 }
 
-                var (success, userId, error) = await _supabase.SignUpAsync(email, password);
+                // MODIFIÉ : Utiliser le singleton App.SupabaseService
+                var (success, userId, error) = await App.SupabaseService.SignUpAsync(email, password);
 
                 if (success)
                 {

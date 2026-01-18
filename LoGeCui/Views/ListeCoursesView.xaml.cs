@@ -11,14 +11,10 @@ namespace LoGeCui.Views
     public partial class ListeCoursesView : UserControl
     {
         private ObservableCollection<ArticleCourse> _articles = new ObservableCollection<ArticleCourse>();
-        private SupabaseService _supabase;
 
         public ListeCoursesView()  // ← PARAMÈTRE ICI !
         {
             InitializeComponent();
-            string url = ConfigurationHelper.GetSupabaseUrl();
-            string key = ConfigurationHelper.GetSupabaseKey();
-            _supabase = new SupabaseService(url, key);
             ChargerDonnees();
         }
 
@@ -26,7 +22,7 @@ namespace LoGeCui.Views
         {
             try
             {
-                var articles = await _supabase.GetArticlesAsync();
+                var articles = await App.SupabaseService.GetArticlesAsync();
 
                 _articles.Clear();
                 foreach (var article in articles)
@@ -53,7 +49,8 @@ namespace LoGeCui.Views
             {
                 try
                 {
-                    var added = await _supabase.AddArticleAsync(dialog.NouvelArticle);
+                    // MODIFIÉ : Utiliser le singleton
+                    var added = await App.SupabaseService.AddArticleAsync(dialog.NouvelArticle);
 
                     if (added != null)
                     {
@@ -86,7 +83,8 @@ namespace LoGeCui.Views
             {
                 try
                 {
-                    await _supabase.DeleteArticleAsync(article.Id);
+                    // MODIFIÉ : Utiliser le singleton
+                    await App.SupabaseService.DeleteArticleAsync(article.Id);
                     _articles.Remove(article);
                     MessageBox.Show("Article supprimé !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -106,7 +104,8 @@ namespace LoGeCui.Views
             {
                 try
                 {
-                    await _supabase.UpdateArticleAsync(article.Id, article);
+                    // MODIFIÉ : Utiliser le singleton
+                    await App.SupabaseService.UpdateArticleAsync(article.Id, article);
                 }
                 catch (Exception ex)
                 {
@@ -135,7 +134,8 @@ namespace LoGeCui.Views
             {
                 try
                 {
-                    await _supabase.DeleteAchetesAsync();
+                    // MODIFIÉ : Utiliser le singleton
+                    await App.SupabaseService.DeleteAchetesAsync();
 
                     foreach (var article in achetes)
                     {
