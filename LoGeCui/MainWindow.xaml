@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LoGeCui"
         xmlns:views="clr-namespace:LoGeCui.Views"
         mc:Ignorable="d"
-        Title="LoGeCui" Height="1000" Width="1200"
+        Title="LoGeCui" Height="900" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="#ECF0F1">
     <Grid>
