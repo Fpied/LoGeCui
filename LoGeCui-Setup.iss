@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "LoGeCui"
-#define MyAppVersion "1.6"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "Francois Pied"
 #define MyAppURL "https://www.example.com/"
 #define MyAppExeName "LoGeCui.exe"
