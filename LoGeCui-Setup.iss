@@ -4,7 +4,7 @@
 
 #define MyAppName "LoGeCui"
 #define MyAppVersion "1.6"
-#define MyAppPublisher "François Pied"
+#define MyAppPublisher "Francois Pied"
 #define MyAppURL "https://www.example.com/"
 #define MyAppExeName "LoGeCui.exe"
 #define MyAppAssocName MyAppName + " File"
@@ -14,7 +14,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{CBB4573B-A991-4CCE-8775-CB83D3C407A3}
+AppId={{06893FBC-364F-415B-814F-35DF36C10E10}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -36,7 +36,7 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputBaseFilename=setup
+OutputBaseFilename=mysetup
 SolidCompression=yes
 WizardStyle=modern dynamic
 
