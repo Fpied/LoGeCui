@@ -364,3 +364,7 @@ FodyWeavers.xsd
 
 # Configuration avec clés sensibles
 **/appsettings.json
+
+Output/
+**/bin/
+**/obj/
