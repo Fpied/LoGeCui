@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using LoGeCuiShared.Models;
 
+
 namespace LoGeCui.Dialogs
 {
     /// <summary>

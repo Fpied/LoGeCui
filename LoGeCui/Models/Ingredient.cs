@@ -2,6 +2,8 @@
 {
     public class Ingredient
     {
+        public Guid Id { get; set; }          // correspond à id
+        public Guid? UserId { get; set; }
         public string Nom { get; set; }
         public string Quantite { get; set; }
         public string Unite { get; set; }

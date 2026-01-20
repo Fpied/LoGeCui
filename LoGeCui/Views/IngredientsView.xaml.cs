@@ -1,140 +1,179 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
 using LoGeCuiShared.Models;
-using System.Linq;
-using LoGeCui.Services;
 
 namespace LoGeCui.Views
 {
     public partial class IngredientsView : UserControl
     {
-        private ObservableCollection<Ingredient> _ingredients;
-        private readonly IngredientService _ingredientService;  // ← NOUVEAU
+        private readonly ObservableCollection<Ingredient> _ingredients = new();
 
         public IngredientsView()
         {
             InitializeComponent();
 
-            // Créer le service
-            _ingredientService = new IngredientService();  // ← NOUVEAU
-
-            // Charger les ingrédients depuis le fichier
-            var ingredientsCharges = _ingredientService.ChargerIngredients();  // ← NOUVEAU
-
-            _ingredients = new ObservableCollection<Ingredient>(ingredientsCharges);  // ← MODIFIÉ
-
-            // Si la liste est vide (première utilisation), ajouter des exemples
-            if (_ingredients.Count == 0)  // ← NOUVEAU
-            {
-                _ingredients.Add(new Ingredient
-                {
-                    Nom = "Tomates",
-                    Quantite = "5",
-                    Unite = "pièces",
-                    EstDisponible = true
-                });
-
-                _ingredients.Add(new Ingredient
-                {
-                    Nom = "Oignons",
-                    Quantite = "3",
-                    Unite = "pièces",
-                    EstDisponible = true
-                });
-
-                _ingredients.Add(new Ingredient
-                {
-                    Nom = "Farine",
-                    Quantite = "1",
-                    Unite = "kg",
-                    EstDisponible = false
-                });
-
-                // Sauvegarder les exemples
-                Sauvegarder();  // ← NOUVEAU
-            }
-
             ListeIngredients.ItemsSource = _ingredients;
+
+            Loaded += IngredientsView_Loaded;
         }
 
-        private void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        private async void IngredientsView_Loaded(object sender, RoutedEventArgs e)
         {
-            var dialog = new Dialogs.AjouterIngredientDialog();
-            dialog.Owner = Window.GetWindow(this);
+            // Evite de recharger plusieurs fois si Loaded se déclenche à nouveau
+            Loaded -= IngredientsView_Loaded;
+            await ReloadIngredientsAsync();
+        }
+
+        private async Task ReloadIngredientsAsync()
+        {
+            try
+            {
+                var data = await App.SupabaseService.GetIngredientsAsync();
+
+                _ingredients.Clear();
+                foreach (var ing in data.OrderBy(i => i.Nom))
+                    _ingredients.Add(ing);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur chargement ingrédients (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Dialogs.AjouterIngredientDialog
+            {
+                Owner = Window.GetWindow(this)
+            };
 
             bool? resultat = dialog.ShowDialog();
+            if (resultat != true || dialog.NouvelIngredient == null)
+                return;
 
-            if (resultat == true && dialog.NouvelIngredient != null)
+            try
             {
-                _ingredients.Add(dialog.NouvelIngredient);
+                var saved = await App.SupabaseService.AddIngredientAsync(dialog.NouvelIngredient);
 
-                Sauvegarder();  // ← NOUVEAU : Sauvegarder après ajout
+                if (saved == null)
+                {
+                    MessageBox.Show("L'ajout a échoué (aucune donnée retournée).",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-                MessageBox.Show($"L'ingrédient '{dialog.NouvelIngredient.Nom}' a été ajouté avec succès !",
+                _ingredients.Add(saved);
+
+                MessageBox.Show(
+                    $"L'ingrédient '{saved.Nom}' a été ajouté avec succès !",
                     "Succès",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'ajout (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        // ← NOUVELLE MÉTHODE : Sauvegarde les ingrédients
-        private void Sauvegarder()
+        private async void BtnSupprimer_Click(object sender, RoutedEventArgs e)
         {
-            var liste = _ingredients.ToList();
-            _ingredientService.SauvegarderIngredients(liste);
-        }
-
-        private void BtnSupprimer_Click(object sender, RoutedEventArgs e)
-        {
-            // Récupérer le bouton qui a été cliqué
-            var bouton = sender as Button;
-
-            // Récupérer l'ingrédient associé au bouton
-            var ingredient = bouton?.Tag as Ingredient;
-
-            if (ingredient == null)
+            if (sender is not Button bouton)
                 return;
 
-            // Demander confirmation
-            var resultat = MessageBox.Show(
+            // On récupère l'objet lié à la ligne (plus fiable que Tag si ton XAML est bindé correctement)
+            if (bouton.DataContext is not Ingredient ingredient)
+                return;
+
+            var confirmation = MessageBox.Show(
                 $"Voulez-vous vraiment supprimer '{ingredient.Nom}' ?",
                 "Confirmation de suppression",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
-            // Si l'utilisateur confirme
-            if (resultat == MessageBoxResult.Yes)
+            if (confirmation != MessageBoxResult.Yes)
+                return;
+
+            try
             {
-                // Supprimer de la liste
+                if (ingredient.Id == Guid.Empty)
+                {
+                    MessageBox.Show("Impossible de supprimer : l'ingrédient n'a pas d'Id.",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                bool ok = await App.SupabaseService.DeleteIngredientAsync(ingredient.Id);
+                if (!ok)
+                {
+                    MessageBox.Show("La suppression a échoué côté serveur.",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 _ingredients.Remove(ingredient);
 
-                // Sauvegarder
-                Sauvegarder();
-
-                // Message de confirmation
                 MessageBox.Show(
                     $"L'ingrédient '{ingredient.Nom}' a été supprimé.",
                     "Suppression réussie",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la suppression (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void ChkDisponible_Changed(object sender, RoutedEventArgs e)
+        private async void ChkDisponible_Changed(object sender, RoutedEventArgs e)
         {
-            // Sauvegarder quand on change la disponibilité
-            Sauvegarder();
+            if (sender is not CheckBox cb)
+                return;
+
+            // Objet lié à la ligne
+            if (cb.DataContext is not Ingredient ingredient)
+                return;
+
+            try
+            {
+                if (ingredient.Id == Guid.Empty)
+                    return; // pas persisté côté Supabase
+
+                bool ok = await App.SupabaseService.UpdateIngredientAsync(ingredient);
+                if (!ok)
+                {
+                    MessageBox.Show("La mise à jour a échoué côté serveur.",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur mise à jour (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

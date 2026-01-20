@@ -9,6 +9,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LoGeCui.Services;
+using LoGeCui.Views;
 
 namespace LoGeCui
 {
@@ -43,18 +45,31 @@ namespace LoGeCui
         {
             var dialog = new Dialogs.AjouterRecetteDialog();
             dialog.Owner = this;
+
             bool? resultat = dialog.ShowDialog();
 
             if (resultat == true && dialog.NouvelleRecette != null)
             {
+                // 1) Sauvegarder dans recettes.json
+                var recetteService = new RecetteService();
+                var toutes = recetteService.ChargerRecettes();
+                toutes.Add(dialog.NouvelleRecette);
+                recetteService.SauvegarderRecettes(toutes);
+
+                // 2) Naviguer vers "Mes Recettes" et afficher la liste à jour
+                var view = new RecettesView();
+                MainContent.Content = view;
+
+                // 3) Message
                 MessageBox.Show(
                     $"La recette '{dialog.NouvelleRecette.Nom}' a été ajoutée avec succès !\n\n" +
-                    "Vous pouvez la voir dans 'Mes Recettes'.",
+                    "Elle est maintenant visible dans 'Mes Recettes'.",
                     "Succès",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
         }
+
 
         private void BtnMenuAleatoire_Click(object sender, RoutedEventArgs e)
         {
