@@ -1,29 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace LoGeCuiShared.Models
 {
-    public class ArticleCourse
+    public class ArticleCourse : INotifyPropertyChanged
     {
-        public int Id { get; set; }
-        public string Nom { get; set; }
-        public string Quantite { get; set; }
-        public string Unite { get; set; }
-        public bool EstAchete { get; set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        public ArticleCourse()
+        private int _id;
+        private Guid _userId;
+        private string _nom = "";
+        private string _quantite = "";
+        private string _unite = "";
+        private bool _estAchete;
+
+        [JsonPropertyName("id")]
+        public int Id
         {
-            Id = 0;
-            Nom = "";
-            Quantite = "";
-            Unite = "";
-            EstAchete = false;
+            get => _id;
+            set { _id = value; OnPropertyChanged(); }
         }
 
-        public override string ToString()
+        [JsonPropertyName("user_id")]
+        public Guid UserId
         {
-            return $"{Nom} - {Quantite} {Unite}";
+            get => _userId;
+            set { _userId = value; OnPropertyChanged(); }
         }
+
+        [JsonPropertyName("nom")]
+        public string Nom
+        {
+            get => _nom;
+            set { _nom = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("quantite")]
+        public string Quantite
+        {
+            get => _quantite;
+            set { _quantite = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("unite")]
+        public string Unite
+        {
+            get => _unite;
+            set { _unite = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("est_achete")]
+        public bool EstAchete
+        {
+            get => _estAchete;
+            set { _estAchete = value; OnPropertyChanged(); }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

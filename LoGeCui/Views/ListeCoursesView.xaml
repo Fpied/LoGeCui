@@ -19,21 +19,22 @@
                    Margin="0,0,0,20"/>
 
         <!-- BOUTONS -->
-        <StackPanel Grid.Row="1" 
-                    Orientation="Horizontal"
-                    Margin="0,0,0,20">
+        <!-- BOUTONS -->
+        <StackPanel Grid.Row="1"
+            Orientation="Horizontal"
+            Margin="0,0,0,20">
 
             <Button Content="➕ Ajouter un article"
-                    Height="40"
-                    Width="180"
-                    Background="#27AE60"
-                    Foreground="White"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    Click="BtnAjouterArticle_Click"
-                    Margin="0,0,10,0">
+            Height="40"
+            Width="180"
+            Background="#27AE60"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnAjouterArticle_Click"
+            Margin="0,0,10,0">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="#27AE60"/>
@@ -47,21 +48,69 @@
             </Button>
 
             <Button Content="🗑️ Supprimer les articles achetés"
-                    Height="40"
-                    Width="230"
-                    Background="#E74C3C"
-                    Foreground="White"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    Click="BtnSupprimerAchetes_Click">
+            Height="40"
+            Width="230"
+            Background="#E74C3C"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnSupprimerAchetes_Click"
+            Margin="0,0,10,0">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="#E74C3C"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#C0392B"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- NOUVEAU : Tout sélectionner -->
+            <Button Content="✅ Tout sélectionner"
+            Height="40"
+            Width="170"
+            Background="#3498DB"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnToutSelectionner_Click"
+            Margin="0,0,10,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#3498DB"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2E86C1"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- NOUVEAU : Supprimer la sélection -->
+            <Button Content="🗑️ Supprimer la sélection"
+            Height="40"
+            Width="210"
+            Background="#E67E22"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnSupprimerSelection_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#E67E22"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#D35400"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -78,7 +127,8 @@
 
             <ListBox x:Name="ListeCourses"
                      Background="#F8F9FA"
-                     BorderThickness="0">
+                     BorderThickness="0"
+                     SelectionMode="Extended">
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -163,6 +213,7 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                
 
                             </Grid>
                         </Border>

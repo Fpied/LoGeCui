@@ -15,6 +15,10 @@
 	  <ApplicationIcon>postriticone.ico</ApplicationIcon>
   </PropertyGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="appsettings.json" />
+	</ItemGroup>
+
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="postriticone.ico" />

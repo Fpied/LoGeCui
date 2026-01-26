@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace LoGeCuiShared.Models
@@ -14,45 +13,104 @@ namespace LoGeCuiShared.Models
 
     public class Recette
     {
-        public string Nom { get; set; }
-        public TypePlat Type { get; set; }
-        public int TempsPreparation { get; set; }
-        public int Difficulte { get; set; }
-        public List<IngredientRecette> Ingredients { get; set; }
-        public string Instructions { get; set; }
+        // ----------------------------
+        // Champs DB / JSON (Supabase)
+        // ----------------------------
 
-        public Recette()
-        {
-            Nom = "";
-            Type = TypePlat.Plat;
-            TempsPreparation = 0;
-            Difficulte = 1;
-            Ingredients = new List<IngredientRecette>();
-            Instructions = "";
-        }
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }
 
-        [JsonIgnore]
-        public string TypeTexte
+        [JsonPropertyName("created_at")]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        [JsonPropertyName("owner_user_id")]
+        public Guid? OwnerUserId { get; set; }   // <-- nullable
+
+        [JsonPropertyName("external_id")]
+        public string? ExternalId { get; set; }
+
+        [JsonPropertyName("nom")]
+        public string Nom { get; set; } = "";
+
+        [JsonPropertyName("categorie")]
+        public string CategorieDb
         {
-            get
+            get => Type switch
             {
-                return Type switch
+                TypePlat.Entree => "Entree",
+                TypePlat.Plat => "Plat",
+                TypePlat.Dessert => "Dessert",
+                _ => "Plat"
+            };
+            set
+            {
+                Type = value switch
                 {
-                    TypePlat.Entree => "Entrée",
-                    TypePlat.Plat => "Plat",
-                    TypePlat.Dessert => "Dessert",
-                    _ => "Inconnu"
+                    "Entree" => TypePlat.Entree,
+                    "Plat" => TypePlat.Plat,
+                    "Dessert" => TypePlat.Dessert,
+                    _ => TypePlat.Plat
                 };
             }
         }
 
-        [JsonIgnore]
-        public string DifficulteTexte
+        [JsonPropertyName("temps_minutes")]
+        public int TempsMinutesDb
         {
-            get
-            {
-                return new string('⭐', Difficulte);
-            }
+            get => TempsPreparation;
+            set => TempsPreparation = value;
         }
+
+        [JsonPropertyName("note")]
+        public int? NoteDb
+        {
+            get => Difficulte;
+            set => Difficulte = Math.Clamp(value ?? 1, 1, 5);
+        }
+
+        [JsonPropertyName("is_favorite")]
+        public bool IsFavorite { get; set; }
+
+        [JsonPropertyName("instructions")]
+        public string InstructionsDb
+        {
+            get => Instructions;
+            set => Instructions = value ?? "";
+        }
+
+        // ----------------------------
+        // Propriétés métier
+        // ----------------------------
+
+        [JsonIgnore]
+        public TypePlat Type { get; set; } = TypePlat.Plat;
+
+        [JsonIgnore]
+        public int TempsPreparation { get; set; } = 0;
+
+        [JsonIgnore]
+        public int Difficulte { get; set; } = 1;
+
+        [JsonIgnore]
+        public List<IngredientRecette> Ingredients { get; set; } = new();
+
+        [JsonIgnore]
+        public string Instructions { get; set; } = "";
+    
+
+    [JsonIgnore]
+        public string TypeTexte => Type switch
+        {
+            TypePlat.Entree => "Entrée",
+            TypePlat.Plat => "Plat",
+            TypePlat.Dessert => "Dessert",
+            _ => "Inconnu"
+        };
+
+        [JsonIgnore]
+        public string DifficulteTexte => new string('⭐', Math.Clamp(Difficulte, 1, 5));
     }
 }
+
+
+

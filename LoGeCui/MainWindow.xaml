@@ -165,6 +165,11 @@
                     </Button.Style>
                 </Button>
 
+                <Button
+                    Content="Synchroniser recettes"
+                    Click="BtnSyncRecettes_Click"
+                    Margin="10"/>
+
             </StackPanel>
         </Border>
 

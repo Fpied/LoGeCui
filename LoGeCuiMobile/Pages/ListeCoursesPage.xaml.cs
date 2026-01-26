@@ -1,18 +1,35 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
+using LoGeCuiMobile.Models;
 
 namespace LoGeCuiMobile.Pages
 {
     public partial class ListeCoursesPage : ContentPage
     {
-        private ObservableCollection<ArticleCourse> _articles = new();
+        private readonly ObservableCollection<ArticleCourseUi> _articles = new();
         private readonly SupabaseService _supabase;
 
-        public ListeCoursesPage(SupabaseService supabase)
+        public ListeCoursesPage()
         {
             InitializeComponent();
-            _supabase = supabase;
+
+            _supabase = ((App)Application.Current).Supabase
+                ?? throw new InvalidOperationException("Supabase non initialisé.");
+
+            // Plus besoin de SelectionChanged / SelectedItems : on passe par IsSelectedForDelete
+            BtnSupprimerSelection.Clicked += BtnSupprimerSelection_Clicked;
+
+            ListeCourses.ItemsSource = _articles;
+
+            // Bouton actif en permanence; il affichera un message si rien n’est coché
+            BtnSupprimerSelection.IsEnabled = true;
+
+            if (SelectionInfoLabel != null)
+                SelectionInfoLabel.Text = "";
+
             ChargerDonnees();
         }
 
@@ -20,16 +37,14 @@ namespace LoGeCuiMobile.Pages
         {
             try
             {
-
                 var articles = await _supabase.GetArticlesAsync();
 
                 _articles.Clear();
-                foreach (var article in articles)
-                {
-                    _articles.Add(article);
-                }
+                foreach (var a in articles)
+                    _articles.Add(new ArticleCourseUi(a));
 
-                ListeCourses.ItemsSource = _articles;
+                if (SelectionInfoLabel != null)
+                    SelectionInfoLabel.Text = "";
             }
             catch (Exception ex)
             {
@@ -37,35 +52,75 @@ namespace LoGeCuiMobile.Pages
             }
         }
 
+        private async void BtnSupprimerSelection_Clicked(object sender, EventArgs e)
+        {
+            var selected = _articles.Where(a => a.IsSelectedForDelete).ToList();
+
+            if (selected.Count == 0)
+            {
+                await DisplayAlert("Information", "Aucun article sélectionné.", "OK");
+                return;
+            }
+
+            bool confirm = await DisplayAlert(
+                "Confirmation",
+                $"Supprimer {selected.Count} article(s) sélectionné(s) ?",
+                "Oui",
+                "Non");
+
+            if (!confirm)
+                return;
+
+            try
+            {
+                foreach (var articleUi in selected)
+                {
+                    await _supabase.DeleteArticleAsync(articleUi.Id);
+                    _articles.Remove(articleUi);
+                }
+
+                if (SelectionInfoLabel != null)
+                    SelectionInfoLabel.Text = "";
+
+                await DisplayAlert("Succès", $"{selected.Count} article(s) supprimé(s).", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erreur", $"Suppression impossible : {ex.Message}", "OK");
+                ChargerDonnees();
+            }
+        }
+
         private async void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
-            var checkbox = sender as CheckBox;
-            var article = checkbox?.BindingContext as ArticleCourse;
+            var checkbox = (CheckBox)sender;
+            var articleUi = checkbox.BindingContext as ArticleCourseUi;
+            if (articleUi == null) return;
 
-            if (article != null)
+            var article = articleUi.Model;
+
+            checkbox.IsEnabled = false;
+            var oldValue = !e.Value;
+
+            try
             {
-                try
-                {
-                    await _supabase.UpdateArticleAsync(article.Id, article);
+                await _supabase.UpdateArticleAsync(article.Id, article);
+            }
+            catch (Exception ex)
+            {
+                article.EstAchete = oldValue;
+                checkbox.IsChecked = oldValue;
 
-                    // Force le refresh visuel
-                    var index = _articles.IndexOf(article);
-                    if (index >= 0)
-                    {
-                        _articles.RemoveAt(index);
-                        _articles.Insert(index, article);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await DisplayAlert("Erreur", $"Synchronisation échouée : {ex.Message}", "OK");
-                }
+                await DisplayAlert("Erreur", $"Synchronisation échouée : {ex.Message}", "OK");
+            }
+            finally
+            {
+                checkbox.IsEnabled = true;
             }
         }
 
         private async void BtnAjouter_Clicked(object sender, EventArgs e)
         {
-
             string nom = await DisplayPromptAsync("Ajouter", "Nom de l'article :");
             if (string.IsNullOrWhiteSpace(nom))
                 return;
@@ -80,19 +135,26 @@ namespace LoGeCuiMobile.Pages
 
             try
             {
+                var app = (App)Application.Current;
+                if (app.CurrentUserId == null)
+                {
+                    await DisplayAlert("Erreur", "Vous devez être connecté.", "OK");
+                    return;
+                }
+
                 var article = new ArticleCourse
                 {
+                    UserId = app.CurrentUserId.Value,
                     Nom = nom,
                     Quantite = quantite,
                     Unite = unite,
                     EstAchete = false
                 };
 
-
                 var added = await _supabase.AddArticleAsync(article);
                 if (added != null)
                 {
-                    _articles.Add(added);
+                    _articles.Add(new ArticleCourseUi(added));
                     await DisplayAlert("Succès", $"'{added.Nom}' ajouté !", "OK");
                 }
             }

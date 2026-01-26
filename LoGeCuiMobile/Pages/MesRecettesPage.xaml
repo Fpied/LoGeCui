@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoGeCuiMobile.Pages.MesRecettesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Mes Recettes">
+
+    <Grid Padding="12" RowDefinitions="Auto,*" RowSpacing="10">
+
+        <!-- Zone haute fixe -->
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+
+            <Picker Title="Catégorie"
+                    ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding SelectedCategorie}" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Rafraîchir"
+                        Command="{Binding RefreshCommand}"
+                        HorizontalOptions="StartAndExpand" />
+
+                <Button Text="Ajouter une recette"
+                        Clicked="OnAjouterRecetteClicked"
+                        HorizontalOptions="EndAndExpand" />
+            </HorizontalStackLayout>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+
+        <!-- Liste scrollable -->
+        <CollectionView Grid.Row="1"
+                        x:Name="RecettesCollection"
+                        ItemsSource="{Binding Recettes}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnRecetteSelected">
+
+            <CollectionView.EmptyView>
+                <Label Text="Aucune recette pour l'instant." />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="0,6" BorderColor="LightGray">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnRecetteTapped"
+                                                  CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Nom}" FontSize="18" />
+                            <Label Text="{Binding TypeTexte}" />
+                            <Label Text="{Binding TempsPreparation, StringFormat='Temps: {0} min'}" />
+                            <Label Text="{Binding DifficulteTexte}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

@@ -1,70 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using LoGeCuiShared.Services;
 
 namespace LoGeCui
 {
     public partial class LoginWindow : Window
     {
-        // SUPPRIMÉ : private readonly SupabaseService _supabase;
-
         public LoginWindow()
         {
             InitializeComponent();
-
-            // SUPPRIMÉ : Création d'une nouvelle instance
-            // _supabase = new SupabaseService(url, key);
         }
 
         private async void BtnConnexion_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                TxtMessage.Text = "Connexion en cours...";
-                TxtMessage.Foreground = System.Windows.Media.Brushes.Blue;
+                SetStatus("Connexion en cours...", isError: false);
 
                 string email = TxtEmail.Text.Trim();
                 string password = TxtPassword.Password;
 
-                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    TxtMessage.Text = "Veuillez remplir tous les champs.";
-                    TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                    SetStatus("Veuillez remplir tous les champs.", isError: true);
                     return;
                 }
 
-                // MODIFIÉ : Utiliser le singleton App.SupabaseService
-                var (success, accessToken, userId, error) = await App.SupabaseService.SignInAsync(email, password);
+                var (success, accessToken, userIdString, error) = await App.SupabaseService.SignInAsync(email, password);
 
-                if (success)
-                {
-                    // Vérifier les mises à jour
-                    await CheckForUpdatesAsync();
 
-                    // Connexion réussie !
-                    var mainWindow = new MainWindow();
-                    mainWindow.Show();
-                    this.Close();
-                }
-                else
+                if (!success)
                 {
-                    TxtMessage.Text = error ?? "Erreur de connexion";
-                    TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                    SetStatus(error ?? "Erreur de connexion", isError: true);
+                    return;
                 }
+                if (!Guid.TryParse(userIdString, out var userId))
+                {
+                    SetStatus("ID utilisateur invalide.", isError: true);
+                    return;
+                }
+
+                App.InitRestServices(accessToken, userId);
+
+
+                // ⬇️ ICI : import des recettes locales vers Supabase (une seule fois)
+                await ImporterRecettesLocalVersSupabaseSiBesoinAsync(userId);
+
+                // Vérifier les mises à jour (optionnel)
+                await CheckForUpdatesAsync();
+
+                // Ouvrir l'app
+                var mainWindow = new MainWindow();
+                mainWindow.Show();
+                Close();
             }
             catch (Exception ex)
             {
-                TxtMessage.Text = $"Erreur : {ex.Message}";
-                TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                SetStatus($"Erreur : {ex.Message}", isError: true);
             }
         }
 
@@ -72,27 +65,23 @@ namespace LoGeCui
         {
             try
             {
-                TxtMessage.Text = "Inscription en cours...";
-                TxtMessage.Foreground = System.Windows.Media.Brushes.Blue;
+                SetStatus("Inscription en cours...", isError: false);
 
                 string email = TxtEmail.Text.Trim();
                 string password = TxtPassword.Password;
 
-                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    TxtMessage.Text = "Veuillez remplir tous les champs.";
-                    TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                    SetStatus("Veuillez remplir tous les champs.", isError: true);
                     return;
                 }
 
                 if (password.Length < 6)
                 {
-                    TxtMessage.Text = "Le mot de passe doit contenir au moins 6 caractères.";
-                    TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                    SetStatus("Le mot de passe doit contenir au moins 6 caractères.", isError: true);
                     return;
                 }
 
-                // MODIFIÉ : Utiliser le singleton App.SupabaseService
                 var (success, userId, error) = await App.SupabaseService.SignUpAsync(email, password);
 
                 if (success)
@@ -104,20 +93,25 @@ namespace LoGeCui
                         MessageBoxImage.Information);
 
                     TxtPassword.Password = "";
-                    TxtMessage.Text = "Compte créé ! Connectez-vous.";
-                    TxtMessage.Foreground = System.Windows.Media.Brushes.Green;
+                    SetStatus("Compte créé ! Connectez-vous.", isError: false);
                 }
                 else
                 {
-                    TxtMessage.Text = error ?? "Erreur lors de l'inscription";
-                    TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                    SetStatus(error ?? "Erreur lors de l'inscription", isError: true);
                 }
             }
             catch (Exception ex)
             {
-                TxtMessage.Text = $"Erreur : {ex.Message}";
-                TxtMessage.Foreground = System.Windows.Media.Brushes.Red;
+                SetStatus($"Erreur : {ex.Message}", isError: true);
             }
+        }
+
+        private void SetStatus(string message, bool isError)
+        {
+            TxtMessage.Text = message;
+            TxtMessage.Foreground = isError
+                ? System.Windows.Media.Brushes.Red
+                : System.Windows.Media.Brushes.Blue;
         }
 
         private async Task CheckForUpdatesAsync()
@@ -155,5 +149,78 @@ namespace LoGeCui
                 // Erreur silencieuse
             }
         }
+
+        private async Task ImporterRecettesLocalVersSupabaseSiBesoinAsync(Guid userId)
+        {
+            try
+            {
+                // 📁 Même chemin que ton ancien RecetteService (JSON)
+                string dossier = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "LoGeCui"
+                );
+
+                string cheminJson = System.IO.Path.Combine(dossier, "recettes.json");
+
+                // ❌ Pas de fichier → rien à importer
+                if (!System.IO.File.Exists(cheminJson))
+                    return;
+
+                // 🏷️ Fichier "flag" pour éviter de réimporter à chaque login
+                string flagPath = System.IO.Path.Combine(dossier, "recettes_import_done.txt");
+                if (System.IO.File.Exists(flagPath))
+                    return;
+
+                // 📖 Lecture du JSON
+                var json = await System.IO.File.ReadAllTextAsync(cheminJson);
+
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var recettes = System.Text.Json.JsonSerializer
+                    .Deserialize<List<LoGeCuiShared.Models.Recette>>(json, options)
+                    ?? new List<LoGeCuiShared.Models.Recette>();
+
+                if (recettes.Count == 0)
+                {
+                    // Rien à importer mais on marque comme fait
+                    await System.IO.File.WriteAllTextAsync(flagPath, "empty");
+                    return;
+                }
+
+                // 🔌 Service Supabase déjà initialisé dans App.InitRestServices
+                var recipesService = App.RecipesService;
+                if (recipesService == null)
+                    return;
+
+                // 🚀 Import / upsert
+                foreach (var r in recettes)
+                {
+                    // ExternalId obligatoire pour l'upsert
+                    if (string.IsNullOrWhiteSpace(r.ExternalId))
+                        r.ExternalId = Guid.NewGuid().ToString("N");
+
+                    // Nettoyage catégorie (important pour mobile)
+                    if (!string.IsNullOrWhiteSpace(r.CategorieDb))
+                        r.CategorieDb = r.CategorieDb.Trim();
+
+                    await recipesService.UpsertRecetteAsync(userId, r);
+                }
+
+                // ✅ Marqueur "import terminé"
+                await System.IO.File.WriteAllTextAsync(
+                    flagPath,
+                    $"done:{DateTime.UtcNow:O}"
+                );
+            }
+            catch (Exception ex)
+            {
+                // ⚠️ Import non bloquant : on log mais on n'empêche pas le login
+                System.Diagnostics.Debug.WriteLine("[ImportRecettes] " + ex);
+            }
+        }
     }
 }
+

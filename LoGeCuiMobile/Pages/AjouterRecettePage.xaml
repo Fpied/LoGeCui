@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoGeCuiMobile.Pages.AjouterRecettePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Ajouter une recette">
+
+    <Grid RowDefinitions="*,Auto" Padding="16">
+
+        <!-- Formulaire scrollable -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="12">
+
+                <Entry x:Name="NomEntry" Placeholder="Nom" />
+
+                <!-- Catégorie -->
+                <Label Text="Catégorie" FontAttributes="Bold"/> "
+                <Picker x:Name="CategoriePicker" Title="Choisir une catégorie" />
+
+                <Entry x:Name="TempsEntry" Placeholder="Temps (min)" Keyboard="Numeric" />
+
+                <Label Text="Ingrédients" FontAttributes="Bold"/>
+                <Editor x:Name="IngredientsEditor"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="140" />
+
+                <Label Text="Instructions" FontAttributes="Bold"/>
+                <Editor x:Name="InstructionsEditor"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="180" />
+
+                <Button Text="📷 Scanner (OCR)" Clicked="OnScanClicked" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bouton fixe en bas -->
+        <Button Grid.Row="1"
+                Text="💾 Enregistrer"
+                Clicked="OnSaveClicked" />
+    </Grid>
+</ContentPage>

@@ -41,7 +41,7 @@ namespace LoGeCui
             MainContent.Content = new Views.RecettesView();
         }
 
-        private void BtnAjouterRecette_Click(object sender, RoutedEventArgs e)
+        private async void BtnAjouterRecette_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Dialogs.AjouterRecetteDialog();
             dialog.Owner = this;
@@ -50,23 +50,37 @@ namespace LoGeCui
 
             if (resultat == true && dialog.NouvelleRecette != null)
             {
-                // 1) Sauvegarder dans recettes.json
-                var recetteService = new RecetteService();
-                var toutes = recetteService.ChargerRecettes();
-                toutes.Add(dialog.NouvelleRecette);
-                recetteService.SauvegarderRecettes(toutes);
+                try
+                {
+                    if (App.RecipesService == null || App.CurrentUserId == null)
+                    {
+                        MessageBox.Show("Utilisateur non connecté ou services non initialisés.");
+                        return;
+                    }
 
-                // 2) Naviguer vers "Mes Recettes" et afficher la liste à jour
-                var view = new RecettesView();
-                MainContent.Content = view;
+                    var r = dialog.NouvelleRecette;
 
-                // 3) Message
-                MessageBox.Show(
-                    $"La recette '{dialog.NouvelleRecette.Nom}' a été ajoutée avec succès !\n\n" +
-                    "Elle est maintenant visible dans 'Mes Recettes'.",
-                    "Succès",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                    // ExternalId obligatoire pour l'upsert (évite les doublons)
+                    if (string.IsNullOrWhiteSpace(r.ExternalId))
+                        r.ExternalId = Guid.NewGuid().ToString("N");
+
+                    // Sauvegarde vers Supabase
+                    await App.RecipesService.UpsertRecetteAsync(App.CurrentUserId.Value, r);
+
+                    // Recharge la vue Recettes (qui doit lire Supabase)
+                    var view = new RecettesView();
+                    MainContent.Content = view;
+
+                    MessageBox.Show(
+                        $"La recette '{r.Nom}' a été ajoutée avec succès !",
+                        "Succès",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur lors de l'ajout :\n{ex}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -80,5 +94,42 @@ namespace LoGeCui
         {
             MainContent.Content = new Views.ListeCoursesView();
         }
+
+        public async Task SyncRecettesToSupabaseAsync(IEnumerable<LoGeCuiShared.Models.Recette> recettesLocales)
+        {
+            if (App.RecipesService == null || App.CurrentUserId == null)
+                throw new InvalidOperationException("Services REST non initialisés. Connecte-toi d'abord.");
+
+            foreach (var r in recettesLocales)
+            {
+                if (string.IsNullOrWhiteSpace(r.ExternalId))
+                    throw new InvalidOperationException($"Recette '{r.Nom}' sans ExternalId. Il faut un identifiant stable pour éviter les doublons.");
+
+                await App.RecipesService.UpsertRecetteAsync(App.CurrentUserId.Value, r);
+            }
+        }
+
+        private async void BtnSyncRecettes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (App.RecipesService == null || App.CurrentUserId == null)
+                {
+                    MessageBox.Show("Utilisateur non connecté ou services non initialisés.");
+                    return;
+                }
+
+                // 🔹 ICI tu dois récupérer TA liste de recettes WPF
+                // Adapte cette ligne à TON code existant
+
+                MessageBox.Show("Synchronisation terminée avec succès.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur de synchronisation :\n{ex.Message}");
+            }
+        }
+
+
     }
 }

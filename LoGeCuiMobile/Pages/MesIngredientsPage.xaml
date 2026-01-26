@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="LoGeCuiMobile.Pages.MesIngredientsPage"
+    Title="Gestion des ingrédients">
+
+    <Grid Padding="16" RowDefinitions="Auto,*" RowSpacing="12">
+
+        <!-- Bouton ajouter -->
+        <Button
+            Grid.Row="0"
+            Text="➕ Ajouter un ingrédient"
+            BackgroundColor="#28a745"
+            TextColor="White"
+            Clicked="OnAddIngredientClicked" />
+
+        <!-- Liste des ingrédients (scroll natif) -->
+        <CollectionView
+            Grid.Row="1"
+            x:Name="IngredientsCollection"
+            SelectionMode="Single"
+            SelectionChanged="OnIngredientSelected">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <Frame
+                        Padding="12"
+                        Margin="0,4"
+                        BorderColor="#ddd"
+                        CornerRadius="10">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <VerticalStackLayout Spacing="4">
+
+                                <Label
+                                    Text="{Binding Nom}"
+                                    FontSize="18"
+                                    FontAttributes="Bold" />
+
+                                <Label FontSize="14" TextColor="Gray">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="Quantité : {0} {1}">
+                                            <Binding Path="Quantite"/>
+                                            <Binding Path="Unite"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <HorizontalStackLayout Spacing="6">
+                                    <CheckBox IsChecked="{Binding EstDisponible}" />
+                                    <Label Text="Disponible" VerticalTextAlignment="Center"/>
+                                </HorizontalStackLayout>
+
+                            </VerticalStackLayout>
+
+                            <Button
+                                Grid.Column="1"
+                                Text="🗑"
+                                BackgroundColor="#e74c3c"
+                                TextColor="White"
+                                Clicked="OnDeleteIngredientClicked" />
+
+                        </Grid>
+                    </Frame>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+</ContentPage>
+

@@ -30,7 +30,12 @@ namespace LoGeCui.Services
                 }
 
                 string json = File.ReadAllText(_cheminFichier);
-                var recettes = JsonSerializer.Deserialize<List<Recette>>(json);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var recettes = JsonSerializer.Deserialize<List<Recette>>(json, options);
                 return recettes ?? new List<Recette>();
             }
             catch (Exception ex)
@@ -48,7 +53,10 @@ namespace LoGeCui.Services
         {
             try
             {
-                var options = new JsonSerializerOptions { WriteIndented = true };
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
                 string json = JsonSerializer.Serialize(recettes, options);
                 File.WriteAllText(_cheminFichier, json);
             }

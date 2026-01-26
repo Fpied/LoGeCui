@@ -3,12 +3,33 @@
     x:Class="LoGeCuiMobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:LoGeCuiMobile"
-    Title="LoGeCuiMobile">
+    xmlns:pages="clr-namespace:LoGeCuiMobile.Pages"
+    FlyoutBehavior="Flyout">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem Title="Liste de course" Route="liste-courses">
+        <ShellContent Route="liste-courses"
+                      ContentTemplate="{DataTemplate pages:ListeCoursesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Mes Recettes" Route="mes-recettes">
+        <ShellContent Route="mes-recettes"
+                      ContentTemplate="{DataTemplate pages:MesRecettesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Menu Aléatoire" Route="menu-aleatoire">
+        <ShellContent Route="menu-aleatoire"
+                      ContentTemplate="{DataTemplate pages:MenuAleatoirePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Mes ingrédients" Route="mes-ingredients">
+        <ShellContent Route="mes-ingredients"
+                      ContentTemplate="{DataTemplate pages:MesIngredientsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Paramètres" Route="settings">
+        <ShellContent Route="settings"
+                      ContentTemplate="{DataTemplate pages:SettingsPage}" />
+    </FlyoutItem>
 
 </Shell>
+

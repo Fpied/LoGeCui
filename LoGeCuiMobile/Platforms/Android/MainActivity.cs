@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Microsoft.Maui.Controls;
 
 namespace LoGeCuiMobile
 {
@@ -18,6 +19,13 @@ namespace LoGeCuiMobile
         DataScheme = "logecui",
         DataHost = "confirm",
         AutoVerify = true)]
+
+    // Deep Link - reset password
+    [IntentFilter(
+        new[] { Intent.ActionView },
+        Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+        DataScheme = "logecui",
+        DataHost = "reset-password")]
 
     public class MainActivity : MauiAppCompatActivity
     {
@@ -42,12 +50,17 @@ namespace LoGeCuiMobile
 
         private void HandleIntent(Intent? intent)
         {
-            if (intent?.Data != null)
+            var data = intent?.DataString;
+            if (string.IsNullOrEmpty(data))
+                return;
+
+            var uri = new Uri(data);
+
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
-                // Le deep link sera géré par App.xaml.cs via OnAppLinkRequestReceived
-                var uri = new Uri(intent.Data.ToString()!);
-                Microsoft.Maui.ApplicationModel.Platform.OnNewIntent(intent);
-            }
+                if (Microsoft.Maui.Controls.Application.Current is App app)
+                    await app.HandleDeepLinkAsync(uri);
+            });
         }
     }
 }

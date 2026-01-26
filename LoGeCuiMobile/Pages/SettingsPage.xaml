@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LoGeCuiMobile.Pages.SettingsPage"
+             Title="Paramètres">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <Label Text="Compte"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+
+            <Frame Padding="12"
+                   CornerRadius="12"
+                   BorderColor="#DDDDDD"
+                   BackgroundColor="White"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="12">
+
+                    <Button Text="Déconnexion"
+                            BackgroundColor="#34495E"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            Clicked="OnLogoutClicked" />
+
+                    <Label Text="Zone dangereuse"
+                           FontSize="14"
+                           TextColor="Gray"
+                           Margin="0,6,0,0" />
+
+                    <Button Text="Désinscription"
+                            BackgroundColor="IndianRed"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            Clicked="OnDesinscriptionClicked" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,4 +1,5 @@
 ﻿using LoGeCuiShared.Services;
+using Microsoft.Maui.Storage;
 
 namespace LoGeCuiMobile.Pages
 {
@@ -6,13 +7,14 @@ namespace LoGeCuiMobile.Pages
     {
         private readonly SupabaseService _supabase;
 
+        private bool _isPasswordVisible = false;
+
         public LoginPage()
         {
             InitializeComponent();
 
-            // ⚠️ REMPLACE PAR TES VRAIES CLÉS !
-            string url = ConfigurationHelper.GetSupabaseUrl();
-            string key = ConfigurationHelper.GetSupabaseKey();
+            var url = ConfigurationHelper.GetSupabaseUrl();
+            var key = ConfigurationHelper.GetSupabaseKey();
 
             _supabase = new SupabaseService(url, key);
         }
@@ -21,42 +23,48 @@ namespace LoGeCuiMobile.Pages
         {
             try
             {
-                TxtMessage.Text = "Connexion en cours...";
-                TxtMessage.TextColor = Colors.Blue;
-                TxtMessage.IsVisible = true;
+                SetStatus("Connexion en cours...", Colors.Blue);
 
-                string email = TxtEmail.Text?.Trim() ?? "";
-                string password = TxtPassword.Text ?? "";
+                var email = TxtEmail.Text?.Trim() ?? "";
+                var password = TxtPassword.Text ?? "";
 
-                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    TxtMessage.Text = "Veuillez remplir tous les champs.";
-                    TxtMessage.TextColor = Colors.Red;
+                    SetStatus("Veuillez remplir tous les champs.", Colors.Red);
                     return;
                 }
 
-                var (success, accessToken, userId, error) = await _supabase.SignInAsync(email, password);
+                var (success, accessToken, userId, error) =
+                    await _supabase.SignInAsync(email, password);
 
-                if (success)
+                System.Diagnostics.Debug.WriteLine("ACCESS_TOKEN=" + accessToken);
+
+
+                if (!success)
                 {
-                    // Vérifier les mises à jour
-                    await CheckForUpdatesAsync();
+                    SetStatus(error ?? "Erreur de connexion", Colors.Red);
+                    await Application.Current.MainPage.DisplayAlert("DEBUG", "Bouton cliqué", "OK");
 
-                    // Connexion réussie !
-                    Application.Current.MainPage = new NavigationPage(new ListeCoursesPage(_supabase));
+                    return;
+                }
 
-                }
-                else
-                {
-                    TxtMessage.Text = error ?? "Erreur de connexion";
-                    TxtMessage.TextColor = Colors.Red;
-                }
+                // 1) Sauvegarde session pour désinscription / relance app
+                await SecureStorage.SetAsync("sb_access_token", accessToken ?? "");
+                await SecureStorage.SetAsync("sb_user_id", userId ?? "");
+
+                // 2) Assure que le SupabaseService a bien la session (utile pour DeleteAccountAsync)
+                _supabase.SetSession(accessToken!, userId!);
+
+                // 3) Mise à dispo pour le reste de l'app + bascule Shell
+                var app = (App)Application.Current;
+                app.SetSupabase(_supabase);
+                app.SetCurrentUserId(Guid.Parse(userId!));
+                app.InitRestServices(accessToken!);
+                app.ShowAppShell();
             }
             catch (Exception ex)
             {
-                TxtMessage.Text = $"Erreur : {ex.Message}";
-                TxtMessage.TextColor = Colors.Red;
-                TxtMessage.IsVisible = true;
+                SetStatus($"Erreur : {ex.Message}", Colors.Red);
             }
         }
 
@@ -64,87 +72,73 @@ namespace LoGeCuiMobile.Pages
         {
             try
             {
-                TxtMessage.Text = "Inscription en cours...";
-                TxtMessage.TextColor = Colors.Blue;
-                TxtMessage.IsVisible = true;
+                SetStatus("Création du compte...", Colors.Blue);
 
-                string email = TxtEmail.Text?.Trim() ?? "";
-                string password = TxtPassword.Text ?? "";
+                var email = TxtEmail.Text?.Trim() ?? "";
+                var password = TxtPassword.Text ?? "";
 
-                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    TxtMessage.Text = "Veuillez remplir tous les champs.";
-                    TxtMessage.TextColor = Colors.Red;
+                    SetStatus("Veuillez remplir tous les champs.", Colors.Red);
                     return;
                 }
 
-                if (password.Length < 6)
+                var (success, accessToken, userId, error) =
+                    await _supabase.SignUpThenSignInAsync(email, password);
+
+                if (!success)
                 {
-                    TxtMessage.Text = "Le mot de passe doit contenir au moins 6 caractères.";
-                    TxtMessage.TextColor = Colors.Red;
+                    SetStatus(error ?? "Erreur lors de l'inscription", Colors.Red);
                     return;
                 }
 
-                var (success, userId, error) = await _supabase.SignUpAsync(email, password);
+                // Sauvegarde session
+                await SecureStorage.SetAsync("sb_access_token", accessToken ?? "");
+                await SecureStorage.SetAsync("sb_user_id", userId ?? "");
 
-                if (success)
-                {
-                    await DisplayAlert(
-                        "Inscription réussie",
-                        "Compte créé avec succès !\n\n" +
-                        "⚠️ IMPORTANT : Un email de confirmation a été envoyé à votre adresse.\n" +
-                        "Veuillez cliquer sur le lien dans l'email avant de vous connecter.\n\n" +
-                        "Vérifiez aussi vos spams si vous ne le voyez pas.",
-                        "OK");
+                _supabase.SetSession(accessToken!, userId!);
 
-                    TxtPassword.Text = "";
-                    TxtMessage.Text = "✅ Compte créé ! Confirmez votre email puis connectez-vous.";
-                    TxtMessage.TextColor = Colors.Green;
-                }
-                else
-                {
-                    TxtMessage.Text = error ?? "Erreur lors de l'inscription";
-                    TxtMessage.TextColor = Colors.Red;
-                }
+                var app = (App)Application.Current;
+                app.SetSupabase(_supabase);
+                app.SetCurrentUserId(Guid.Parse(userId!));
+                app.InitRestServices(accessToken!);
+                app.ShowAppShell();
             }
             catch (Exception ex)
             {
-                TxtMessage.Text = $"Erreur : {ex.Message}";
-                TxtMessage.TextColor = Colors.Red;
-                TxtMessage.IsVisible = true;
+                SetStatus($"Erreur : {ex.Message}", Colors.Red);
             }
         }
 
-        private async Task CheckForUpdatesAsync()
+        private void TogglePassword(object sender, EventArgs e)
         {
-            try
+            _isPasswordVisible = !_isPasswordVisible;
+
+            // Affiche/masque le mot de passe
+            TxtPassword.IsPassword = !_isPasswordVisible;
+
+            // Optionnel: change l'icône texte
+            if (sender is Button btn)
+                btn.Text = _isPasswordVisible ? "🙈" : "👁";
+
+            // Optionnel Android: force refresh / curseur fin
+            if (!string.IsNullOrEmpty(TxtPassword.Text))
             {
-                string url = ConfigurationHelper.GetSupabaseUrl();
-                string key = ConfigurationHelper.GetSupabaseKey();
-
-                var updateService = new LoGeCuiShared.Services.UpdateService(url, key);
-                var updateInfo = await updateService.CheckForUpdateAsync("mobile", "1.0.0");
-
-                if (updateInfo != null)
-                {
-                    bool answer = await DisplayAlert(
-                        "Mise à jour disponible",
-                        $"Une nouvelle version {updateInfo.Version} est disponible !\n\n" +
-                        $"Notes de version :\n{updateInfo.ReleaseNotes}\n\n" +
-                        $"Voulez-vous télécharger la mise à jour ?",
-                        "Oui",
-                        "Plus tard");
-
-                    if (answer)
-                    {
-                        await Launcher.OpenAsync(new Uri(updateInfo.DownloadUrl));
-                    }
-                }
+                var t = TxtPassword.Text;
+                TxtPassword.Text = string.Empty;
+                TxtPassword.Text = t;
             }
-            catch
-            {
-                // Erreur silencieuse
-            }
+        }
+
+
+        private void SetStatus(string message, Color color)
+        {
+            TxtMessage.Text = message;
+            TxtMessage.TextColor = color;
+            TxtMessage.IsVisible = true;
         }
     }
 }
+
+
+

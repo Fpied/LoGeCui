@@ -1,10 +1,13 @@
-﻿namespace LoGeCuiMobile
+﻿using LoGeCuiMobile.Pages;
+
+namespace LoGeCuiMobile;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        Routing.RegisterRoute(nameof(ListeCoursesPage), typeof(ListeCoursesPage));
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="LoGeCuiMobile.Pages.AjouterIngredientPage"
+    Title="Ajouter un ingrédient">
+
+    <VerticalStackLayout Padding="20" Spacing="14">
+
+        <Entry
+            x:Name="NomEntry"
+            Placeholder="Nom de l’ingrédient" />
+
+        <Entry
+            x:Name="QuantiteEntry"
+            Placeholder="Quantité (ex: 10)"
+            Keyboard="Numeric" />
+
+        <Entry
+            x:Name="UniteEntry"
+            Placeholder="Unité (ex: kg, pièces)" />
+
+        <HorizontalStackLayout Spacing="10">
+            <CheckBox x:Name="DisponibleCheckBox" IsChecked="True"/>
+            <Label Text="Disponible"
+                   VerticalTextAlignment="Center"/>
+        </HorizontalStackLayout>
+
+        <Button
+            Text="💾 Enregistrer"
+            BackgroundColor="#28a745"
+            TextColor="White"
+            Clicked="OnSaveClicked"/>
+
+    </VerticalStackLayout>
+</ContentPage>
