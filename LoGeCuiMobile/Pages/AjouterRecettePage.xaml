@@ -1,42 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    x:Class="LoGeCuiMobile.Pages.AjouterRecettePage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Ajouter une recette">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LoGeCuiMobile.Pages.AjouterRecettePage"
+             Title="Ajouter une recette">
 
-    <Grid RowDefinitions="*,Auto" Padding="16">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
 
-        <!-- Formulaire scrollable -->
-        <ScrollView Grid.Row="0">
-            <VerticalStackLayout Spacing="12">
+            <Label Text="Nom" />
+            <Entry x:Name="NomEntry" Placeholder="Nom de la recette" />
 
-                <Entry x:Name="NomEntry" Placeholder="Nom" />
+            <Label Text="Catégorie" />
+            <Picker x:Name="CategoriePicker" />
 
-                <!-- Catégorie -->
-                <Label Text="Catégorie" FontAttributes="Bold"/> "
-                <Picker x:Name="CategoriePicker" Title="Choisir une catégorie" />
+            <Label Text="Temps (minutes)" />
+            <Entry x:Name="TempsEntry" Keyboard="Numeric" />
 
-                <Entry x:Name="TempsEntry" Placeholder="Temps (min)" Keyboard="Numeric" />
+            <Label Text="Ingrédients (1 par ligne)" />
+            <Editor x:Name="IngredientsEditor" AutoSize="TextChanges" HeightRequest="140" />
 
-                <Label Text="Ingrédients" FontAttributes="Bold"/>
-                <Editor x:Name="IngredientsEditor"
-                        AutoSize="TextChanges"
-                        MinimumHeightRequest="140" />
+            <Label Text="Instructions" />
+            <Editor x:Name="InstructionsEditor" AutoSize="TextChanges" HeightRequest="180" />
 
-                <Label Text="Instructions" FontAttributes="Bold"/>
-                <Editor x:Name="InstructionsEditor"
-                        AutoSize="TextChanges"
-                        MinimumHeightRequest="180" />
+            <Button Text="Scanner (OCR)" Clicked="OnScanClicked" />
+            <Button Text="Enregistrer" Clicked="OnSaveClicked" />
 
-                <Button Text="📷 Scanner (OCR)" Clicked="OnScanClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
 
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <!-- Bouton fixe en bas -->
-        <Button Grid.Row="1"
-                Text="💾 Enregistrer"
-                Clicked="OnSaveClicked" />
-    </Grid>
 </ContentPage>
+

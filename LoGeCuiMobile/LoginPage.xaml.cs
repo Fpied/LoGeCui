@@ -68,6 +68,35 @@ namespace LoGeCuiMobile.Pages
             }
         }
 
+        private async void BtnForgotPassword_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var email = TxtEmail.Text?.Trim() ?? "";
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    SetStatus("Entrez votre email pour réinitialiser le mot de passe.", Colors.Red);
+                    return;
+                }
+
+                var (success, error) = await _supabase.SendPasswordResetAsync(email);
+
+                if (!success)
+                {
+                    SetStatus(error ?? "Erreur lors de l'envoi.", Colors.Red);
+                    return;
+                }
+
+                await DisplayAlert("OK", "Email de réinitialisation envoyé.", "OK");
+                SetStatus("Email de réinitialisation envoyé.", Colors.Green);
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"Erreur : {ex.Message}", Colors.Red);
+            }
+        }
+
+
         private async void BtnInscription_Clicked(object sender, EventArgs e)
         {
             try

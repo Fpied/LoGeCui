@@ -33,27 +33,38 @@
         <CollectionView Grid.Row="1"
                         x:Name="RecettesCollection"
                         ItemsSource="{Binding Recettes}"
-                        SelectionMode="Single"
-                        SelectionChanged="OnRecetteSelected">
+                        SelectionMode="None">
 
             <CollectionView.EmptyView>
-                <Label Text="Aucune recette pour l'instant." />
+                <Label Text="Aucune recette pour l'instant."
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       Margin="0,30,0,0" />
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Padding="10" Margin="0,6" BorderColor="LightGray">
+                    <Frame Padding="10"
+                           Margin="0,6"
+                           BorderColor="LightGray"
+                           HasShadow="False">
+
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnRecetteTapped"
                                                   CommandParameter="{Binding .}" />
                         </Frame.GestureRecognizers>
 
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Nom}" FontSize="18" />
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Nom}"
+                                   FontSize="18" />
+
                             <Label Text="{Binding TypeTexte}" />
+
                             <Label Text="{Binding TempsPreparation, StringFormat='Temps: {0} min'}" />
+
                             <Label Text="{Binding DifficulteTexte}" />
                         </VerticalStackLayout>
+
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

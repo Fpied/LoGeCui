@@ -38,7 +38,7 @@ namespace LoGeCuiMobile.Pages
 
                 if (app.RecetteIngredientsService == null)
                 {
-                    await DisplayAlert("Erreur", "Service RecetteIngredients indisponible (initialisation App).", "OK");
+                    await DisplayAlert("Erreur", "RecetteIngredientsService non initialisé (InitRestServices).", "OK");
                     return;
                 }
 
@@ -51,7 +51,7 @@ namespace LoGeCuiMobile.Pages
                 var categorie = (CategoriePicker.SelectedItem as string) ?? "Plat";
                 int temps = int.TryParse(TempsEntry.Text, out var t) ? t : 0;
 
-                // IMPORTANT: external_id sert à retrouver l'ID DB après Upsert
+                // ExternalId stable pour retrouver l'id après upsert
                 var externalId = Guid.NewGuid().ToString("N");
 
                 var recette = new Recette
@@ -65,32 +65,47 @@ namespace LoGeCuiMobile.Pages
                     ExternalId = externalId
                 };
 
-                // Parse ingrédients depuis l’éditeur (1 ligne = 1 ingrédient)
-                // Supporte aussi "Nom - Quantite Unite" (issue de IngredientRecette.ToString)
-                var items = ParseIngredientsEditor(IngredientsEditor.Text);
-
-                // 1) Upsert recette
+                // 1) Upsert recette (table recettes)
                 await app.RecipesService.UpsertRecetteAsync(app.CurrentUserId.Value, recette);
 
-                // 2) Récupérer l’ID de la recette créée via external_id
+                // 2) Récupérer l'id réel de la recette (UUID en DB) via ExternalId
                 var recetteId = await app.RecipesService.GetRecetteIdByExternalIdAsync(externalId);
                 if (recetteId == null)
                 {
-                    await DisplayAlert("Erreur", "Recette enregistrée mais ID introuvable (external_id).", "OK");
+                    await DisplayAlert("Erreur", "Impossible de retrouver l'ID de la recette après sauvegarde.", "OK");
                     return;
                 }
 
-                // 3) Sauvegarder recette_ingredients (replace total, robuste)
+                // 3) Parser les ingrédients (1 par ligne)
+                //    Format accepté: "pomme" OU "2 kg pomme" (simple)
+                var lines = (IngredientsEditor.Text ?? "")
+                    .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(l => l.Trim())
+                    .Where(l => l.Length > 0)
+                    .ToList();
+
+                var items = new List<(string nom, string? quantite, string? unite)>();
+
+                foreach (var line in lines)
+                {
+                    // Si vous ne gérez pas quantite/unite maintenant, gardez simple:
+                    // tout va dans ingredient_nom
+                    items.Add((line, null, null));
+                }
+
+                // 4) Écriture dans recette_ingredients (delete + insert)
                 await app.RecetteIngredientsService.ReplaceForRecetteAsync(recetteId.Value, items);
 
-                await DisplayAlert("OK", "Recette + ingrédients enregistrés.", "OK");
+                await DisplayAlert("OK", "Recette enregistrée.", "OK");
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
                 await DisplayAlert("Erreur", ex.Message, "OK");
             }
         }
+
 
         // Transforme le texte du multi-line editor en liste (nom, quantite, unite)
         private static List<(string nom, string? quantite, string? unite)> ParseIngredientsEditor(string? text)

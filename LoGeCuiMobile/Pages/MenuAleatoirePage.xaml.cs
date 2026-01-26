@@ -178,7 +178,8 @@ public partial class MenuAleatoirePage : ContentPage
         ResultLabel.Text = "Génération du menu (Entrée / Plat / Dessert)…";
 
         // 1) Recettes utilisateur
-        var recettes = await app.RecipesService.GetRecettesAsync(userId);
+        var recettes = await app.RecipesService.GetMyRecettesAsync();
+
         if (recettes == null || recettes.Count == 0)
         {
             ResultLabel.Text = "Aucune recette disponible.";
