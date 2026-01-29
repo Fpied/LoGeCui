@@ -237,7 +237,7 @@ namespace LoGeCuiShared.Services
                 var request = new
                 {
                     email = email.Trim(),
-                    redirect_to = "logecui://reset-password"
+                    redirect_to = "https://logecui.fr/logecui-reset-password/index.html"
                 };
 
                 var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/recover", request);

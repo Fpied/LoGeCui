@@ -1,70 +1,102 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lang="clr-namespace:LoGeCuiMobile.Resources.Lang"
+             xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
              x:Class="LoGeCuiMobile.Pages.LoginPage"
              Title="LoGeCui - Connexion"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-            <!-- Logo / Titre -->
+            
+
+            <!-- Logo -->
             <Label Text="🛒 LoGeCui"
-                   FontSize="48"
+                   FontSize="42"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
-                   TextColor="#27AE60"
-                   Margin="0,0,0,40"/>
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                   Margin="0,10,0,30"/>
+
+            <!-- 🌍 Choix de langue -->
+            <Picker x:Name="LanguagePicker"
+        Title="🌍 Language"
+        SelectedIndexChanged="LanguagePicker_SelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>🇫🇷 Français</x:String>
+                    <x:String>🇬🇧 English</x:String>
+                    <x:String>🇩🇪 Deutsch</x:String>
+                    <x:String>🇪🇸 Español</x:String>
+                    <x:String>🇮🇹 Italiano</x:String>
+                    <x:String>🇸🇦 العربية</x:String>
+                    <x:String>🇵🇱 Polski</x:String>
+                    <x:String>🇹🇷 Türkçe</x:String>
+                    <x:String>🇷🇴 Română</x:String>
+                    <x:String>🇨🇿 Čeština</x:String>
+                    <x:String>🇰🇷 한국어</x:String>
+                    <x:String>🇯🇵 日本語</x:String>
+                    <x:String>🇹🇭 ไทย</x:String>
+                    <x:String>🇮🇳 हिन्दी</x:String>
+                </Picker.Items>
+            </Picker>
 
             <!-- Email -->
-            <Label Text="Email :"
+            <Label Text="{tr:Translate Email}"
                    FontAttributes="Bold"
-                   FontSize="16"/>
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
             <Entry x:Name="TxtEmail"
-                   Placeholder="votre.email@example.com"
+                   Placeholder="email@example.com"
                    Keyboard="Email"
-                   FontSize="16"
-                   BackgroundColor="White"/>
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
             <!-- Mot de passe -->
-            <Label Text="Mot de passe :"
+            <Label Text="{tr:Translate Password}"
                    FontAttributes="Bold"
-                   FontSize="16"/>
-            <Grid ColumnDefinitions="*, Auto"
-                  BackgroundColor="White">
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <Grid ColumnDefinitions="*,Auto"
+                  BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                  Padding="8">
 
                 <Entry x:Name="TxtPassword"
                        Placeholder="••••••••"
                        IsPassword="True"
-                       FontSize="16"
-                       BackgroundColor="White"/>
+                       BackgroundColor="Transparent"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
                 <Button Grid.Column="1"
                         Text="👁"
-                        FontSize="18"
                         BackgroundColor="Transparent"
                         Clicked="TogglePassword"/>
-
-
             </Grid>
 
-            <!-- Bouton Connexion -->
+            <!-- Rester connecté -->
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="ChkRememberMe" Color="#27AE60"/>
+                <Label Text="{tr:Translate StayConnected}"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+            </HorizontalStackLayout>
+
+            <!-- Connexion -->
             <Button x:Name="BtnConnexion"
-                    Text="Se connecter"
+                    Text="{tr:Translate LoginButton}"
                     BackgroundColor="#27AE60"
                     TextColor="White"
-                    FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     CornerRadius="10"
                     Clicked="BtnConnexion_Clicked"/>
 
-            <!-- Bouton Inscription -->
+            <!-- Inscription -->
             <Button x:Name="BtnInscription"
-                    Text="Créer un compte"
+                    Text="{tr:Translate SignupButton}"
                     BackgroundColor="#3498DB"
                     TextColor="White"
-                    FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     CornerRadius="10"
@@ -73,15 +105,13 @@
             <!-- Message -->
             <Label x:Name="TxtMessage"
                    TextColor="Red"
-                   FontSize="14"
                    HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"
                    IsVisible="False"/>
 
-            <Button Text="Mot de passe oublié ?"
-                    FontSize="14"
-                    TextColor="Blue"
+            <!-- Mot de passe oublié -->
+            <Button Text="{tr:Translate ForgotPassword}"
                     BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=Blue, Dark=#4DA3FF}"
                     Clicked="BtnForgotPassword_Clicked"/>
 
         </VerticalStackLayout>
