@@ -2,34 +2,34 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
     x:Class="LoGeCuiMobile.Pages.AjouterIngredientPage"
-    Title="Ajouter un ingrédient">
+    Title="{tr:Translate Ingredients_Add_Title}">
 
     <VerticalStackLayout Padding="20" Spacing="14">
 
         <Entry
             x:Name="NomEntry"
-            Placeholder="Nom de l’ingrédient" />
+            Placeholder="{tr:Translate Ingredients_Add_NamePlaceholder}" />
 
         <Entry
             x:Name="QuantiteEntry"
-            Placeholder="Quantité (ex: 10)"
+            Placeholder="{tr:Translate Ingredients_Add_QuantityPlaceholder}"
             Keyboard="Numeric" />
 
         <Entry
             x:Name="UniteEntry"
-            Placeholder="Unité (ex: kg, pièces)" />
+            Placeholder="{tr:Translate Ingredients_Add_UnitPlaceholder}" />
 
         <HorizontalStackLayout Spacing="10">
             <CheckBox x:Name="DisponibleCheckBox" IsChecked="True"/>
-            <Label Text="Disponible"
+            <Label Text="{tr:Translate Ingredients_Add_Available}"
                    VerticalTextAlignment="Center"/>
         </HorizontalStackLayout>
 
         <Button
-            Text="💾 Enregistrer"
+            Text="{tr:Translate Ingredients_Add_Save}"
             BackgroundColor="#28a745"
-            TextColor="White"
             Clicked="OnSaveClicked"/>
 
     </VerticalStackLayout>

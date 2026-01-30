@@ -6,6 +6,7 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace LoGeCuiMobile
 {
@@ -39,6 +40,11 @@ namespace LoGeCuiMobile
             // ✅ 1) Appliquer la langue sauvegardée AVANT de charger l'UI
             ApplySavedLanguage();
 
+            ApplySavedTheme(); // 👈 AJOUTE CETTE LIGNE
+
+            // ✅ (Optionnel) Suivre le thème système (ou forcer Dark/Light ailleurs)
+            Current.UserAppTheme = AppTheme.Unspecified;
+
             // ✅ 2) Init des services de base (anon + OCR)
             InitBaseServices();
 
@@ -54,14 +60,16 @@ namespace LoGeCuiMobile
             try
             {
                 var lang = Preferences.Get("app_language", "fr");
+
+                // CultureInfo supporte "fr", "en", "pt-BR", etc.
                 var culture = new CultureInfo(lang);
 
-                // ✅ Une seule méthode pour tout (culture + refresh UI si TranslateExtension)
+                // ✅ Centralise tout (culture + refresh UI si TranslateExtension)
                 LocalizationResourceManager.Instance.SetCulture(culture);
             }
             catch
             {
-                // Si culture invalide : fallback FR
+                // Fallback FR si la culture est invalide
                 LocalizationResourceManager.Instance.SetCulture(new CultureInfo("fr"));
             }
         }
@@ -83,7 +91,7 @@ namespace LoGeCuiMobile
                 OcrApiKey = "K86867725288957"; // ⚠️ debug only
             }
 
-            // ❌ Ne pas supprimer sb_access_token/sb_user_id ici (sinon remember me ne marche pas)
+            // ❌ Ne pas supprimer sb_access_token/sb_user_id ici
         }
 
         private async Task InitAsync()
@@ -128,9 +136,11 @@ namespace LoGeCuiMobile
                 return;
             }
 
-            // Recharge la session
-            Supabase ??= new SupabaseService(ConfigurationHelper.GetSupabaseUrl(),
-                                            ConfigurationHelper.GetSupabaseKey());
+            // Recharge la session (au cas où)
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
 
             Supabase.SetSession(accessToken, userId);
 
@@ -148,8 +158,21 @@ namespace LoGeCuiMobile
 
         public void OnLoginSuccess(string accessToken, string userId)
         {
-            Supabase!.SetSession(accessToken, userId);
-            CurrentUserId = Guid.Parse(userId);
+            // Sécurité : Supabase peut être null si jamais InitBaseServices a été modifié ailleurs
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
 
             InitRestServices(accessToken);
             ShowAppShell();
@@ -209,9 +232,9 @@ namespace LoGeCuiMobile
             ShowLogin();
         }
 
-        public async Task HandleDeepLinkAsync(Uri uri)
+        public Task HandleDeepLinkAsync(Uri uri)
         {
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public void SetSupabase(SupabaseService supabase) => Supabase = supabase;
@@ -220,6 +243,18 @@ namespace LoGeCuiMobile
         public void InitRestServices(string accessToken)
         {
             InitRestServicesInternal(accessToken);
+        }
+
+        private void ApplySavedTheme()
+        {
+            var theme = Preferences.Get("app_theme", "system");
+
+            Current.UserAppTheme = theme switch
+            {
+                "light" => AppTheme.Light,
+                "dark" => AppTheme.Dark,
+                _ => AppTheme.Unspecified
+            };
         }
     }
 }

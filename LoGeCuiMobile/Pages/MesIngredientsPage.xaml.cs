@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Linq;
+using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiShared.Models;
 
 namespace LoGeCuiMobile.Pages;
@@ -41,7 +43,12 @@ public partial class MesIngredientsPage : ContentPage
         if (e.CurrentSelection.FirstOrDefault() is Ingredient ingredient)
         {
             // Plus tard : voir les recettes liées
-            DisplayAlert("Ingrédient", ingredient.Nom, "OK");
+            DisplayAlert(
+                LocalizationResourceManager.Instance["Ingredients_DialogTitle"],
+                ingredient.Nom,
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
+
             IngredientsCollection.SelectedItem = null;
         }
     }

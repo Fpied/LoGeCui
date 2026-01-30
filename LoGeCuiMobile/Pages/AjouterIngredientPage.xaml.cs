@@ -1,4 +1,5 @@
 using LoGeCuiShared.Models;
+using LoGeCuiMobile.Resources.Lang;
 using Microsoft.Maui.Controls;
 
 namespace LoGeCuiMobile.Pages;
@@ -17,7 +18,11 @@ public partial class AjouterIngredientPage : ContentPage
     {
         if (string.IsNullOrWhiteSpace(NomEntry.Text))
         {
-            await DisplayAlert("Erreur", "Le nom est obligatoire.", "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                LocalizationResourceManager.Instance["Ingredients_Add_NameRequired"],
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
             return;
         }
 
@@ -33,4 +38,3 @@ public partial class AjouterIngredientPage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 }
-

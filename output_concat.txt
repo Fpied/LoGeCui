@@ -1,6 +1,6 @@
 # CONCAT OUTPUT
 # Root: C:\Users\Francois\source\repos\LoGeCui
-# Files: 102
+# Files: 107
 
 
 ================================================================================
@@ -3881,6 +3881,7 @@ FILE: LoGeCuiMobile\App.xaml
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
@@ -3890,13 +3891,14 @@ FILE: LoGeCuiMobile\App.xaml.cs
 ================================================================================
 
 ﻿using LoGeCuiMobile.Pages;
+using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiShared.Services;
-using Microsoft.Maui.Storage;
-using Microsoft.Maui.ApplicationModel;
-using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
-
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace LoGeCuiMobile
 {
@@ -3911,7 +3913,6 @@ namespace LoGeCuiMobile
         public IngredientsService? IngredientsService { get; private set; }
         public ListeCoursesSupabaseService? ListeCoursesSupabaseService { get; private set; }
 
-
         public Guid? CurrentUserId { get; private set; }
         public string OcrApiKey { get; private set; } = "";
 
@@ -3922,30 +3923,53 @@ namespace LoGeCuiMobile
             IngredientsService != null &&
             ListeCoursesSupabaseService != null;
 
+        private IConfigurationRoot? _config;
+
         public App()
         {
             InitializeComponent();
 
+            // ✅ 1) Appliquer la langue sauvegardée AVANT de charger l'UI
+            ApplySavedLanguage();
+
+            // ✅ (Optionnel) Suivre le thème système (ou forcer Dark/Light ailleurs)
+            Current.UserAppTheme = AppTheme.Unspecified;
+
+            // ✅ 2) Init des services de base (anon + OCR)
+            InitBaseServices();
+
+            // ✅ 3) Page par défaut (avant auto-login)
             MainPage = RootPage.CreateLoginRoot();
-            Init();
-            Task.Run(async () =>
-            {
-                await InitConfigurationAsync();
-                MainThread.BeginInvokeOnMainThread(Init);
-            });
+
+            // ✅ 4) Lancement async (config + auto-login)
+            _ = InitAsync();
         }
 
-        private IConfigurationRoot? _config;
-
-
-        private void Init()
+        private void ApplySavedLanguage()
         {
-            // SUPABASE (anon)
+            try
+            {
+                var lang = Preferences.Get("app_language", "fr");
+
+                // CultureInfo supporte "fr", "en", "pt-BR", etc.
+                var culture = new CultureInfo(lang);
+
+                // ✅ Centralise tout (culture + refresh UI si TranslateExtension)
+                LocalizationResourceManager.Instance.SetCulture(culture);
+            }
+            catch
+            {
+                // Fallback FR si la culture est invalide
+                LocalizationResourceManager.Instance.SetCulture(new CultureInfo("fr"));
+            }
+        }
+
+        private void InitBaseServices()
+        {
             var url = ConfigurationHelper.GetSupabaseUrl();
             var key = ConfigurationHelper.GetSupabaseKey();
             Supabase = new SupabaseService(url, key);
 
-            // OCR (chargée UNE FOIS)
             try
             {
                 OcrApiKey = ConfigurationHelper.GetOcrApiKey();
@@ -3954,20 +3978,91 @@ namespace LoGeCuiMobile
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ ERREUR OCR: {ex.Message}");
-                // Temporairement, hardcodez pour tester
-                OcrApiKey = "K86867725288957"; // ⚠️ METTEZ VOTRE VRAIE CLÉ ICI TEMPORAIREMENT
+                OcrApiKey = "K86867725288957"; // ⚠️ debug only
             }
 
-            // ❌ PAS d’auto-login : nettoyage SYNCHRONE (API correcte)
-            SecureStorage.Remove("sb_access_token");
-            SecureStorage.Remove("sb_user_id");
+            // ❌ Ne pas supprimer sb_access_token/sb_user_id ici
         }
 
-        // APPELÉ UNIQUEMENT APRÈS LOGIN
+        private async Task InitAsync()
+        {
+            try
+            {
+                await InitConfigurationAsync();
+                await TryAutoLoginAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ InitAsync: {ex}");
+                ShowLogin();
+            }
+        }
+
+        private async Task InitConfigurationAsync()
+        {
+            using var stream = await FileSystem.OpenAppPackageFileAsync("appsettings.json");
+
+            var builder = new ConfigurationBuilder()
+                .AddJsonStream(stream);
+
+            _config = builder.Build();
+        }
+
+        private async Task TryAutoLoginAsync()
+        {
+            var rememberMe = await SecureStorage.GetAsync("remember_me");
+            if (!string.Equals(rememberMe, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowLogin();
+                return;
+            }
+
+            var accessToken = await SecureStorage.GetAsync("sb_access_token");
+            var userId = await SecureStorage.GetAsync("sb_user_id");
+
+            if (string.IsNullOrWhiteSpace(accessToken) || string.IsNullOrWhiteSpace(userId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            // Recharge la session (au cas où)
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
+
+            InitRestServices(accessToken);
+            ShowAppShell();
+        }
+
         public void OnLoginSuccess(string accessToken, string userId)
         {
-            Supabase!.SetSession(accessToken, userId);
-            CurrentUserId = Guid.Parse(userId);
+            // Sécurité : Supabase peut être null si jamais InitBaseServices a été modifié ailleurs
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
 
             InitRestServices(accessToken);
             ShowAppShell();
@@ -3985,22 +4080,8 @@ namespace LoGeCuiMobile
             RecipesService = new RecipesService(client);
             IngredientsService = new IngredientsService(client);
             ListeCoursesSupabaseService = new ListeCoursesSupabaseService(client);
-            // ✅ AJOUTER CETTE LIGNE ICI
             RecetteIngredientsService = new RecetteIngredientsService(client);
         }
-
-        private async Task InitConfigurationAsync()
-        {
-            using var stream = await FileSystem.OpenAppPackageFileAsync("appsettings.json");
-
-            var builder = new ConfigurationBuilder()
-                .AddJsonStream(stream);
-
-            _config = builder.Build();
-
-            
-        }
-
 
         public void ShowAppShell()
         {
@@ -4016,7 +4097,6 @@ namespace LoGeCuiMobile
             });
         }
 
-        // ✅ MÉTHODE RÉTABLIE (utilisée ailleurs)
         public void ShowLogin()
         {
             MainThread.BeginInvokeOnMainThread(() =>
@@ -4027,6 +4107,7 @@ namespace LoGeCuiMobile
 
         public void Logout()
         {
+            SecureStorage.Remove("remember_me");
             SecureStorage.Remove("sb_access_token");
             SecureStorage.Remove("sb_user_id");
 
@@ -4036,53 +4117,25 @@ namespace LoGeCuiMobile
             RecipesService = null;
             IngredientsService = null;
             ListeCoursesSupabaseService = null;
+            RecetteIngredientsService = null;
 
             ShowLogin();
         }
 
-        // =========================
-        // MÉTHODES DE COMPATIBILITÉ
-        // (utilisées ailleurs dans l'app)
-        // =========================
-
-        // Ancien point d'entrée DeepLink (Android)
-        public async Task HandleDeepLinkAsync(Uri uri)
+        public Task HandleDeepLinkAsync(Uri uri)
         {
-            // Tu peux garder la logique existante si elle est ailleurs.
-            // Ici, on empêche juste le crash / erreur de compilation.
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        // Ancien setter Supabase (appelé depuis LoginPage)
-        public void SetSupabase(SupabaseService supabase)
-        {
-            Supabase = supabase;
-        }
+        public void SetSupabase(SupabaseService supabase) => Supabase = supabase;
+        public void SetCurrentUserId(Guid userId) => CurrentUserId = userId;
 
-        // Ancien setter UserId
-        public void SetCurrentUserId(Guid userId)
-        {
-            CurrentUserId = userId;
-        }
-
-        // Ancienne méthode publique (appelée depuis LoginPage)
         public void InitRestServices(string accessToken)
         {
-            // Appelle la méthode privée existante
             InitRestServicesInternal(accessToken);
         }
-
-        // 🔒 On renomme l'ancienne méthode privée
-       
-
     }
 }
-
-
-
-
-
-
 
 ================================================================================
 FILE: LoGeCuiMobile\appsettings.json
@@ -4520,6 +4573,7 @@ FILE: LoGeCuiMobile\LoGeCuiMobile.csproj
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
@@ -4568,7 +4622,51 @@ FILE: LoGeCuiMobile\LoGeCuiMobile.csproj
 	  <Folder Include="Platforms\Android\Resources\Raw\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Resources\Lang\AppResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AppResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Lang\AppResources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
 </Project>
+
+================================================================================
+FILE: LoGeCuiMobile\LoGeCuiMobile.sln
+================================================================================
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoGeCuiMobile", "LoGeCuiMobile.csproj", "{718860EB-0CC0-D204-6424-4B05AD96CB46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE3EFD92-D10C-4693-8095-DE23E3011D74}
+	EndGlobalSection
+EndGlobal
 
 ================================================================================
 FILE: LoGeCuiMobile\LoginPage.xaml
@@ -4576,71 +4674,103 @@ FILE: LoGeCuiMobile\LoginPage.xaml
 
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lang="clr-namespace:LoGeCuiMobile.Resources.Lang"
+             xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
              x:Class="LoGeCuiMobile.Pages.LoginPage"
              Title="LoGeCui - Connexion"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-            <!-- Logo / Titre -->
+            
+
+            <!-- Logo -->
             <Label Text="🛒 LoGeCui"
-                   FontSize="48"
+                   FontSize="42"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
-                   TextColor="#27AE60"
-                   Margin="0,0,0,40"/>
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                   Margin="0,10,0,30"/>
+
+            <!-- 🌍 Choix de langue -->
+            <Picker x:Name="LanguagePicker"
+        Title="🌍 Language"
+        SelectedIndexChanged="LanguagePicker_SelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>🇫🇷 Français</x:String>
+                    <x:String>🇬🇧 English</x:String>
+                    <x:String>🇩🇪 Deutsch</x:String>
+                    <x:String>🇪🇸 Español</x:String>
+                    <x:String>🇮🇹 Italiano</x:String>
+                    <x:String>🇸🇦 العربية</x:String>
+                    <x:String>🇵🇱 Polski</x:String>
+                    <x:String>🇹🇷 Türkçe</x:String>
+                    <x:String>🇷🇴 Română</x:String>
+                    <x:String>🇨🇿 Čeština</x:String>
+                    <x:String>🇰🇷 한국어</x:String>
+                    <x:String>🇯🇵 日本語</x:String>
+                    <x:String>🇹🇭 ไทย</x:String>
+                    <x:String>🇮🇳 हिन्दी</x:String>
+                </Picker.Items>
+            </Picker>
 
             <!-- Email -->
-            <Label Text="Email :"
+            <Label Text="{tr:Translate Email}"
                    FontAttributes="Bold"
-                   FontSize="16"/>
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
             <Entry x:Name="TxtEmail"
-                   Placeholder="votre.email@example.com"
+                   Placeholder="email@example.com"
                    Keyboard="Email"
-                   FontSize="16"
-                   BackgroundColor="White"/>
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
             <!-- Mot de passe -->
-            <Label Text="Mot de passe :"
+            <Label Text="{tr:Translate Password}"
                    FontAttributes="Bold"
-                   FontSize="16"/>
-            <Grid ColumnDefinitions="*, Auto"
-                  BackgroundColor="White">
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <Grid ColumnDefinitions="*,Auto"
+                  BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                  Padding="8">
 
                 <Entry x:Name="TxtPassword"
                        Placeholder="••••••••"
                        IsPassword="True"
-                       FontSize="16"
-                       BackgroundColor="White"/>
+                       BackgroundColor="Transparent"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
                 <Button Grid.Column="1"
                         Text="👁"
-                        FontSize="18"
                         BackgroundColor="Transparent"
                         Clicked="TogglePassword"/>
-
-
             </Grid>
 
-            <!-- Bouton Connexion -->
+            <!-- Rester connecté -->
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="ChkRememberMe" Color="#27AE60"/>
+                <Label Text="{tr:Translate StayConnected}"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+            </HorizontalStackLayout>
+
+            <!-- Connexion -->
             <Button x:Name="BtnConnexion"
-                    Text="Se connecter"
+                    Text="{tr:Translate LoginButton}"
                     BackgroundColor="#27AE60"
                     TextColor="White"
-                    FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     CornerRadius="10"
                     Clicked="BtnConnexion_Clicked"/>
 
-            <!-- Bouton Inscription -->
+            <!-- Inscription -->
             <Button x:Name="BtnInscription"
-                    Text="Créer un compte"
+                    Text="{tr:Translate SignupButton}"
                     BackgroundColor="#3498DB"
                     TextColor="White"
-                    FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     CornerRadius="10"
@@ -4649,15 +4779,13 @@ FILE: LoGeCuiMobile\LoginPage.xaml
             <!-- Message -->
             <Label x:Name="TxtMessage"
                    TextColor="Red"
-                   FontSize="14"
                    HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"
                    IsVisible="False"/>
 
-            <Button Text="Mot de passe oublié ?"
-                    FontSize="14"
-                    TextColor="Blue"
+            <!-- Mot de passe oublié -->
+            <Button Text="{tr:Translate ForgotPassword}"
                     BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=Blue, Dark=#4DA3FF}"
                     Clicked="BtnForgotPassword_Clicked"/>
 
         </VerticalStackLayout>
@@ -4669,74 +4797,254 @@ FILE: LoGeCuiMobile\LoginPage.xaml
 FILE: LoGeCuiMobile\LoginPage.xaml.cs
 ================================================================================
 
-﻿using LoGeCuiShared.Services;
+﻿using LoGeCuiMobile; // ForgotPasswordPage / RootPage
+using LoGeCuiMobile.Resources.Lang;
+using LoGeCuiShared.Services;
 using Microsoft.Maui.Storage;
-using LoGeCuiMobile; // si ForgotPasswordPage est à la racine du projet
+using System.Globalization;
 
 namespace LoGeCuiMobile.Pages
 {
     public partial class LoginPage : ContentPage
     {
         private readonly SupabaseService _supabase;
-
         private bool _isPasswordVisible = false;
+
+        // Empêche SelectedIndexChanged pendant l'init
+        private bool _isInitializingLanguage = false;
 
         public LoginPage()
         {
             InitializeComponent();
 
+            _isInitializingLanguage = true;
+            InitLanguagePickerSelection();
+            _isInitializingLanguage = false;
+
             var url = ConfigurationHelper.GetSupabaseUrl();
             var key = ConfigurationHelper.GetSupabaseKey();
-
             _supabase = new SupabaseService(url, key);
+
+            _ = LoadSavedUserAsync();
         }
 
+        // =========================
+        // LANGUE (Picker)
+        // =========================
+        private void LanguagePicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_isInitializingLanguage)
+                return;
+
+            if (LanguagePicker.SelectedIndex < 0)
+                return;
+
+            var langCode = LanguagePicker.SelectedIndex switch
+            {
+                0 => "fr",
+                1 => "en",
+                2 => "de",
+                3 => "es",
+                4 => "it",
+                5 => "ar",
+                6 => "pl",
+                7 => "tr",
+                8 => "ro",
+                9 => "cs",
+                10 => "ko",
+                11 => "ja",
+                12 => "th",
+                13 => "hi",
+                _ => "fr"
+            };
+
+            var current = Preferences.Get("app_language", "fr");
+            if (string.Equals(current, langCode, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            Preferences.Set("app_language", langCode);
+
+            var culture = new CultureInfo(langCode);
+
+            // ✅ Applique la culture + notifie l'UI (si tu utilises TranslateExtension)
+            LocalizationResourceManager.Instance.SetCulture(culture);
+
+            // ⚠️ Si ton XAML est encore en x:Static et que tu veux quand même voir le changement,
+            // dé-commente ce bloc (mais évite de le faire pendant l'init) :
+            // MainThread.BeginInvokeOnMainThread(() =>
+            // {
+            //     Application.Current.MainPage = RootPage.CreateLoginRoot();
+            // });
+        }
+
+        private void InitLanguagePickerSelection()
+        {
+            var lang = Preferences.Get("app_language", "fr");
+
+            var index = lang switch
+            {
+                "fr" => 0,
+                "en" => 1,
+                "de" => 2,
+                "es" => 3,
+                "it" => 4,
+                "ar" => 5,
+                "pl" => 6,
+                "tr" => 7,
+                "ro" => 8,
+                "cs" => 9,
+                "ko" => 10,
+                "ja" => 11,
+                "th" => 12,
+                "hi" => 13,
+                _ => 0
+            };
+
+            LanguagePicker.SelectedIndex = index;
+        }
+
+        // =========================
+        // LOGIN
+        // =========================
         private async void BtnConnexion_Clicked(object sender, EventArgs e)
         {
             try
             {
-                SetStatus("Connexion en cours...", Colors.Blue);
+                SetStatus(AppResources.Connecting, Colors.Blue);
 
-                var email = TxtEmail.Text?.Trim() ?? "";
-                var password = TxtPassword.Text ?? "";
+                var email = TxtEmail.Text?.Trim() ?? string.Empty;
+                var password = TxtPassword.Text ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    SetStatus("Veuillez remplir tous les champs.", Colors.Red);
+                    SetStatus(AppResources.FillAllFields, Colors.Red);
                     return;
                 }
 
                 var (success, accessToken, userId, error) =
                     await _supabase.SignInAsync(email, password);
 
-                System.Diagnostics.Debug.WriteLine("ACCESS_TOKEN=" + accessToken);
-
-
                 if (!success)
                 {
-                    SetStatus(error ?? "Erreur de connexion", Colors.Red);
-                    await Application.Current.MainPage.DisplayAlert("DEBUG", "Bouton cliqué", "OK");
-
+                    SetStatus(error ?? AppResources.ConnectionError, Colors.Red);
+                    await DisplayAlert(AppResources.ErrorTitle, AppResources.BadPassword, "OK");
                     return;
                 }
 
-                // 1) Sauvegarde session pour désinscription / relance app
-                await SecureStorage.SetAsync("sb_access_token", accessToken ?? "");
-                await SecureStorage.SetAsync("sb_user_id", userId ?? "");
+                accessToken ??= string.Empty;
+                userId ??= string.Empty;
 
-                // 2) Assure que le SupabaseService a bien la session (utile pour DeleteAccountAsync)
-                _supabase.SetSession(accessToken!, userId!);
+                if (ChkRememberMe?.IsChecked == true)
+                {
+                    await SecureStorage.SetAsync("remember_me", "true");
+                    await SecureStorage.SetAsync("sb_access_token", accessToken);
+                    await SecureStorage.SetAsync("sb_user_id", userId);
+                    await SecureStorage.SetAsync("user_email", email);
+                }
+                else
+                {
+                    SecureStorage.Remove("remember_me");
+                    SecureStorage.Remove("sb_access_token");
+                    SecureStorage.Remove("sb_user_id");
+                    SecureStorage.Remove("user_email");
+                }
 
-                // 3) Mise à dispo pour le reste de l'app + bascule Shell
+                if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(userId))
+                    _supabase.SetSession(accessToken, userId);
+
                 var app = (App)Application.Current;
                 app.SetSupabase(_supabase);
-                app.SetCurrentUserId(Guid.Parse(userId!));
-                app.InitRestServices(accessToken!);
+
+                if (Guid.TryParse(userId, out var guidUserId))
+                    app.SetCurrentUserId(guidUserId);
+
+                app.InitRestServices(accessToken);
                 app.ShowAppShell();
             }
             catch (Exception ex)
             {
-                SetStatus($"Erreur : {ex.Message}", Colors.Red);
+                SetStatus($"{AppResources.ErrorTitle} : {ex.Message}", Colors.Red);
+            }
+        }
+
+        private async Task LoadSavedUserAsync()
+        {
+            try
+            {
+                var rememberMe = await SecureStorage.GetAsync("remember_me");
+                if (!string.Equals(rememberMe, "true", StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                var email = await SecureStorage.GetAsync("user_email");
+                if (!string.IsNullOrEmpty(email))
+                {
+                    TxtEmail.Text = email;
+                    ChkRememberMe.IsChecked = true;
+                }
+            }
+            catch
+            {
+                // ignore SecureStorage errors
+            }
+        }
+
+        private async void BtnInscription_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                SetStatus(AppResources.CreatingAccount, Colors.Blue);
+
+                var email = TxtEmail.Text?.Trim() ?? string.Empty;
+                var password = TxtPassword.Text ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    SetStatus(AppResources.FillAllFields, Colors.Red);
+                    return;
+                }
+
+                var (success, accessToken, userId, error) =
+                    await _supabase.SignUpThenSignInAsync(email, password);
+
+                if (!success)
+                {
+                    SetStatus(error ?? AppResources.SignupError, Colors.Red);
+                    return;
+                }
+
+                accessToken ??= string.Empty;
+                userId ??= string.Empty;
+
+                if (ChkRememberMe?.IsChecked == true)
+                {
+                    await SecureStorage.SetAsync("remember_me", "true");
+                    await SecureStorage.SetAsync("sb_access_token", accessToken);
+                    await SecureStorage.SetAsync("sb_user_id", userId);
+                    await SecureStorage.SetAsync("user_email", email);
+                }
+                else
+                {
+                    SecureStorage.Remove("remember_me");
+                    SecureStorage.Remove("sb_access_token");
+                    SecureStorage.Remove("sb_user_id");
+                    SecureStorage.Remove("user_email");
+                }
+
+                if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(userId))
+                    _supabase.SetSession(accessToken, userId);
+
+                var app = (App)Application.Current;
+                app.SetSupabase(_supabase);
+
+                if (Guid.TryParse(userId, out var guidUserId))
+                    app.SetCurrentUserId(guidUserId);
+
+                app.InitRestServices(accessToken);
+                app.ShowAppShell();
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"{AppResources.ErrorTitle} : {ex.Message}", Colors.Red);
             }
         }
 
@@ -4748,51 +5056,7 @@ namespace LoGeCuiMobile.Pages
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erreur", ex.ToString(), "OK");
-            }
-        }
-
-
-
-        private async void BtnInscription_Clicked(object sender, EventArgs e)
-        {
-            try
-            {
-                SetStatus("Création du compte...", Colors.Blue);
-
-                var email = TxtEmail.Text?.Trim() ?? "";
-                var password = TxtPassword.Text ?? "";
-
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                {
-                    SetStatus("Veuillez remplir tous les champs.", Colors.Red);
-                    return;
-                }
-
-                var (success, accessToken, userId, error) =
-                    await _supabase.SignUpThenSignInAsync(email, password);
-
-                if (!success)
-                {
-                    SetStatus(error ?? "Erreur lors de l'inscription", Colors.Red);
-                    return;
-                }
-
-                // Sauvegarde session
-                await SecureStorage.SetAsync("sb_access_token", accessToken ?? "");
-                await SecureStorage.SetAsync("sb_user_id", userId ?? "");
-
-                _supabase.SetSession(accessToken!, userId!);
-
-                var app = (App)Application.Current;
-                app.SetSupabase(_supabase);
-                app.SetCurrentUserId(Guid.Parse(userId!));
-                app.InitRestServices(accessToken!);
-                app.ShowAppShell();
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erreur : {ex.Message}", Colors.Red);
+                await DisplayAlert(AppResources.ErrorTitle, ex.ToString(), "OK");
             }
         }
 
@@ -4800,14 +5064,11 @@ namespace LoGeCuiMobile.Pages
         {
             _isPasswordVisible = !_isPasswordVisible;
 
-            // Affiche/masque le mot de passe
             TxtPassword.IsPassword = !_isPasswordVisible;
 
-            // Optionnel: change l'icône texte
             if (sender is Button btn)
                 btn.Text = _isPasswordVisible ? "🙈" : "👁";
 
-            // Optionnel Android: force refresh / curseur fin
             if (!string.IsNullOrEmpty(TxtPassword.Text))
             {
                 var t = TxtPassword.Text;
@@ -4815,7 +5076,6 @@ namespace LoGeCuiMobile.Pages
                 TxtPassword.Text = t;
             }
         }
-
 
         private void SetStatus(string message, Color color)
         {
@@ -4825,9 +5085,6 @@ namespace LoGeCuiMobile.Pages
         }
     }
 }
-
-
-
 
 ================================================================================
 FILE: LoGeCuiMobile\MainPage.xaml
@@ -4907,6 +5164,7 @@ FILE: LoGeCuiMobile\MauiProgram.cs
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Storage;
+using CommunityToolkit.Maui;
 
 namespace LoGeCuiMobile
 {
@@ -4919,12 +5177,13 @@ namespace LoGeCuiMobile
             var builder = MauiApp.CreateBuilder();
 
             builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+            .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()   // 👈 AJOUT ICI
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
 #if DEBUG
             builder.Logging.AddDebug();
@@ -4968,6 +5227,24 @@ namespace LoGeCuiMobile
     }
 }
 
+
+================================================================================
+FILE: LoGeCuiMobile\Models\LanguageItem.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LoGeCuiMobile.Models
+{
+    internal class LanguageItem
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+        public string Flag { get; set; } = ""; // emoji drapeau
+    }
+}
 
 ================================================================================
 FILE: LoGeCuiMobile\Pages\AjouterIngredientPage.xaml
@@ -6940,6 +7217,247 @@ FILE: LoGeCuiMobile\Properties\launchSettings.json
       "nativeDebugging": false
     }
   }
+}
+
+================================================================================
+FILE: LoGeCuiMobile\Resources\Lang\AppResources.Designer.cs
+================================================================================
+
+﻿//------------------------------------------------------------------------------
+// <auto-generated>
+//     Ce code a été généré par un outil.
+//     Version du runtime :4.0.30319.42000
+//
+//     Les modifications apportées à ce fichier peuvent provoquer un comportement incorrect et seront perdues si
+//     le code est régénéré.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+namespace LoGeCuiMobile.Resources.Lang {
+    using System;
+    
+    
+    /// <summary>
+    ///   Une classe de ressource fortement typée destinée, entre autres, à la consultation des chaînes localisées.
+    /// </summary>
+    // Cette classe a été générée automatiquement par la classe StronglyTypedResourceBuilder
+    // à l'aide d'un outil, tel que ResGen ou Visual Studio.
+    // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
+    // avec l'option /str ou régénérez votre projet VS.
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    public class AppResources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal AppResources() {
+        }
+        
+        /// <summary>
+        ///   Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        public static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LoGeCuiMobile.Resources.Lang.AppResources", typeof(AppResources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Remplace la propriété CurrentUICulture du thread actuel pour toutes
+        ///   les recherches de ressources à l'aide de cette classe de ressource fortement typée.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        public static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mauvais mot de passe.
+        /// </summary>
+        public static string BadPassword {
+            get {
+                return ResourceManager.GetString("BadPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Connexion en cours....
+        /// </summary>
+        public static string Connecting {
+            get {
+                return ResourceManager.GetString("Connecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur de connexion.
+        /// </summary>
+        public static string ConnectionError {
+            get {
+                return ResourceManager.GetString("ConnectionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Création du compte....
+        /// </summary>
+        public static string CreatingAccount {
+            get {
+                return ResourceManager.GetString("CreatingAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Email.
+        /// </summary>
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur.
+        /// </summary>
+        public static string ErrorTitle {
+            get {
+                return ResourceManager.GetString("ErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Veuillez remplir tous les champs.
+        /// </summary>
+        public static string FillAllFields {
+            get {
+                return ResourceManager.GetString("FillAllFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mot de passe oublié ?.
+        /// </summary>
+        public static string ForgotPassword {
+            get {
+                return ResourceManager.GetString("ForgotPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Se connecter.
+        /// </summary>
+        public static string LoginButton {
+            get {
+                return ResourceManager.GetString("LoginButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mot de passe.
+        /// </summary>
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Créer un compte.
+        /// </summary>
+        public static string SignupButton {
+            get {
+                return ResourceManager.GetString("SignupButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur lors de l&apos;inscription.
+        /// </summary>
+        public static string SignupError {
+            get {
+                return ResourceManager.GetString("SignupError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Rester connecté.
+        /// </summary>
+        public static string StayConnected {
+            get {
+                return ResourceManager.GetString("StayConnected", resourceCulture);
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: LoGeCuiMobile\Resources\Lang\LocalizationResourceManager.cs
+================================================================================
+
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Resources;
+
+namespace LoGeCuiMobile.Resources.Lang;
+
+public class LocalizationResourceManager : INotifyPropertyChanged
+{
+    public static LocalizationResourceManager Instance { get; } = new();
+
+    private readonly ResourceManager _resourceManager = AppResources.ResourceManager;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string this[string key] => _resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
+
+    public void SetCulture(CultureInfo culture)
+    {
+        if (culture == null) return;
+
+        CultureInfo.CurrentUICulture = culture;
+        CultureInfo.CurrentCulture = culture;
+
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+        // ✅ Notifie toute l’UI : toutes les bindings se réévaluent
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+    }
+}
+
+================================================================================
+FILE: LoGeCuiMobile\Resources\Lang\TranslateExtension.cs
+================================================================================
+
+﻿using Microsoft.Maui.Controls;
+using System;
+
+namespace LoGeCuiMobile.Resources.Lang;
+
+[ContentProperty(nameof(Key))]
+public class TranslateExtension : IMarkupExtension<BindingBase>
+{
+    public string Key { get; set; } = "";
+
+    public BindingBase ProvideValue(IServiceProvider serviceProvider)
+        => new Binding($"[{Key}]", source: LocalizationResourceManager.Instance);
+
+    object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)
+        => ProvideValue(serviceProvider);
 }
 
 ================================================================================
@@ -9409,7 +9927,7 @@ FILE: output_concat.txt
 
 # CONCAT OUTPUT
 # Root: C:\Users\Francois\source\repos\LoGeCui
-# Files: 102
+# Files: 107
 
 
 ================================================================================
@@ -13290,6 +13808,7 @@ FILE: LoGeCuiMobile\App.xaml
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
@@ -13299,13 +13818,14 @@ FILE: LoGeCuiMobile\App.xaml.cs
 ================================================================================
 
 ﻿using LoGeCuiMobile.Pages;
+using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiShared.Services;
-using Microsoft.Maui.Storage;
-using Microsoft.Maui.ApplicationModel;
-using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
-
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace LoGeCuiMobile
 {
@@ -13320,7 +13840,6 @@ namespace LoGeCuiMobile
         public IngredientsService? IngredientsService { get; private set; }
         public ListeCoursesSupabaseService? ListeCoursesSupabaseService { get; private set; }
 
-
         public Guid? CurrentUserId { get; private set; }
         public string OcrApiKey { get; private set; } = "";
 
@@ -13331,30 +13850,53 @@ namespace LoGeCuiMobile
             IngredientsService != null &&
             ListeCoursesSupabaseService != null;
 
+        private IConfigurationRoot? _config;
+
         public App()
         {
             InitializeComponent();
 
+            // ✅ 1) Appliquer la langue sauvegardée AVANT de charger l'UI
+            ApplySavedLanguage();
+
+            // ✅ (Optionnel) Suivre le thème système (ou forcer Dark/Light ailleurs)
+            Current.UserAppTheme = AppTheme.Unspecified;
+
+            // ✅ 2) Init des services de base (anon + OCR)
+            InitBaseServices();
+
+            // ✅ 3) Page par défaut (avant auto-login)
             MainPage = RootPage.CreateLoginRoot();
-            Init();
-            Task.Run(async () =>
-            {
-                await InitConfigurationAsync();
-                MainThread.BeginInvokeOnMainThread(Init);
-            });
+
+            // ✅ 4) Lancement async (config + auto-login)
+            _ = InitAsync();
         }
 
-        private IConfigurationRoot? _config;
-
-
-        private void Init()
+        private void ApplySavedLanguage()
         {
-            // SUPABASE (anon)
+            try
+            {
+                var lang = Preferences.Get("app_language", "fr");
+
+                // CultureInfo supporte "fr", "en", "pt-BR", etc.
+                var culture = new CultureInfo(lang);
+
+                // ✅ Centralise tout (culture + refresh UI si TranslateExtension)
+                LocalizationResourceManager.Instance.SetCulture(culture);
+            }
+            catch
+            {
+                // Fallback FR si la culture est invalide
+                LocalizationResourceManager.Instance.SetCulture(new CultureInfo("fr"));
+            }
+        }
+
+        private void InitBaseServices()
+        {
             var url = ConfigurationHelper.GetSupabaseUrl();
             var key = ConfigurationHelper.GetSupabaseKey();
             Supabase = new SupabaseService(url, key);
 
-            // OCR (chargée UNE FOIS)
             try
             {
                 OcrApiKey = ConfigurationHelper.GetOcrApiKey();
@@ -13363,20 +13905,91 @@ namespace LoGeCuiMobile
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ ERREUR OCR: {ex.Message}");
-                // Temporairement, hardcodez pour tester
-                OcrApiKey = "K86867725288957"; // ⚠️ METTEZ VOTRE VRAIE CLÉ ICI TEMPORAIREMENT
+                OcrApiKey = "K86867725288957"; // ⚠️ debug only
             }
 
-            // ❌ PAS d’auto-login : nettoyage SYNCHRONE (API correcte)
-            SecureStorage.Remove("sb_access_token");
-            SecureStorage.Remove("sb_user_id");
+            // ❌ Ne pas supprimer sb_access_token/sb_user_id ici
         }
 
-        // APPELÉ UNIQUEMENT APRÈS LOGIN
+        private async Task InitAsync()
+        {
+            try
+            {
+                await InitConfigurationAsync();
+                await TryAutoLoginAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ InitAsync: {ex}");
+                ShowLogin();
+            }
+        }
+
+        private async Task InitConfigurationAsync()
+        {
+            using var stream = await FileSystem.OpenAppPackageFileAsync("appsettings.json");
+
+            var builder = new ConfigurationBuilder()
+                .AddJsonStream(stream);
+
+            _config = builder.Build();
+        }
+
+        private async Task TryAutoLoginAsync()
+        {
+            var rememberMe = await SecureStorage.GetAsync("remember_me");
+            if (!string.Equals(rememberMe, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowLogin();
+                return;
+            }
+
+            var accessToken = await SecureStorage.GetAsync("sb_access_token");
+            var userId = await SecureStorage.GetAsync("sb_user_id");
+
+            if (string.IsNullOrWhiteSpace(accessToken) || string.IsNullOrWhiteSpace(userId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            // Recharge la session (au cas où)
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
+
+            InitRestServices(accessToken);
+            ShowAppShell();
+        }
+
         public void OnLoginSuccess(string accessToken, string userId)
         {
-            Supabase!.SetSession(accessToken, userId);
-            CurrentUserId = Guid.Parse(userId);
+            // Sécurité : Supabase peut être null si jamais InitBaseServices a été modifié ailleurs
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
 
             InitRestServices(accessToken);
             ShowAppShell();
@@ -13394,22 +14007,8 @@ namespace LoGeCuiMobile
             RecipesService = new RecipesService(client);
             IngredientsService = new IngredientsService(client);
             ListeCoursesSupabaseService = new ListeCoursesSupabaseService(client);
-            // ✅ AJOUTER CETTE LIGNE ICI
             RecetteIngredientsService = new RecetteIngredientsService(client);
         }
-
-        private async Task InitConfigurationAsync()
-        {
-            using var stream = await FileSystem.OpenAppPackageFileAsync("appsettings.json");
-
-            var builder = new ConfigurationBuilder()
-                .AddJsonStream(stream);
-
-            _config = builder.Build();
-
-            
-        }
-
 
         public void ShowAppShell()
         {
@@ -13425,7 +14024,6 @@ namespace LoGeCuiMobile
             });
         }
 
-        // ✅ MÉTHODE RÉTABLIE (utilisée ailleurs)
         public void ShowLogin()
         {
             MainThread.BeginInvokeOnMainThread(() =>
@@ -13436,6 +14034,7 @@ namespace LoGeCuiMobile
 
         public void Logout()
         {
+            SecureStorage.Remove("remember_me");
             SecureStorage.Remove("sb_access_token");
             SecureStorage.Remove("sb_user_id");
 
@@ -13445,53 +14044,25 @@ namespace LoGeCuiMobile
             RecipesService = null;
             IngredientsService = null;
             ListeCoursesSupabaseService = null;
+            RecetteIngredientsService = null;
 
             ShowLogin();
         }
 
-        // =========================
-        // MÉTHODES DE COMPATIBILITÉ
-        // (utilisées ailleurs dans l'app)
-        // =========================
-
-        // Ancien point d'entrée DeepLink (Android)
-        public async Task HandleDeepLinkAsync(Uri uri)
+        public Task HandleDeepLinkAsync(Uri uri)
         {
-            // Tu peux garder la logique existante si elle est ailleurs.
-            // Ici, on empêche juste le crash / erreur de compilation.
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        // Ancien setter Supabase (appelé depuis LoginPage)
-        public void SetSupabase(SupabaseService supabase)
-        {
-            Supabase = supabase;
-        }
+        public void SetSupabase(SupabaseService supabase) => Supabase = supabase;
+        public void SetCurrentUserId(Guid userId) => CurrentUserId = userId;
 
-        // Ancien setter UserId
-        public void SetCurrentUserId(Guid userId)
-        {
-            CurrentUserId = userId;
-        }
-
-        // Ancienne méthode publique (appelée depuis LoginPage)
         public void InitRestServices(string accessToken)
         {
-            // Appelle la méthode privée existante
             InitRestServicesInternal(accessToken);
         }
-
-        // 🔒 On renomme l'ancienne méthode privée
-       
-
     }
 }
-
-
-
-
-
-
 
 ================================================================================
 FILE: LoGeCuiMobile\appsettings.json
@@ -13929,6 +14500,7 @@ FILE: LoGeCuiMobile\LoGeCuiMobile.csproj
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
@@ -13977,7 +14549,51 @@ FILE: LoGeCuiMobile\LoGeCuiMobile.csproj
 	  <Folder Include="Platforms\Android\Resources\Raw\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Resources\Lang\AppResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AppResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Lang\AppResources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
 </Project>
+
+================================================================================
+FILE: LoGeCuiMobile\LoGeCuiMobile.sln
+================================================================================
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoGeCuiMobile", "LoGeCuiMobile.csproj", "{718860EB-0CC0-D204-6424-4B05AD96CB46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE3EFD92-D10C-4693-8095-DE23E3011D74}
+	EndGlobalSection
+EndGlobal
 
 ================================================================================
 FILE: LoGeCuiMobile\LoginPage.xaml
@@ -13985,71 +14601,103 @@ FILE: LoGeCuiMobile\LoginPage.xaml
 
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lang="clr-namespace:LoGeCuiMobile.Resources.Lang"
+             xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
              x:Class="LoGeCuiMobile.Pages.LoginPage"
              Title="LoGeCui - Connexion"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-            <!-- Logo / Titre -->
+            
+
+            <!-- Logo -->
             <Label Text="🛒 LoGeCui"
-                   FontSize="48"
+                   FontSize="42"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
-                   TextColor="#27AE60"
-                   Margin="0,0,0,40"/>
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                   Margin="0,10,0,30"/>
+
+            <!-- 🌍 Choix de langue -->
+            <Picker x:Name="LanguagePicker"
+        Title="🌍 Language"
+        SelectedIndexChanged="LanguagePicker_SelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>🇫🇷 Français</x:String>
+                    <x:String>🇬🇧 English</x:String>
+                    <x:String>🇩🇪 Deutsch</x:String>
+                    <x:String>🇪🇸 Español</x:String>
+                    <x:String>🇮🇹 Italiano</x:String>
+                    <x:String>🇸🇦 العربية</x:String>
+                    <x:String>🇵🇱 Polski</x:String>
+                    <x:String>🇹🇷 Türkçe</x:String>
+                    <x:String>🇷🇴 Română</x:String>
+                    <x:String>🇨🇿 Čeština</x:String>
+                    <x:String>🇰🇷 한국어</x:String>
+                    <x:String>🇯🇵 日本語</x:String>
+                    <x:String>🇹🇭 ไทย</x:String>
+                    <x:String>🇮🇳 हिन्दी</x:String>
+                </Picker.Items>
+            </Picker>
 
             <!-- Email -->
-            <Label Text="Email :"
+            <Label Text="{tr:Translate Email}"
                    FontAttributes="Bold"
-                   FontSize="16"/>
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
             <Entry x:Name="TxtEmail"
-                   Placeholder="votre.email@example.com"
+                   Placeholder="email@example.com"
                    Keyboard="Email"
-                   FontSize="16"
-                   BackgroundColor="White"/>
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
             <!-- Mot de passe -->
-            <Label Text="Mot de passe :"
+            <Label Text="{tr:Translate Password}"
                    FontAttributes="Bold"
-                   FontSize="16"/>
-            <Grid ColumnDefinitions="*, Auto"
-                  BackgroundColor="White">
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <Grid ColumnDefinitions="*,Auto"
+                  BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                  Padding="8">
 
                 <Entry x:Name="TxtPassword"
                        Placeholder="••••••••"
                        IsPassword="True"
-                       FontSize="16"
-                       BackgroundColor="White"/>
+                       BackgroundColor="Transparent"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
                 <Button Grid.Column="1"
                         Text="👁"
-                        FontSize="18"
                         BackgroundColor="Transparent"
                         Clicked="TogglePassword"/>
-
-
             </Grid>
 
-            <!-- Bouton Connexion -->
+            <!-- Rester connecté -->
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="ChkRememberMe" Color="#27AE60"/>
+                <Label Text="{tr:Translate StayConnected}"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+            </HorizontalStackLayout>
+
+            <!-- Connexion -->
             <Button x:Name="BtnConnexion"
-                    Text="Se connecter"
+                    Text="{tr:Translate LoginButton}"
                     BackgroundColor="#27AE60"
                     TextColor="White"
-                    FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     CornerRadius="10"
                     Clicked="BtnConnexion_Clicked"/>
 
-            <!-- Bouton Inscription -->
+            <!-- Inscription -->
             <Button x:Name="BtnInscription"
-                    Text="Créer un compte"
+                    Text="{tr:Translate SignupButton}"
                     BackgroundColor="#3498DB"
                     TextColor="White"
-                    FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     CornerRadius="10"
@@ -14058,15 +14706,13 @@ FILE: LoGeCuiMobile\LoginPage.xaml
             <!-- Message -->
             <Label x:Name="TxtMessage"
                    TextColor="Red"
-                   FontSize="14"
                    HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"
                    IsVisible="False"/>
 
-            <Button Text="Mot de passe oublié ?"
-                    FontSize="14"
-                    TextColor="Blue"
+            <!-- Mot de passe oublié -->
+            <Button Text="{tr:Translate ForgotPassword}"
                     BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=Blue, Dark=#4DA3FF}"
                     Clicked="BtnForgotPassword_Clicked"/>
 
         </VerticalStackLayout>
@@ -14078,74 +14724,254 @@ FILE: LoGeCuiMobile\LoginPage.xaml
 FILE: LoGeCuiMobile\LoginPage.xaml.cs
 ================================================================================
 
-﻿using LoGeCuiShared.Services;
+﻿using LoGeCuiMobile; // ForgotPasswordPage / RootPage
+using LoGeCuiMobile.Resources.Lang;
+using LoGeCuiShared.Services;
 using Microsoft.Maui.Storage;
-using LoGeCuiMobile; // si ForgotPasswordPage est à la racine du projet
+using System.Globalization;
 
 namespace LoGeCuiMobile.Pages
 {
     public partial class LoginPage : ContentPage
     {
         private readonly SupabaseService _supabase;
-
         private bool _isPasswordVisible = false;
+
+        // Empêche SelectedIndexChanged pendant l'init
+        private bool _isInitializingLanguage = false;
 
         public LoginPage()
         {
             InitializeComponent();
 
+            _isInitializingLanguage = true;
+            InitLanguagePickerSelection();
+            _isInitializingLanguage = false;
+
             var url = ConfigurationHelper.GetSupabaseUrl();
             var key = ConfigurationHelper.GetSupabaseKey();
-
             _supabase = new SupabaseService(url, key);
+
+            _ = LoadSavedUserAsync();
         }
 
+        // =========================
+        // LANGUE (Picker)
+        // =========================
+        private void LanguagePicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_isInitializingLanguage)
+                return;
+
+            if (LanguagePicker.SelectedIndex < 0)
+                return;
+
+            var langCode = LanguagePicker.SelectedIndex switch
+            {
+                0 => "fr",
+                1 => "en",
+                2 => "de",
+                3 => "es",
+                4 => "it",
+                5 => "ar",
+                6 => "pl",
+                7 => "tr",
+                8 => "ro",
+                9 => "cs",
+                10 => "ko",
+                11 => "ja",
+                12 => "th",
+                13 => "hi",
+                _ => "fr"
+            };
+
+            var current = Preferences.Get("app_language", "fr");
+            if (string.Equals(current, langCode, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            Preferences.Set("app_language", langCode);
+
+            var culture = new CultureInfo(langCode);
+
+            // ✅ Applique la culture + notifie l'UI (si tu utilises TranslateExtension)
+            LocalizationResourceManager.Instance.SetCulture(culture);
+
+            // ⚠️ Si ton XAML est encore en x:Static et que tu veux quand même voir le changement,
+            // dé-commente ce bloc (mais évite de le faire pendant l'init) :
+            // MainThread.BeginInvokeOnMainThread(() =>
+            // {
+            //     Application.Current.MainPage = RootPage.CreateLoginRoot();
+            // });
+        }
+
+        private void InitLanguagePickerSelection()
+        {
+            var lang = Preferences.Get("app_language", "fr");
+
+            var index = lang switch
+            {
+                "fr" => 0,
+                "en" => 1,
+                "de" => 2,
+                "es" => 3,
+                "it" => 4,
+                "ar" => 5,
+                "pl" => 6,
+                "tr" => 7,
+                "ro" => 8,
+                "cs" => 9,
+                "ko" => 10,
+                "ja" => 11,
+                "th" => 12,
+                "hi" => 13,
+                _ => 0
+            };
+
+            LanguagePicker.SelectedIndex = index;
+        }
+
+        // =========================
+        // LOGIN
+        // =========================
         private async void BtnConnexion_Clicked(object sender, EventArgs e)
         {
             try
             {
-                SetStatus("Connexion en cours...", Colors.Blue);
+                SetStatus(AppResources.Connecting, Colors.Blue);
 
-                var email = TxtEmail.Text?.Trim() ?? "";
-                var password = TxtPassword.Text ?? "";
+                var email = TxtEmail.Text?.Trim() ?? string.Empty;
+                var password = TxtPassword.Text ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    SetStatus("Veuillez remplir tous les champs.", Colors.Red);
+                    SetStatus(AppResources.FillAllFields, Colors.Red);
                     return;
                 }
 
                 var (success, accessToken, userId, error) =
                     await _supabase.SignInAsync(email, password);
 
-                System.Diagnostics.Debug.WriteLine("ACCESS_TOKEN=" + accessToken);
-
-
                 if (!success)
                 {
-                    SetStatus(error ?? "Erreur de connexion", Colors.Red);
-                    await Application.Current.MainPage.DisplayAlert("DEBUG", "Bouton cliqué", "OK");
-
+                    SetStatus(error ?? AppResources.ConnectionError, Colors.Red);
+                    await DisplayAlert(AppResources.ErrorTitle, AppResources.BadPassword, "OK");
                     return;
                 }
 
-                // 1) Sauvegarde session pour désinscription / relance app
-                await SecureStorage.SetAsync("sb_access_token", accessToken ?? "");
-                await SecureStorage.SetAsync("sb_user_id", userId ?? "");
+                accessToken ??= string.Empty;
+                userId ??= string.Empty;
 
-                // 2) Assure que le SupabaseService a bien la session (utile pour DeleteAccountAsync)
-                _supabase.SetSession(accessToken!, userId!);
+                if (ChkRememberMe?.IsChecked == true)
+                {
+                    await SecureStorage.SetAsync("remember_me", "true");
+                    await SecureStorage.SetAsync("sb_access_token", accessToken);
+                    await SecureStorage.SetAsync("sb_user_id", userId);
+                    await SecureStorage.SetAsync("user_email", email);
+                }
+                else
+                {
+                    SecureStorage.Remove("remember_me");
+                    SecureStorage.Remove("sb_access_token");
+                    SecureStorage.Remove("sb_user_id");
+                    SecureStorage.Remove("user_email");
+                }
 
-                // 3) Mise à dispo pour le reste de l'app + bascule Shell
+                if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(userId))
+                    _supabase.SetSession(accessToken, userId);
+
                 var app = (App)Application.Current;
                 app.SetSupabase(_supabase);
-                app.SetCurrentUserId(Guid.Parse(userId!));
-                app.InitRestServices(accessToken!);
+
+                if (Guid.TryParse(userId, out var guidUserId))
+                    app.SetCurrentUserId(guidUserId);
+
+                app.InitRestServices(accessToken);
                 app.ShowAppShell();
             }
             catch (Exception ex)
             {
-                SetStatus($"Erreur : {ex.Message}", Colors.Red);
+                SetStatus($"{AppResources.ErrorTitle} : {ex.Message}", Colors.Red);
+            }
+        }
+
+        private async Task LoadSavedUserAsync()
+        {
+            try
+            {
+                var rememberMe = await SecureStorage.GetAsync("remember_me");
+                if (!string.Equals(rememberMe, "true", StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                var email = await SecureStorage.GetAsync("user_email");
+                if (!string.IsNullOrEmpty(email))
+                {
+                    TxtEmail.Text = email;
+                    ChkRememberMe.IsChecked = true;
+                }
+            }
+            catch
+            {
+                // ignore SecureStorage errors
+            }
+        }
+
+        private async void BtnInscription_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                SetStatus(AppResources.CreatingAccount, Colors.Blue);
+
+                var email = TxtEmail.Text?.Trim() ?? string.Empty;
+                var password = TxtPassword.Text ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    SetStatus(AppResources.FillAllFields, Colors.Red);
+                    return;
+                }
+
+                var (success, accessToken, userId, error) =
+                    await _supabase.SignUpThenSignInAsync(email, password);
+
+                if (!success)
+                {
+                    SetStatus(error ?? AppResources.SignupError, Colors.Red);
+                    return;
+                }
+
+                accessToken ??= string.Empty;
+                userId ??= string.Empty;
+
+                if (ChkRememberMe?.IsChecked == true)
+                {
+                    await SecureStorage.SetAsync("remember_me", "true");
+                    await SecureStorage.SetAsync("sb_access_token", accessToken);
+                    await SecureStorage.SetAsync("sb_user_id", userId);
+                    await SecureStorage.SetAsync("user_email", email);
+                }
+                else
+                {
+                    SecureStorage.Remove("remember_me");
+                    SecureStorage.Remove("sb_access_token");
+                    SecureStorage.Remove("sb_user_id");
+                    SecureStorage.Remove("user_email");
+                }
+
+                if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(userId))
+                    _supabase.SetSession(accessToken, userId);
+
+                var app = (App)Application.Current;
+                app.SetSupabase(_supabase);
+
+                if (Guid.TryParse(userId, out var guidUserId))
+                    app.SetCurrentUserId(guidUserId);
+
+                app.InitRestServices(accessToken);
+                app.ShowAppShell();
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"{AppResources.ErrorTitle} : {ex.Message}", Colors.Red);
             }
         }
 
@@ -14157,51 +14983,7 @@ namespace LoGeCuiMobile.Pages
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erreur", ex.ToString(), "OK");
-            }
-        }
-
-
-
-        private async void BtnInscription_Clicked(object sender, EventArgs e)
-        {
-            try
-            {
-                SetStatus("Création du compte...", Colors.Blue);
-
-                var email = TxtEmail.Text?.Trim() ?? "";
-                var password = TxtPassword.Text ?? "";
-
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                {
-                    SetStatus("Veuillez remplir tous les champs.", Colors.Red);
-                    return;
-                }
-
-                var (success, accessToken, userId, error) =
-                    await _supabase.SignUpThenSignInAsync(email, password);
-
-                if (!success)
-                {
-                    SetStatus(error ?? "Erreur lors de l'inscription", Colors.Red);
-                    return;
-                }
-
-                // Sauvegarde session
-                await SecureStorage.SetAsync("sb_access_token", accessToken ?? "");
-                await SecureStorage.SetAsync("sb_user_id", userId ?? "");
-
-                _supabase.SetSession(accessToken!, userId!);
-
-                var app = (App)Application.Current;
-                app.SetSupabase(_supabase);
-                app.SetCurrentUserId(Guid.Parse(userId!));
-                app.InitRestServices(accessToken!);
-                app.ShowAppShell();
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erreur : {ex.Message}", Colors.Red);
+                await DisplayAlert(AppResources.ErrorTitle, ex.ToString(), "OK");
             }
         }
 
@@ -14209,14 +14991,11 @@ namespace LoGeCuiMobile.Pages
         {
             _isPasswordVisible = !_isPasswordVisible;
 
-            // Affiche/masque le mot de passe
             TxtPassword.IsPassword = !_isPasswordVisible;
 
-            // Optionnel: change l'icône texte
             if (sender is Button btn)
                 btn.Text = _isPasswordVisible ? "🙈" : "👁";
 
-            // Optionnel Android: force refresh / curseur fin
             if (!string.IsNullOrEmpty(TxtPassword.Text))
             {
                 var t = TxtPassword.Text;
@@ -14224,7 +15003,6 @@ namespace LoGeCuiMobile.Pages
                 TxtPassword.Text = t;
             }
         }
-
 
         private void SetStatus(string message, Color color)
         {
@@ -14234,9 +15012,6 @@ namespace LoGeCuiMobile.Pages
         }
     }
 }
-
-
-
 
 ================================================================================
 FILE: LoGeCuiMobile\MainPage.xaml
@@ -14316,6 +15091,7 @@ FILE: LoGeCuiMobile\MauiProgram.cs
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Storage;
+using CommunityToolkit.Maui;
 
 namespace LoGeCuiMobile
 {
@@ -14328,12 +15104,13 @@ namespace LoGeCuiMobile
             var builder = MauiApp.CreateBuilder();
 
             builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+            .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()   // 👈 AJOUT ICI
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
 #if DEBUG
             builder.Logging.AddDebug();
@@ -14377,6 +15154,24 @@ namespace LoGeCuiMobile
     }
 }
 
+
+================================================================================
+FILE: LoGeCuiMobile\Models\LanguageItem.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LoGeCuiMobile.Models
+{
+    internal class LanguageItem
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+        public string Flag { get; set; } = ""; // emoji drapeau
+    }
+}
 
 ================================================================================
 FILE: LoGeCuiMobile\Pages\AjouterIngredientPage.xaml
@@ -16349,6 +17144,247 @@ FILE: LoGeCuiMobile\Properties\launchSettings.json
       "nativeDebugging": false
     }
   }
+}
+
+================================================================================
+FILE: LoGeCuiMobile\Resources\Lang\AppResources.Designer.cs
+================================================================================
+
+﻿//------------------------------------------------------------------------------
+// <auto-generated>
+//     Ce code a été généré par un outil.
+//     Version du runtime :4.0.30319.42000
+//
+//     Les modifications apportées à ce fichier peuvent provoquer un comportement incorrect et seront perdues si
+//     le code est régénéré.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+namespace LoGeCuiMobile.Resources.Lang {
+    using System;
+    
+    
+    /// <summary>
+    ///   Une classe de ressource fortement typée destinée, entre autres, à la consultation des chaînes localisées.
+    /// </summary>
+    // Cette classe a été générée automatiquement par la classe StronglyTypedResourceBuilder
+    // à l'aide d'un outil, tel que ResGen ou Visual Studio.
+    // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
+    // avec l'option /str ou régénérez votre projet VS.
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    public class AppResources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal AppResources() {
+        }
+        
+        /// <summary>
+        ///   Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        public static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LoGeCuiMobile.Resources.Lang.AppResources", typeof(AppResources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Remplace la propriété CurrentUICulture du thread actuel pour toutes
+        ///   les recherches de ressources à l'aide de cette classe de ressource fortement typée.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        public static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mauvais mot de passe.
+        /// </summary>
+        public static string BadPassword {
+            get {
+                return ResourceManager.GetString("BadPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Connexion en cours....
+        /// </summary>
+        public static string Connecting {
+            get {
+                return ResourceManager.GetString("Connecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur de connexion.
+        /// </summary>
+        public static string ConnectionError {
+            get {
+                return ResourceManager.GetString("ConnectionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Création du compte....
+        /// </summary>
+        public static string CreatingAccount {
+            get {
+                return ResourceManager.GetString("CreatingAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Email.
+        /// </summary>
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur.
+        /// </summary>
+        public static string ErrorTitle {
+            get {
+                return ResourceManager.GetString("ErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Veuillez remplir tous les champs.
+        /// </summary>
+        public static string FillAllFields {
+            get {
+                return ResourceManager.GetString("FillAllFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mot de passe oublié ?.
+        /// </summary>
+        public static string ForgotPassword {
+            get {
+                return ResourceManager.GetString("ForgotPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Se connecter.
+        /// </summary>
+        public static string LoginButton {
+            get {
+                return ResourceManager.GetString("LoginButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mot de passe.
+        /// </summary>
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Créer un compte.
+        /// </summary>
+        public static string SignupButton {
+            get {
+                return ResourceManager.GetString("SignupButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur lors de l&apos;inscription.
+        /// </summary>
+        public static string SignupError {
+            get {
+                return ResourceManager.GetString("SignupError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Rester connecté.
+        /// </summary>
+        public static string StayConnected {
+            get {
+                return ResourceManager.GetString("StayConnected", resourceCulture);
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: LoGeCuiMobile\Resources\Lang\LocalizationResourceManager.cs
+================================================================================
+
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Resources;
+
+namespace LoGeCuiMobile.Resources.Lang;
+
+public class LocalizationResourceManager : INotifyPropertyChanged
+{
+    public static LocalizationResourceManager Instance { get; } = new();
+
+    private readonly ResourceManager _resourceManager = AppResources.ResourceManager;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string this[string key] => _resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
+
+    public void SetCulture(CultureInfo culture)
+    {
+        if (culture == null) return;
+
+        CultureInfo.CurrentUICulture = culture;
+        CultureInfo.CurrentCulture = culture;
+
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+        // ✅ Notifie toute l’UI : toutes les bindings se réévaluent
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+    }
+}
+
+================================================================================
+FILE: LoGeCuiMobile\Resources\Lang\TranslateExtension.cs
+================================================================================
+
+﻿using Microsoft.Maui.Controls;
+using System;
+
+namespace LoGeCuiMobile.Resources.Lang;
+
+[ContentProperty(nameof(Key))]
+public class TranslateExtension : IMarkupExtension<BindingBase>
+{
+    public string Key { get; set; } = "";
+
+    public BindingBase ProvideValue(IServiceProvider serviceProvider)
+        => new Binding($"[{Key}]", source: LocalizationResourceManager.Instance);
+
+    object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)
+        => ProvideValue(serviceProvider);
 }
 
 ================================================================================

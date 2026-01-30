@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using LoGeCuiShared.Models;
+﻿using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiShared.Services;
 
 namespace LoGeCuiMobile.Pages;
@@ -26,31 +25,39 @@ public partial class ResetPasswordPage : ContentPage
 
         if (string.IsNullOrWhiteSpace(p1) || p1.Length < 6)
         {
-            Msg.Text = "Le mot de passe doit contenir au moins 6 caractères.";
+            Msg.Text = LocalizationResourceManager.Instance["Reset_PwdMinLength"];
             Msg.TextColor = Colors.Red;
             return;
         }
 
         if (p1 != p2)
         {
-            Msg.Text = "Les mots de passe ne correspondent pas.";
+            Msg.Text = LocalizationResourceManager.Instance["Reset_PwdMismatch"];
             Msg.TextColor = Colors.Red;
             return;
         }
 
-        Msg.Text = "Mise à jour en cours...";
+        Msg.Text = LocalizationResourceManager.Instance["Reset_Updating"];
         Msg.TextColor = Colors.Blue;
 
         var (success, error) = await _supabase.UpdatePasswordAsync(_accessToken, p1);
 
         if (success)
         {
-            await DisplayAlert("✅ Terminé", "Votre mot de passe a été modifié. Vous pouvez vous connecter.", "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["Reset_DoneTitle"],
+                LocalizationResourceManager.Instance["Reset_DoneBody"],
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
+
             await Navigation.PopToRootAsync();
         }
         else
         {
-            Msg.Text = error ?? "Impossible de modifier le mot de passe.";
+            Msg.Text = string.IsNullOrWhiteSpace(error)
+                ? LocalizationResourceManager.Instance["Reset_Failed"]
+                : error;
+
             Msg.TextColor = Colors.Red;
         }
     }

@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,92 +9,443 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>E-mail</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Parolă</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Rămâi conectat</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Conectați-vă</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Creați un cont</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Ați uitat parola?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Eroare</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Parolă greșită</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>Conexiune în curs...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Vă rugăm să completați toate câmpurile</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Eroare de conectare</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Crearea unui cont...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>Eroare de înregistrare</value>
-  </data>
-</root>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 Lista de curse</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>Lista mea de cumpărături</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ Adăugați un element</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ Ștergeți selecția</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>Niciun articol încă.</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>Achiziționat</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>Ștergeți</value>
+    </data>
+  <data name="Nav_ShoppingList" xml:space="preserve">
+    <value>Lista de cumpărături</value>
+    </data>
+  <data name="Nav_Recipes" xml:space="preserve">
+    <value>Rețetele mele</value>
+    </data>
+  <data name="Nav_RandomMenu" xml:space="preserve">
+    <value>Meniu aleatoriu</value>
+    </data>
+  <data name="Nav_Ingredients" xml:space="preserve">
+    <value>Ingrediente</value>
+    </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>Parametrii</value>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>OK</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>Da</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>Nu</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Anulează</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ OK</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 Permisiune</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Eroare necunoscută.</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>Serviciul nu este disponibil.</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>Trebuie să fiți autentificat.</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>Sesiune</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Sesiune ratată sau expirată. Vă rugăm să vă autentificați din nou.</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>Adăugați un ingredient</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>Denumirea ingredientului</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>Cantitate (de exemplu, 10)</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>Unitate (de exemplu, kg, bucăți)</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>Disponibil la</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 Înregistrare</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>Numele este obligatoriu.</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>Gestionarea ingredientelor</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ Adăugați un ingredient</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>Cantitate: {0} {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>Disponibil la</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>Ingredient</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>Adăugați o rețetă</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>Nume și prenume</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>Denumirea rețetei</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>Categorie</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>Alegeți o categorie</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>Timp (minute)</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>Ex : 30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>Ingrediente (1 pe rând)</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>Ex:
+2 ouă
+100 g făină
+1 vârf de cuțit de sare</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>Instrucțiuni</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>Ex: Se amestecă, se gătește timp de 10 min...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>Scanare (OCR)</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>Înregistrare</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>Trebuie să fiți autentificat.</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>RecipeIngredientsService nu este inițializat.</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>Numele este obligatoriu.</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>Imposibil de găsit ID-ul rețetei după salvare.</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ Chitanța înregistrată.</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 Scanați o rețetă</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>Accesul la cameră este necesar pentru scanare.</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>Captura foto nu este acceptată pe acest dispozitiv.</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>Imaginea este prea grea pentru OCR. Încercați să tăiați imaginea mai strâns sau să reduceți rezoluția.</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>Nu este detectat niciun text. Încercați cu mai multă lumină și fără blur.</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ Text scanat și câmpuri precompletate. Verificați și corectați dacă este necesar.</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>Rețetele mele</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>Categorie</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>Reîmprospătare</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>Adăugați o rețetă</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>Nici o rețetă încă.</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>Timp : {0} min</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesService este NULL (InitRestServices nu a fost apelat după autentificare).</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>RecipeIngredientsService nu este inițializat.</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(nu se dau ingrediente)</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>Categorie: {0}
+Timp: {1} min
+
+Ingrediente:
+{2}
+
+Instrucțiuni:
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 Meniu aleatoriu</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 Meniu aleatoriu</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>Apăsați butonul pentru a genera un meniu</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 Trimiteți ingredientele lipsă în lista de cumpărături</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 Deschideți lista de cumpărături</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>Trimiteți?</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>Lipsește:</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 Ingrediente trimise</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ Generarea meniului (antreu / fel principal / desert)...</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>Nu există rețetă disponibilă.</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>Imposibilitatea de a genera un meniu de antreu/curs principal/ desert.</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>Aperitive: {0}
+Feluri principale: {1}
+Deserturi: {2}</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>Verificați dacă rețetele dvs. au "categoria" = Fel principal / Fel principal / Desert în DB.</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ Meniu generat :</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>Ingrediente : (nu sunt enumerate ingrediente pentru această rețetă)</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>Ingrediente:</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>Lipsește: niciunul</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>Lipsește:</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>Imposibilitatea de a calcula ingredientele lipsă: unele rețete nu au niciun ingredient înregistrat.</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ Totul este disponibil. Nu lipsesc ingrediente.</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>Lista globală a ingredientelor lipsă :</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>Resetare</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>Resetați parola</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>Parolă nouă</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>Confirmați parola</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>Confirmați</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>Parola trebuie să conțină cel puțin 6 caractere.</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>Parolele nu se potrivesc.</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ Actualizare în curs...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ Terminat</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>Parola dvs. a fost schimbată. Acum vă puteți conecta.</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>Imposibilitatea de a schimba parola.</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Parametrii</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>Cont</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>Deconectare</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>Zonă periculoasă</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>Dezabonare</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>Dezabonare</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>Sunteți sigur că doriți să vă ștergeți contul? Această acțiune este ireversibilă.</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>Da, ștergeți</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>Supabază neinițializată. Reconectați.</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>Nu poate fi șters: {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>✅ Contul dvs. a fost șters.</value>
+    </data>
+  </root>

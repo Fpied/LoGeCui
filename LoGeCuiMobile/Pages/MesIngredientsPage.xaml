@@ -2,20 +2,26 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
+    xmlns:conv="clr-namespace:LoGeCuiMobile.Converters"
     x:Class="LoGeCuiMobile.Pages.MesIngredientsPage"
-    Title="Gestion des ingrédients">
+    Title="{tr:Translate Ingredients_Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:QuantityFormatConverter x:Key="QuantityFormatConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid Padding="16" RowDefinitions="Auto,*" RowSpacing="12">
 
-        <!-- Bouton ajouter -->
         <Button
             Grid.Row="0"
-            Text="➕ Ajouter un ingrédient"
+            Text="{tr:Translate Ingredients_AddButton}"
             BackgroundColor="#28a745"
             TextColor="White"
             Clicked="OnAddIngredientClicked" />
 
-        <!-- Liste des ingrédients (scroll natif) -->
         <CollectionView
             Grid.Row="1"
             x:Name="IngredientsCollection"
@@ -42,7 +48,7 @@
 
                                 <Label FontSize="14" TextColor="Gray">
                                     <Label.Text>
-                                        <MultiBinding StringFormat="Quantité : {0} {1}">
+                                        <MultiBinding Converter="{StaticResource QuantityFormatConverter}">
                                             <Binding Path="Quantite"/>
                                             <Binding Path="Unite"/>
                                         </MultiBinding>
@@ -51,7 +57,8 @@
 
                                 <HorizontalStackLayout Spacing="6">
                                     <CheckBox IsChecked="{Binding EstDisponible}" />
-                                    <Label Text="Disponible" VerticalTextAlignment="Center"/>
+                                    <Label Text="{tr:Translate Ingredients_Available}"
+                                           VerticalTextAlignment="Center"/>
                                 </HorizontalStackLayout>
 
                             </VerticalStackLayout>
@@ -60,7 +67,6 @@
                                 Grid.Column="1"
                                 Text="🗑"
                                 BackgroundColor="#e74c3c"
-                                TextColor="White"
                                 Clicked="OnDeleteIngredientClicked" />
 
                         </Grid>
@@ -73,4 +79,3 @@
 
     </Grid>
 </ContentPage>
-

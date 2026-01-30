@@ -142,11 +142,119 @@ namespace LoGeCuiMobile.Resources.Lang {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ingrédients.
+        /// </summary>
+        public static string Nav_Ingredients {
+            get {
+                return ResourceManager.GetString("Nav_Ingredients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Menu aléatoire.
+        /// </summary>
+        public static string Nav_RandomMenu {
+            get {
+                return ResourceManager.GetString("Nav_RandomMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mes recettes.
+        /// </summary>
+        public static string Nav_Recipes {
+            get {
+                return ResourceManager.GetString("Nav_Recipes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Paramètres.
+        /// </summary>
+        public static string Nav_Settings {
+            get {
+                return ResourceManager.GetString("Nav_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Liste de courses.
+        /// </summary>
+        public static string Nav_ShoppingList {
+            get {
+                return ResourceManager.GetString("Nav_ShoppingList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Mot de passe.
         /// </summary>
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ➕ Ajouter un article.
+        /// </summary>
+        public static string Shopping_AddItem {
+            get {
+                return ResourceManager.GetString("Shopping_AddItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Acheté.
+        /// </summary>
+        public static string Shopping_Bought {
+            get {
+                return ResourceManager.GetString("Shopping_Bought", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Supprimer.
+        /// </summary>
+        public static string Shopping_Delete {
+            get {
+                return ResourceManager.GetString("Shopping_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🗑️ Supprimer sélection.
+        /// </summary>
+        public static string Shopping_DeleteSelection {
+            get {
+                return ResourceManager.GetString("Shopping_DeleteSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Aucun article pour l’instant..
+        /// </summary>
+        public static string Shopping_Empty {
+            get {
+                return ResourceManager.GetString("Shopping_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ma liste de courses.
+        /// </summary>
+        public static string Shopping_Header {
+            get {
+                return ResourceManager.GetString("Shopping_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🛒 Liste de Courses.
+        /// </summary>
+        public static string Shopping_Title {
+            get {
+                return ResourceManager.GetString("Shopping_Title", resourceCulture);
             }
         }
         

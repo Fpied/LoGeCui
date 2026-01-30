@@ -3,23 +3,24 @@
     x:Class="LoGeCuiMobile.Pages.MesRecettesPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Mes Recettes">
+    xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
+    Title="{tr:Translate Recipes_Title}">
 
     <Grid Padding="12" RowDefinitions="Auto,*" RowSpacing="10">
 
         <!-- Zone haute fixe -->
         <VerticalStackLayout Grid.Row="0" Spacing="10">
 
-            <Picker Title="Catégorie"
+            <Picker Title="{tr:Translate Recipes_Category}"
                     ItemsSource="{Binding Categories}"
                     SelectedItem="{Binding SelectedCategorie}" />
 
             <HorizontalStackLayout Spacing="10">
-                <Button Text="Rafraîchir"
+                <Button Text="{tr:Translate Recipes_Refresh}"
                         Command="{Binding RefreshCommand}"
                         HorizontalOptions="StartAndExpand" />
 
-                <Button Text="Ajouter une recette"
+                <Button Text="{tr:Translate Recipes_Add}"
                         Clicked="OnAjouterRecetteClicked"
                         HorizontalOptions="EndAndExpand" />
             </HorizontalStackLayout>
@@ -36,7 +37,7 @@
                         SelectionMode="None">
 
             <CollectionView.EmptyView>
-                <Label Text="Aucune recette pour l'instant."
+                <Label Text="{tr:Translate Recipes_Empty}"
                        HorizontalTextAlignment="Center"
                        VerticalTextAlignment="Center"
                        Margin="0,30,0,0" />
@@ -60,7 +61,8 @@
 
                             <Label Text="{Binding TypeTexte}" />
 
-                            <Label Text="{Binding TempsPreparation, StringFormat='Temps: {0} min'}" />
+                            <!-- Temps: {0} min -->
+                            <Label Text="{Binding TempsPreparation, StringFormat='{tr:Translate Recipes_TimeFormat}'}" />
 
                             <Label Text="{Binding DifficulteTexte}" />
                         </VerticalStackLayout>

@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
              x:Class="LoGeCuiMobile.Pages.MenuAleatoirePage"
-             Title="Menu aléatoire">
+             Title="{tr:Translate RandomMenu_Title}">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
             <Button
-                Text="🎲 Menu aléatoire"
+                Text="{tr:Translate RandomMenu_GenerateButton}"
                 Clicked="OnMenuAleatoireClicked" />
 
             <Label
                 x:Name="ResultLabel"
-                Text="Appuyez sur le bouton pour générer un menu"
+                Text="{tr:Translate RandomMenu_DefaultText}"
                 FontSize="18"
                 HorizontalTextAlignment="Center" />
 
             <!-- Bouton visible uniquement après génération si ingrédients manquants -->
             <Button x:Name="SendMissingButton"
-                    Text="🛒 Envoyer les ingrédients manquants dans la liste de courses"
+                    Text="{tr:Translate RandomMenu_SendMissingToShopping}"
                     Clicked="OnSendMissingClicked"
                     HorizontalOptions="FillAndExpand"
                     IsVisible="False"
                     IsEnabled="False" />
 
             <Button
-                Text="🛒 Ouvrir la liste de courses"
+                Text="{tr:Translate RandomMenu_OpenShopping}"
                 Clicked="OnOpenListeCoursesClicked"
                 HorizontalOptions="FillAndExpand" />
 
@@ -34,5 +35,3 @@
     </ScrollView>
 
 </ContentPage>
-
-

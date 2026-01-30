@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,92 +9,443 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>電子メール</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>パスワード</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>つながりを保つ</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>ログイン</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>アカウントの作成</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>パスワードをお忘れですか？</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>エラー</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>パスワードの間違い</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>接続中...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>すべての欄にご記入ください。</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>接続エラー</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>アカウントの作成...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>登録エラー</value>
-  </data>
-</root>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 レース一覧</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>買い物リスト</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>アイテムを追加する</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ 削除選択</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>まだ記事はない。</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>購入</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>削除</value>
+    </data>
+  <data name="Nav_ShoppingList" xml:space="preserve">
+    <value>買い物リスト</value>
+    </data>
+  <data name="Nav_Recipes" xml:space="preserve">
+    <value>私のレシピ</value>
+    </data>
+  <data name="Nav_RandomMenu" xml:space="preserve">
+    <value>ランダムメニュー</value>
+    </data>
+  <data name="Nav_Ingredients" xml:space="preserve">
+    <value>原材料</value>
+    </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>パラメータ</value>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>OK</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>はい</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>いいえ</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ OK</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 許可</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>光学式文字認識</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>不明なエラー。</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>サービスは利用できない。</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>ログインが必要です。</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>セッション</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>セッションに参加できなかったか、有効期限が切れています。再度ログインしてください。</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>食材の追加</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>成分名</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>数量（例：10）</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>単位（kg、個数など）</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>下記にて入手可能</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 レジスター</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>名前は必須である。</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>食材の管理</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ 食材を追加する</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>数量: {0} {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>下記にて入手可能</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>原材料</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>レシピを追加する</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>名称</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>レシピ名</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>カテゴリー</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>カテゴリーを選ぶ</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>時間（分）</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>例：30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>材料（1行に1つ）</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>例
+卵 2個
+小麦粉 100g
+塩 ひとつまみ</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>使用方法</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>例：混ぜて10分煮る。</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>スキャニング（OCR）</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>登録</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>ログインが必要です。</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>RecipeIngredientsService が初期化されていません。</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>名前は必須である。</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>保存後にレシピIDを見つけることができない。</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ レシートを記録。</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 レシピをスキャンする</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>スキャンにはカメラへのアクセスが必要です。</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>このデバイスではフォトキャプチャはサポートされていません。</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>画像がOCRには重すぎます。画像をきつくトリミングするか、解像度を下げてみてください。</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>テキストが検出されない。もっと明るくして、ぼかしなしで試してください。</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ スキャンしたテキストと入力済みフィールド。必要に応じてチェックし、修正する。</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>私のレシピ</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>カテゴリー</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>リフレッシュ</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>レシピを追加する</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>レシピはまだない。</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>時間 : {0}分</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesServiceがNULLです（ログイン後にInitRestServicesが呼び出されていません）。</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>RecipeIngredientsService が初期化されていません。</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(成分表示なし）</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>カテゴリ： {0｝
+時間： {1}分
+
+材料
+{2}
+
+作り方
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 ランダムメニュー</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 ランダムメニュー</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>ボタンを押してメニューを生成する</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 買い物リストに足りない食材を送る</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>買い物リストを開く</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>送る？</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>行方不明だ：</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>送付された 🛒 原材料</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>メニュー作成（前菜／メイン／デザート）...</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>レシピはありません。</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>スターター/メインコース/デザートのメニューが作成できません。</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>前菜: {0｝
+メインディッシュ: {1｝
+デザート: {2｝</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>レシピのDBに'category' = Main course / Main course / Dessertがあるか確認してください。</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>メニュー生成 ✅ ：</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>材料 : (このレシピには材料は記載されていません)</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>原材料</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>欠場：なし</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>行方不明だ：</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>不足している材料の計算ができない：材料が記録されていないレシピがある。</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ すべて揃っている。足りない食材はない。</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>グローバル欠落成分リスト：</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>リセット</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>パスワードのリセット</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>新しいパスワード</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>パスワードの確認</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>確認</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>パスワードは6文字以上でなければならない。</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>パスワードが一致しない。</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ アップデート中...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ 終了した</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>パスワードが変更されました。ログインできるようになりました。</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>パスワードを変更できません。</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>パラメータ</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>アカウント</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>切断</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>危険区域</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>登録解除</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>登録解除</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>本当にアカウントを削除しますか？このアクションは不可逆的です。</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>はい、削除</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>スーパーベースが初期化されていない。再接続してください。</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>削除できません: {0｝</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>アカウントが削除されました。</value>
+    </data>
+  </root>

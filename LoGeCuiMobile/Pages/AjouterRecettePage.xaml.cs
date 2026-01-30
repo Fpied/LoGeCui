@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using LoGeCuiMobile.Resources.Lang;
+using LoGeCuiMobile.Services;
 using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
-using LoGeCuiMobile.Services;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
@@ -32,19 +32,31 @@ namespace LoGeCuiMobile.Pages
 
                 if (app.CurrentUserId == null || app.RecipesService == null)
                 {
-                    await DisplayAlert("Erreur", "Vous devez être connecté.", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_LoginRequired"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
                 if (app.RecetteIngredientsService == null)
                 {
-                    await DisplayAlert("Erreur", "RecetteIngredientsService non initialisé (InitRestServices).", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_ServiceNotReady"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(NomEntry.Text))
                 {
-                    await DisplayAlert("Erreur", "Le nom est obligatoire.", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_NameRequired"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
@@ -72,12 +84,15 @@ namespace LoGeCuiMobile.Pages
                 var recetteId = await app.RecipesService.GetRecetteIdByExternalIdAsync(externalId);
                 if (recetteId == null)
                 {
-                    await DisplayAlert("Erreur", "Impossible de retrouver l'ID de la recette après sauvegarde.", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_IdNotFound"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
                 // 3) Parser les ingrédients (1 par ligne)
-                //    Format accepté: "pomme" OU "2 kg pomme" (simple)
                 var lines = (IngredientsEditor.Text ?? "")
                     .Split('\n', StringSplitOptions.RemoveEmptyEntries)
                     .Select(l => l.Trim())
@@ -96,16 +111,24 @@ namespace LoGeCuiMobile.Pages
                 // 4) Écriture dans recette_ingredients (delete + insert)
                 await app.RecetteIngredientsService.ReplaceForRecetteAsync(recetteId.Value, items);
 
-                await DisplayAlert("OK", "Recette enregistrée.", "OK");
+                await DisplayAlert(
+                    LocalizationResourceManager.Instance["SuccessTitle"],
+                    LocalizationResourceManager.Instance["Recipes_Add_Saved"],
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                );
+
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                await DisplayAlert("Erreur", ex.Message, "OK");
+                await DisplayAlert(
+                    LocalizationResourceManager.Instance["ErrorTitle"],
+                    ex.Message,
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                );
             }
         }
-
 
         // Transforme le texte du multi-line editor en liste (nom, quantite, unite)
         private static List<(string nom, string? quantite, string? unite)> ParseIngredientsEditor(string? text)
@@ -168,20 +191,28 @@ namespace LoGeCuiMobile.Pages
 
                 if (status != PermissionStatus.Granted)
                 {
-                    await DisplayAlert("Permission", "L'accès à la caméra est requis pour scanner.", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["PermissionTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_CameraPermission"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
                 // Capture supportée ?
                 if (!MediaPicker.Default.IsCaptureSupported)
                 {
-                    await DisplayAlert("Erreur", "Capture photo non supportée sur cet appareil.", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_CaptureNotSupported"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
                 var photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
                 {
-                    Title = "Scanner une recette"
+                    Title = LocalizationResourceManager.Instance["Recipes_Add_ScanTitle"]
                 });
 
                 if (photo == null)
@@ -211,9 +242,10 @@ namespace LoGeCuiMobile.Pages
                 if (bytes.Length > 1024 * 1024)
                 {
                     await DisplayAlert(
-                        "Erreur",
-                        "L'image est toujours trop lourde (> 1 Mo) pour l'OCR. Essayez de cadrer plus serré ou baissez la résolution.",
-                        "OK");
+                        LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_ImageTooLarge"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
@@ -225,7 +257,11 @@ namespace LoGeCuiMobile.Pages
 
                 if (string.IsNullOrWhiteSpace(fullText))
                 {
-                    await DisplayAlert("OCR", "Aucun texte détecté. Essayez avec plus de lumière et sans flou.", "OK");
+                    await DisplayAlert(
+                        LocalizationResourceManager.Instance["OcrTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_NoTextDetected"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]
+                    );
                     return;
                 }
 
@@ -246,20 +282,28 @@ namespace LoGeCuiMobile.Pages
                         NomEntry.Text = title;
                 }
 
-                await DisplayAlert("OK", "Texte scanné et champs pré-remplis. Vérifiez et corrigez si besoin.", "OK");
+                await DisplayAlert(
+                    LocalizationResourceManager.Instance["SuccessTitle"],
+                    LocalizationResourceManager.Instance["Recipes_Add_OcrSuccess"],
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                );
             }
             catch (Exception ex)
             {
-                var msg = ex.Message ?? "Erreur inconnue.";
+                var msg = ex.Message ?? LocalizationResourceManager.Instance["UnknownError"];
 
                 if (msg.Contains("File failed validation", StringComparison.OrdinalIgnoreCase) ||
                     msg.Contains("maximum permissible file size", StringComparison.OrdinalIgnoreCase) ||
                     msg.Contains("1024kb", StringComparison.OrdinalIgnoreCase))
                 {
-                    msg = "L'image dépasse la limite (1 Mo) du service OCR. Essayez de recadrer plus serré ou compresser davantage.";
+                    msg = LocalizationResourceManager.Instance["Recipes_Add_ImageTooLarge"];
                 }
 
-                await DisplayAlert("Erreur", msg, "OK");
+                await DisplayAlert(
+                    LocalizationResourceManager.Instance["ErrorTitle"],
+                    msg,
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                );
             }
         }
 

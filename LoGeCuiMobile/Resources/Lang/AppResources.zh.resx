@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,92 +9,443 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>电子邮件</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>密码</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>保持联系</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>登录</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>创建账户</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>忘记密码？</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>错误</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>密码错误</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>连接中...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>请填写所有栏目</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>连接错误</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>创建账户...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>注册错误</value>
-  </data>
-</root>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 种族名单</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>我的购物清单</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ 添加一个项目</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ 删除选择</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>尚无文章。</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>已购买</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>删除</value>
+    </data>
+  <data name="Nav_ShoppingList" xml:space="preserve">
+    <value>购物清单</value>
+    </data>
+  <data name="Nav_Recipes" xml:space="preserve">
+    <value>我的食谱</value>
+    </data>
+  <data name="Nav_RandomMenu" xml:space="preserve">
+    <value>随机菜单</value>
+    </data>
+  <data name="Nav_Ingredients" xml:space="preserve">
+    <value>配料</value>
+    </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>参数</value>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>好的</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>是</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>没有</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ 确定</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 许可</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>未知错误。</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>无法提供服务。</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>您必须已登录。</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>会议</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>错过会话或会话过期。请重新登录。</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>添加配料</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>成分名称</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>数量（例如 10）</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>单位（如公斤、件数）</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>网址</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 登记册</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>名称是必填项。</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>成分管理</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ 添加食材</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>数量： {0} {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>网址</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>成分</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>添加食谱</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>名称</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>食谱名称</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>类别</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>选择类别</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>时间（分钟）</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>Ex : 30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>配料（每行 1 种）</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>例如
+2 枚鸡蛋
+100 克面粉
+1 小撮盐</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>说明</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>例如：混合，煮 10 分钟...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>扫描（OCR）</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>注册</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>您必须已登录。</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>RecipeIngredientsService 未初始化。</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>名称是必填项。</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>保存后无法找到配方 ID。</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ 记录收据。</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 扫描食谱</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>扫描时需要使用摄像头。</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>此设备不支持照片捕捉。</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>图像太重，无法进行 OCR 识别。尝试将图像裁剪得更紧凑或降低分辨率。</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>未检测到文本。试着用更强的光线和不模糊的效果。</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ 扫描文本和预填字段。检查并在必要时更正。</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>我的食谱</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>类别</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>刷新</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>添加食谱</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>还没有食谱</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>时间：{0}分钟</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesService 为空（登录后未调用 InitRestServices）。</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>RecipeIngredientsService 未初始化。</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(没有提供成分）</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>类别： {0}
+时间： {1} 分钟
+
+配料
+{2}
+
+说明
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 随机菜单</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 随机菜单</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>按下按钮生成菜单</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 发送购物清单中缺少的配料</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 打开购物清单</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>发送？</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>失踪：</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 发送的食材</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ 菜单生成（前菜/主菜/甜点）...</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>无食谱。</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>无法生成前菜/主菜/甜点菜单。</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>开胃菜： {0}
+主菜：{1｝
+甜点：{2｝</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>检查您的食谱在数据库中是否有 "类别"=主菜/主菜/甜点。</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ 生成菜单 ：</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>配料：（此食谱未列出配料）</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>成分</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>缺失：无</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>失踪：</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>无法计算缺少的配料：有些食谱没有记录配料。</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ 应有尽有。不缺配料。</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>全球缺失成分清单 ：</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>重置</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>重置密码</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>新密码</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>确认密码</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>确认</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>密码必须至少包含 6 个字符。</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>密码不匹配。</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ 更新中...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ 已完成</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>您的密码已更改。您现在可以登录。</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>无法更改密码。</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>参数</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>账户</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>断开连接</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>危险区域</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>取消订阅</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>取消订阅</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>您确定要删除账户吗？此操作不可逆转。</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>是，删除</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>超级数据库未初始化。重新连接。</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>无法删除： {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>✅ 您的账户已被删除。</value>
+    </data>
+  </root>

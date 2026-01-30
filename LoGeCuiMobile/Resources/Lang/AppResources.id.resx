@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,92 +9,443 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Kata sandi</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Tetap terhubung</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Masuk</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Membuat akun</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Lupa kata sandi Anda?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Kesalahan</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Kata sandi salah</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>Koneksi sedang berlangsung...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Harap lengkapi semua kolom</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Kesalahan koneksi</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Membuat akun...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>Kesalahan pendaftaran</value>
-  </data>
-</root>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 Daftar balapan</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>Daftar belanja saya</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ Menambahkan item</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ Hapus pilihan</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>Belum ada artikel.</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>Dibeli</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>Menghapus</value>
+    </data>
+  <data name="Nav_ShoppingList" xml:space="preserve">
+    <value>Daftar belanja</value>
+    </data>
+  <data name="Nav_Recipes" xml:space="preserve">
+    <value>Resep saya</value>
+    </data>
+  <data name="Nav_RandomMenu" xml:space="preserve">
+    <value>Menu acak</value>
+    </data>
+  <data name="Nav_Ingredients" xml:space="preserve">
+    <value>Bahan</value>
+    </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>Parameter</value>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>BAIKLAH.</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>Ya.</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>Tidak.</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Batal</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ OK</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 Izin</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Kesalahan yang tidak diketahui.</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>Layanan tidak tersedia.</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>Anda harus masuk.</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>Sesi</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Sesi terlewat atau kedaluwarsa. Silakan masuk lagi.</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>Tambahkan bahan</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>Nama bahan</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>Kuantitas (misalnya 10)</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>Satuan (mis. kg, buah)</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>Tersedia di</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 Daftar</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>Namanya wajib.</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>Mengelola bahan-bahan</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ Menambahkan bahan</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>Jumlah: {0} {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>Tersedia di</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>Bahan</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>Tambahkan resep</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>Nama</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>Nama resep</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>Kategori</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>Pilih kategori</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>Waktu (menit)</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>Ex: 30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>Bahan-bahan (1 per baris)</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>Ex:
+2 butir telur
+Tepung terigu 100g
+1 sejumput garam</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>Petunjuk</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>Contoh: Campur, masak selama 10 menit...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>Pemindaian (OCR)</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>Daftar</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>Anda harus masuk.</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>RecipeIngredientsService tidak diinisialisasi.</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>Namanya wajib.</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>Tidak dapat menemukan ID resep setelah menyimpan.</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ Tanda terima dicatat.</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 Memindai resep</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>Akses ke kamera diperlukan untuk pemindaian.</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>Pengambilan foto tidak didukung pada perangkat ini.</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>Gambar terlalu berat untuk OCR. Coba krop gambar lebih ketat atau turunkan resolusinya.</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>Tidak ada teks yang terdeteksi. Coba dengan lebih banyak cahaya dan tanpa keburaman.</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ Teks yang dipindai dan bidang yang telah diisi sebelumnya. Periksa dan perbaiki jika perlu.</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>Resep saya</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>Kategori</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>Menyegarkan</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>Tambahkan resep</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>Belum ada resep.</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>Waktu: {0} menit</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesService adalah NULL (InitRestServices belum dipanggil setelah login).</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>RecipeIngredientsService tidak diinisialisasi.</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(tidak ada bahan yang diberikan)</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>Kategori: {0}
+Waktu: {1} menit
+
+Bahan:
+{2}
+
+Petunjuk:
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 Menu acak</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 Menu acak</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>Tekan tombol untuk menghasilkan menu</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 Kirim bahan yang hilang dalam daftar belanja</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 Buka daftar belanja</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>Kirim?</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>Hilang:</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 Bahan yang dikirim</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ Pembuatan menu (Hidangan Pembuka / Hidangan Utama / Hidangan Penutup)...</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>Tidak ada resep yang tersedia.</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>Tidak dapat membuat menu Hidangan Pembuka/Hidangan Utama/Hidangan Penutup.</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>Makanan pembuka: {0}
+Hidangan utama: {1}
+Makanan penutup: {2}</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>Periksa apakah resep Anda memiliki 'kategori' = Hidangan utama / Hidangan utama / Hidangan penutup di DB.</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ Menu yang dihasilkan :</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>Bahan: (tidak ada bahan yang tercantum untuk resep ini)</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>Bahan:</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>Hilang: tidak ada</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>Hilang:</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>Tidak dapat menghitung bahan yang hilang: beberapa resep tidak memiliki bahan yang tercatat.</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ Semuanya tersedia. Tidak ada bahan yang hilang.</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>Daftar global bahan yang hilang :</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>Atur ulang</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>Atur ulang kata sandi Anda</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>Kata sandi baru</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>Konfirmasi kata sandi</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>Konfirmasi</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>Kata sandi harus terdiri dari setidaknya 6 karakter.</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>Kata sandi tidak cocok.</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ Pembaruan sedang berlangsung...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ Selesai</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>Kata sandi Anda telah diubah. Anda sekarang dapat masuk.</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>Tidak dapat mengubah kata sandi.</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Parameter</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>Akun</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>Pemutusan</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>Area berbahaya</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>Berhenti berlangganan</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>Berhenti berlangganan</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>Ya, hapus</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>Supabase tidak diinisialisasi. Sambungkan kembali.</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>Tidak dapat dihapus: {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>Akun Anda telah dihapus.</value>
+    </data>
+  </root>

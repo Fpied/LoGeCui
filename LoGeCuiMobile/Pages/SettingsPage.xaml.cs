@@ -1,4 +1,5 @@
 ﻿using System;
+using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiShared.Services;
 using Microsoft.Maui.Storage;
 
@@ -14,10 +15,10 @@ public partial class SettingsPage : ContentPage
     private async void OnDesinscriptionClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            "Désinscription",
-            "Es-tu sûr de vouloir supprimer ton compte ? Cette action est irréversible.",
-            "Oui, supprimer",
-            "Annuler");
+            LocalizationResourceManager.Instance["Settings_DeleteConfirmTitle"],
+            LocalizationResourceManager.Instance["Settings_DeleteConfirmBody"],
+            LocalizationResourceManager.Instance["Settings_DeleteConfirmYes"],
+            LocalizationResourceManager.Instance["Dialog_Cancel"]);
 
         if (!confirm) return;
 
@@ -25,7 +26,11 @@ public partial class SettingsPage : ContentPage
 
         if (app.Supabase == null)
         {
-            await DisplayAlert("Erreur", "Supabase non initialisé. Reconnectez-vous.", "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                LocalizationResourceManager.Instance["Settings_SupabaseNull"],
+                LocalizationResourceManager.Instance["Dialog_Ok"]);
+
             app.ShowLogin();
             return;
         }
@@ -34,19 +39,18 @@ public partial class SettingsPage : ContentPage
         var token = await SecureStorage.GetAsync("sb_access_token");
         var userId = await SecureStorage.GetAsync("sb_user_id");
 
-        
-        System.Diagnostics.Debug.WriteLine($"TOKEN_START={token?.Substring(0, Math.Min(10, token.Length))}");
-        System.Diagnostics.Debug.WriteLine($"TOKEN_LEN={token?.Length ?? 0}");
-        System.Diagnostics.Debug.WriteLine($"APP_SUPABASE_URL={ConfigurationHelper.GetSupabaseUrl()}");
-
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(userId))
         {
-            await DisplayAlert("Session", "Session absente/expirée. Veuillez vous reconnecter.", "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["SessionTitle"],
+                LocalizationResourceManager.Instance["SessionExpired"],
+                LocalizationResourceManager.Instance["Dialog_Ok"]);
+
             app.ShowLogin();
             return;
         }
 
-        // 2) CRUCIAL : réinjecter la session dans SupabaseService AVANT delete
+        // 2) Réinjecter la session AVANT delete
         app.Supabase.SetSession(token, userId);
 
         // 3) Appel Edge Function
@@ -54,9 +58,11 @@ public partial class SettingsPage : ContentPage
 
         if (!ok)
         {
-            await DisplayAlert("Erreur", $"Suppression impossible : {err}", "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                string.Format(LocalizationResourceManager.Instance["Settings_DeleteFailed"], err),
+                LocalizationResourceManager.Instance["Dialog_Ok"]);
 
-            // Si JWT invalide → forcer reconnexion
             if (!string.IsNullOrWhiteSpace(err) &&
                 err.Contains("Invalid JWT", StringComparison.OrdinalIgnoreCase))
             {
@@ -66,11 +72,15 @@ public partial class SettingsPage : ContentPage
             return;
         }
 
-        // Nettoyage local (bonne pratique après suppression)
+        // Nettoyage local
         SecureStorage.Remove("sb_access_token");
         SecureStorage.Remove("sb_user_id");
 
-        await DisplayAlert("OK", "Votre compte a été supprimé.", "OK");
+        await DisplayAlert(
+            LocalizationResourceManager.Instance["Dialog_Ok"],
+            LocalizationResourceManager.Instance["Settings_DeleteSuccess"],
+            LocalizationResourceManager.Instance["Dialog_Ok"]);
+
         app.ShowLogin();
     }
 
@@ -86,7 +96,3 @@ public partial class SettingsPage : ContentPage
         app.ShowLogin();
     }
 }
-
-
-
-

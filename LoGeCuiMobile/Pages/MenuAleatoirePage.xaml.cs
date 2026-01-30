@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiShared.Models;
 using Microsoft.Maui.Controls;
 
@@ -91,7 +92,11 @@ public partial class MenuAleatoirePage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erreur", ex.Message, "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                ex.Message,
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
         }
     }
 
@@ -102,7 +107,11 @@ public partial class MenuAleatoirePage : ContentPage
             var app = Application.Current as App;
             if (app?.ListeCoursesSupabaseService == null)
             {
-                await DisplayAlert("Erreur", "Service indisponible.", "OK");
+                await DisplayAlert(
+                    LocalizationResourceManager.Instance["ErrorTitle"],
+                    LocalizationResourceManager.Instance["ServiceUnavailable"],
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                );
                 return;
             }
 
@@ -110,7 +119,11 @@ public partial class MenuAleatoirePage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erreur", ex.Message, "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                ex.Message,
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
         }
     }
 
@@ -127,10 +140,11 @@ public partial class MenuAleatoirePage : ContentPage
                 return;
 
             bool confirm = await DisplayAlert(
-                "Envoyer ?",
-                "Il manque :\n- " + string.Join("\n- ", _lastMissing),
-                "Oui",
-                "Non");
+                LocalizationResourceManager.Instance["RandomMenu_SendConfirmTitle"],
+                LocalizationResourceManager.Instance["RandomMenu_SendConfirmBody"] + "\n- " + string.Join("\n- ", _lastMissing),
+                LocalizationResourceManager.Instance["Dialog_Yes"],
+                LocalizationResourceManager.Instance["Dialog_No"]
+            );
 
             if (!confirm)
                 return;
@@ -140,11 +154,15 @@ public partial class MenuAleatoirePage : ContentPage
                 _lastMissing);
 
             SendMissingButton.IsEnabled = false;
-            SendMissingButton.Text = "🛒 Ingrédients envoyés";
+            SendMissingButton.Text = LocalizationResourceManager.Instance["RandomMenu_SentButton"];
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erreur", ex.Message, "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                ex.Message,
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
         }
     }
 
@@ -159,7 +177,7 @@ public partial class MenuAleatoirePage : ContentPage
         // Reset UI
         SendMissingButton.IsVisible = false;
         SendMissingButton.IsEnabled = false;
-        SendMissingButton.Text = "🛒 Envoyer les ingrédients manquants dans la liste de courses";
+        SendMissingButton.Text = LocalizationResourceManager.Instance["RandomMenu_SendMissingToShopping"];
         _lastMissing = new List<string>();
         _lastIngredientsKnown = false;
         _lastUserId = app.CurrentUserId;
@@ -170,19 +188,19 @@ public partial class MenuAleatoirePage : ContentPage
             app.IngredientsService == null ||
             app.ListeCoursesSupabaseService == null)
         {
-            ResultLabel.Text = "Vous devez être connecté.";
+            ResultLabel.Text = LocalizationResourceManager.Instance["LoginRequired"];
             return;
         }
 
         var userId = app.CurrentUserId.Value;
-        ResultLabel.Text = "Génération du menu (Entrée / Plat / Dessert)…";
+        ResultLabel.Text = LocalizationResourceManager.Instance["RandomMenu_Generating"];
 
         // 1) Recettes utilisateur
         var recettes = await app.RecipesService.GetMyRecettesAsync();
 
         if (recettes == null || recettes.Count == 0)
         {
-            ResultLabel.Text = "Aucune recette disponible.";
+            ResultLabel.Text = LocalizationResourceManager.Instance["RandomMenu_NoRecipes"];
             return;
         }
 
@@ -194,9 +212,9 @@ public partial class MenuAleatoirePage : ContentPage
         if (entrees.Count == 0 || plats.Count == 0 || desserts.Count == 0)
         {
             ResultLabel.Text =
-                "Impossible de générer un menu Entrée/Plat/Dessert.\n\n" +
-                $"Entrées: {entrees.Count}\nPlats: {plats.Count}\nDesserts: {desserts.Count}\n\n" +
-                "Vérifie que tes recettes ont bien 'categorie' = Entree / Plat / Dessert en DB.";
+                LocalizationResourceManager.Instance["RandomMenu_CannotGenerate"] + "\n\n" +
+                string.Format(LocalizationResourceManager.Instance["RandomMenu_CountsFormat"], entrees.Count, plats.Count, desserts.Count) + "\n\n" +
+                LocalizationResourceManager.Instance["RandomMenu_CheckCategories"];
             return;
         }
 
@@ -258,7 +276,7 @@ public partial class MenuAleatoirePage : ContentPage
         // 7) UI
         var sb = new StringBuilder();
 
-        sb.AppendLine("Menu généré :");
+        sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_GeneratedHeader"]);
         sb.AppendLine($"- {entree.TypeTexte} : {entree.Nom}");
         sb.AppendLine($"- {plat.TypeTexte} : {plat.Nom}");
         sb.AppendLine($"- {dessert.TypeTexte} : {dessert.Nom}");
@@ -270,22 +288,22 @@ public partial class MenuAleatoirePage : ContentPage
 
             if (!hasData)
             {
-                sb.AppendLine("Ingrédients : (aucun ingrédient enregistré pour cette recette)");
+                sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_NoIngredientsForRecipe"]);
                 sb.AppendLine();
                 return;
             }
 
-            sb.AppendLine("Ingrédients :");
+            sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_IngredientsHeader"]);
             foreach (var i in ingredients)
                 sb.AppendLine("- " + i);
 
             if (missing.Count == 0)
             {
-                sb.AppendLine("Manquants : aucun");
+                sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_MissingNone"]);
             }
             else
             {
-                sb.AppendLine("Manquants :");
+                sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_MissingHeader"]);
                 foreach (var m in missing)
                     sb.AppendLine("- " + m);
             }
@@ -299,19 +317,19 @@ public partial class MenuAleatoirePage : ContentPage
 
         if (!allHaveData)
         {
-            sb.AppendLine("Impossible de calculer les ingrédients manquants : certaines recettes n’ont pas d’ingrédients enregistrés.");
+            sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_CannotComputeMissing"]);
             SendMissingButton.IsVisible = false;
             SendMissingButton.IsEnabled = false;
         }
         else if (_lastMissing.Count == 0)
         {
-            sb.AppendLine("Tout est disponible. Aucun ingrédient manquant.");
+            sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_AllAvailable"]);
             SendMissingButton.IsVisible = false;
             SendMissingButton.IsEnabled = false;
         }
         else
         {
-            sb.AppendLine("Liste globale des ingrédients manquants :");
+            sb.AppendLine(LocalizationResourceManager.Instance["RandomMenu_GlobalMissingHeader"]);
             foreach (var m in _lastMissing)
                 sb.AppendLine("- " + m);
 

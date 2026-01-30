@@ -1,4 +1,6 @@
-﻿using LoGeCuiMobile.ViewModels;
+﻿using System.Linq;
+using LoGeCuiMobile.Resources.Lang;
+using LoGeCuiMobile.ViewModels;
 using LoGeCuiShared.Models;
 
 namespace LoGeCuiMobile.Pages;
@@ -17,9 +19,10 @@ public partial class MesRecettesPage : ContentPage
         {
             MainThread.BeginInvokeOnMainThread(async () =>
                 await DisplayAlert(
-                    "Erreur",
-                    "RecipesService est NULL (InitRestServices n'a pas été appelé après login).",
-                    "OK"));
+                    LocalizationResourceManager.Instance["ErrorTitle"],
+                    LocalizationResourceManager.Instance["Recipes_ServiceNull"],
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                ));
 
             return;
         }
@@ -53,7 +56,11 @@ public partial class MesRecettesPage : ContentPage
 
         if (app.RecetteIngredientsService == null)
         {
-            await DisplayAlert("Erreur", "RecetteIngredientsService non initialisé.", "OK");
+            await DisplayAlert(
+                LocalizationResourceManager.Instance["ErrorTitle"],
+                LocalizationResourceManager.Instance["Recipes_IngredientsServiceNull"],
+                LocalizationResourceManager.Instance["Dialog_Ok"]
+            );
             return;
         }
 
@@ -61,20 +68,25 @@ public partial class MesRecettesPage : ContentPage
         var items = await app.RecetteIngredientsService.GetForRecetteAsync(recette.Id);
 
         var ingredientsText = (items.Count == 0)
-            ? "(aucun ingrédient renseigné)"
+            ? LocalizationResourceManager.Instance["Recipes_NoIngredients"]
             : string.Join("\n", items.Select(x =>
                 string.IsNullOrWhiteSpace(x.quantite) && string.IsNullOrWhiteSpace(x.unite)
                     ? $"• {x.nom}"
                     : $"• {x.quantite} {x.unite} {x.nom}".Replace("  ", " ").Trim()
             ));
 
+        var details = string.Format(
+            LocalizationResourceManager.Instance["Recipes_DetailsFormat"],
+            recette.CategorieDb,
+            recette.TempsPreparation,
+            ingredientsText,
+            recette.Instructions ?? ""
+        );
+
         await DisplayAlert(
             recette.Nom,
-            $"Catégorie: {recette.CategorieDb}\n" +
-            $"Temps: {recette.TempsPreparation} min\n\n" +
-            $"Ingrédients:\n{ingredientsText}\n\n" +
-            $"Instructions:\n{recette.Instructions}",
-            "OK"
+            details,
+            LocalizationResourceManager.Instance["Dialog_Ok"]
         );
     }
 }

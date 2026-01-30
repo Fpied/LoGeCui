@@ -1,32 +1,45 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
              x:Class="LoGeCuiMobile.Pages.AjouterRecettePage"
-             Title="Ajouter une recette">
+             Title="{tr:Translate Recipes_Add_Title}">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="12">
 
-            <Label Text="Nom" />
-            <Entry x:Name="NomEntry" Placeholder="Nom de la recette" />
+            <Label Text="{tr:Translate Recipes_Add_NameLabel}" />
+            <Entry x:Name="NomEntry"
+                   Placeholder="{tr:Translate Recipes_Add_NamePlaceholder}" />
 
-            <Label Text="Catégorie" />
-            <Picker x:Name="CategoriePicker" />
+            <Label Text="{tr:Translate Recipes_Add_CategoryLabel}" />
+            <Picker x:Name="CategoriePicker"
+                    Title="{tr:Translate Recipes_Add_CategoryPlaceholder}" />
 
-            <Label Text="Temps (minutes)" />
-            <Entry x:Name="TempsEntry" Keyboard="Numeric" />
+            <Label Text="{tr:Translate Recipes_Add_TimeLabel}" />
+            <Entry x:Name="TempsEntry"
+                   Keyboard="Numeric"
+                   Placeholder="{tr:Translate Recipes_Add_TimePlaceholder}" />
 
-            <Label Text="Ingrédients (1 par ligne)" />
-            <Editor x:Name="IngredientsEditor" AutoSize="TextChanges" HeightRequest="140" />
+            <Label Text="{tr:Translate Recipes_Add_IngredientsLabel}" />
+            <Editor x:Name="IngredientsEditor"
+                    AutoSize="TextChanges"
+                    HeightRequest="140"
+                    Placeholder="{tr:Translate Recipes_Add_IngredientsPlaceholder}" />
 
-            <Label Text="Instructions" />
-            <Editor x:Name="InstructionsEditor" AutoSize="TextChanges" HeightRequest="180" />
+            <Label Text="{tr:Translate Recipes_Add_InstructionsLabel}" />
+            <Editor x:Name="InstructionsEditor"
+                    AutoSize="TextChanges"
+                    HeightRequest="180"
+                    Placeholder="{tr:Translate Recipes_Add_InstructionsPlaceholder}" />
 
-            <Button Text="Scanner (OCR)" Clicked="OnScanClicked" />
-            <Button Text="Enregistrer" Clicked="OnSaveClicked" />
+            <Button Text="{tr:Translate Recipes_Add_ScanOcr}"
+                    Clicked="OnScanClicked" />
+
+            <Button Text="{tr:Translate Recipes_Add_Save}"
+                    Clicked="OnSaveClicked" />
 
         </VerticalStackLayout>
     </ScrollView>
 
 </ContentPage>
-
