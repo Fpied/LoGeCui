@@ -15,9 +15,13 @@
     <Grid Padding="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Header -->
             <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
             <RowDefinition Height="Auto"/>
+            <!-- Checkbox Tout sélectionner -->
             <RowDefinition Height="*"/>
+            <!-- Liste -->
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -49,13 +53,19 @@
                     Clicked="BtnSupprimerSelection_Clicked"/>
         </Grid>
 
-        <!-- Selection info (garde vide, tu remplis en C#) -->
-        <Label Grid.Row="2"
-               x:Name="SelectionInfoLabel"
-               Text=""
-               TextColor="Gray"
-               Margin="0,8,0,8"/>
+        <!-- Checkbox Tout sélectionner -->
+        <HorizontalStackLayout Grid.Row="2"
+                               Spacing="10"
+                               Padding="4,6"
+                               VerticalOptions="Center">
+            <CheckBox x:Name="ChkToutSelectionner"
+                      CheckedChanged="ChkToutSelectionner_CheckedChanged"/>
+            <Label Text="Tout sélectionner"
+                   VerticalTextAlignment="Center"
+                   TextColor="Gray"/>
+        </HorizontalStackLayout>
 
+        <!-- Liste des courses -->
         <CollectionView Grid.Row="3"
                         x:Name="ListeCourses"
                         SelectionMode="None">
@@ -73,12 +83,8 @@
                            Padding="14"
                            BorderColor="#DDDDDD"
                            CornerRadius="12"
-                           HasShadow="True">
-
-                        <Frame.BackgroundColor>
-                            <AppThemeBinding Light="White"
-                                             Dark="#1E1E1E" />
-                        </Frame.BackgroundColor>
+                           HasShadow="True"
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
 
                         <VerticalStackLayout Spacing="8">
 
@@ -86,20 +92,12 @@
                             <Label Text="{Binding Nom}"
                                    FontSize="18"
                                    FontAttributes="Bold"
-                                   TextDecorations="{Binding EstAchete, Converter={StaticResource BoolToStrikethroughConverter}}">
-                                <Label.TextColor>
-                                    <AppThemeBinding Light="Black"
-                                                     Dark="White" />
-                                </Label.TextColor>
-                            </Label>
+                                   TextDecorations="{Binding EstAchete, Converter={StaticResource BoolToStrikethroughConverter}}"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
                             <!-- Quantité -->
-                            <Label FontSize="14">
-                                <Label.TextColor>
-                                    <AppThemeBinding Light="#666666"
-                                                     Dark="#CCCCCC" />
-                                </Label.TextColor>
-
+                            <Label FontSize="14"
+                                   TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="{Binding Quantite}"/>
@@ -117,24 +115,16 @@
                                     <CheckBox IsChecked="{Binding EstAchete, Mode=TwoWay}"
                                               CheckedChanged="CheckBox_CheckedChanged"/>
                                     <Label Text="{tr:Translate Shopping_Bought}"
-                                           VerticalOptions="Center">
-                                        <Label.TextColor>
-                                            <AppThemeBinding Light="Black"
-                                                             Dark="White" />
-                                        </Label.TextColor>
-                                    </Label>
+                                           VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
                                 </HorizontalStackLayout>
 
-                                <!-- Supprimer -->
+                                <!-- Sélection pour suppression -->
                                 <HorizontalStackLayout Spacing="6">
                                     <CheckBox IsChecked="{Binding IsSelectedForDelete}"/>
                                     <Label Text="{tr:Translate Shopping_Delete}"
-                                           VerticalOptions="Center">
-                                        <Label.TextColor>
-                                            <AppThemeBinding Light="Black"
-                                                             Dark="White" />
-                                        </Label.TextColor>
-                                    </Label>
+                                           VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
                                 </HorizontalStackLayout>
 
                             </HorizontalStackLayout>
@@ -146,9 +136,4 @@
 
         </CollectionView>
     </Grid>
-
 </ContentPage>
-
-
-
-

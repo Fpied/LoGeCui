@@ -160,6 +160,8 @@ namespace LoGeCuiMobile.Pages
                     app.SetCurrentUserId(guidUserId);
 
                 app.InitRestServices(accessToken);
+
+
                 app.ShowAppShell();
             }
             catch (Exception ex)

@@ -6,6 +6,8 @@ namespace LoGeCuiShared.Models
 {
     public class Ingredient
     {
+        public bool EstFavori { get; set; }
+
         public Guid Id { get; set; }          // id (uuid) dans Supabase
         public Guid? UserId { get; set; }     // user_id (uuid) dans Supabase
         public string Nom { get; set; }

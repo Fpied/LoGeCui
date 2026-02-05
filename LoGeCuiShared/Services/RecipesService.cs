@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LoGeCuiShared.Models;
-using Supabase;
 
 namespace LoGeCuiShared.Services
 {
@@ -16,15 +15,18 @@ namespace LoGeCuiShared.Services
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
+        // ✅ Toujours sélectionner ces colonnes (sinon: pas de photo + pas d'external_id)
+        private const string SelectCols =
+            "id,created_at,owner_user_id,nom,categorie,temps_minutes,note,is_favorite,instructions,external_id,photo_url";
+
         /// <summary>
         /// Récupère TOUTES les recettes de l’utilisateur courant
-        /// (utilisé notamment pour le menu aléatoire)
         /// </summary>
         public async Task<List<Recette>> GetRecettesAsync(Guid userId)
         {
             var q =
                 "recettes?" +
-                "select=id,created_at,owner_user_id,nom,categorie,temps_minutes,note,is_favorite,instructions" +
+                $"select={SelectCols}" +
                 $"&owner_user_id=eq.{userId}" +
                 "&order=created_at.desc";
 
@@ -35,11 +37,12 @@ namespace LoGeCuiShared.Services
         /// <summary>
         /// Récupère les recettes (optionnellement filtrées par catégorie)
         /// </summary>
-        public async Task<List<Recette>> GetMyRecettesAsync(string? categorie = null)
+        public async Task<List<Recette>> GetMyRecettesAsync(Guid userId, string? categorie = null)
         {
             var q =
                 "recettes?" +
-                "select=id,created_at,owner_user_id,nom,categorie,temps_minutes,note,is_favorite,instructions" +
+                $"select={SelectCols}" +
+                $"&owner_user_id=eq.{userId}" +
                 "&order=created_at.desc";
 
             if (!string.IsNullOrWhiteSpace(categorie) &&
@@ -59,19 +62,25 @@ namespace LoGeCuiShared.Services
         {
             if (r == null) throw new ArgumentNullException(nameof(r));
 
+            // ✅ external_id obligatoire pour éviter les futurs doublons
+            if (string.IsNullOrWhiteSpace(r.ExternalId))
+                r.ExternalId = Guid.NewGuid().ToString("N");
+
             var payload = new
             {
                 owner_user_id = ownerUserId,
+                external_id = r.ExternalId,
                 nom = r.Nom,
                 categorie = r.CategorieDb,
                 temps_minutes = r.TempsMinutesDb,
                 note = r.NoteDb,
                 is_favorite = r.IsFavorite,
-                instructions = r.InstructionsDb
+                instructions = r.InstructionsDb,
+                photo_url = r.PhotoUrl
             };
 
             var created = await _client.PostAsync<List<Recette>>(
-                "recettes?select=id,created_at,owner_user_id,nom,categorie,temps_minutes,note,is_favorite,instructions",
+                $"recettes?select={SelectCols}",
                 payload,
                 returnRepresentation: true);
 
@@ -87,7 +96,8 @@ namespace LoGeCuiShared.Services
         }
 
         /// <summary>
-        /// Insert ou met à jour une recette via external_id
+        /// Insert ou met à jour une recette via (owner_user_id, external_id)
+        /// ✅ évite les doublons si external_id n'est pas unique globalement
         /// </summary>
         public async Task UpsertRecetteAsync(Guid ownerUserId, Recette r)
         {
@@ -107,17 +117,21 @@ namespace LoGeCuiShared.Services
                     temps_minutes = r.TempsMinutesDb,
                     note = r.NoteDb,
                     is_favorite = r.IsFavorite,
-                    instructions = r.InstructionsDb
+                    instructions = r.InstructionsDb,
+                    photo_url = r.PhotoUrl
                 }
             };
 
+            // ✅ IMPORTANT :
+            // nécessite une contrainte unique sur (owner_user_id, external_id) côté DB.
             await _client.PostAsync<object>(
-                "recettes?on_conflict=external_id",
+                "recettes?on_conflict=owner_user_id,external_id",
                 payload,
                 returnRepresentation: false,
                 mergeDuplicates: true);
         }
-        public async Task<Guid?> GetRecetteIdByExternalIdAsync(string externalId)
+
+        public async Task<Guid?> GetRecetteIdByExternalIdAsync(Guid userId, string externalId)
         {
             if (string.IsNullOrWhiteSpace(externalId))
                 throw new ArgumentException("externalId requis", nameof(externalId));
@@ -125,6 +139,7 @@ namespace LoGeCuiShared.Services
             var q =
                 "recettes?" +
                 "select=id" +
+                $"&owner_user_id=eq.{userId}" +
                 $"&external_id=eq.{Uri.EscapeDataString(externalId)}" +
                 "&limit=1";
 
@@ -137,7 +152,5 @@ namespace LoGeCuiShared.Services
         {
             public Guid id { get; set; }
         }
-
     }
 }
-

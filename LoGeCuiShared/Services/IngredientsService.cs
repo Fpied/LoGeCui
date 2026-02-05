@@ -20,7 +20,7 @@ namespace LoGeCuiShared.Services
         {
             var q =
                 $"{Table}?" +
-                "select=id,user_id,nom,quantite,unite,est_disponible,created_at" +
+                "select=id,user_id,nom,quantite,unite,est_disponible,est_favori,created_at" +
                 $"&user_id=eq.{userId}" +
                 "&order=created_at.desc";
 
@@ -29,25 +29,24 @@ namespace LoGeCuiShared.Services
 
         public async Task<Ingredient?> CreateIngredientAsync(Guid userId, Ingredient i)
         {
-            if (i == null) throw new ArgumentNullException(nameof(i));
-            if (string.IsNullOrWhiteSpace(i.Nom)) throw new ArgumentException("Nom requis.", nameof(i));
-
             var payload = new
             {
                 user_id = userId,
                 nom = i.Nom,
                 quantite = string.IsNullOrWhiteSpace(i.Quantite) ? null : i.Quantite,
                 unite = string.IsNullOrWhiteSpace(i.Unite) ? null : i.Unite,
-                est_disponible = i.EstDisponible
+                est_disponible = i.EstDisponible,
+                est_favori = i.EstFavori
             };
 
             var created = await _client.PostAsync<List<Ingredient>>(
-                $"{Table}?select=id,user_id,nom,quantite,unite,est_disponible,created_at",
+                $"{Table}?select=id,user_id,nom,quantite,unite,est_disponible,est_favori,created_at",
                 payload,
                 returnRepresentation: true);
 
             return created?.Count > 0 ? created[0] : null;
         }
+
 
         public async Task UpdateDisponibiliteAsync(Guid ingredientId, bool estDisponible)
         {
@@ -59,6 +58,13 @@ namespace LoGeCuiShared.Services
         {
             await _client.DeleteAsync($"{Table}?id=eq.{ingredientId}");
         }
+
+        public async Task UpdateFavoriAsync(Guid ingredientId, bool estFavori)
+        {
+            var payload = new { est_favori = estFavori };
+            await _client.PatchAsync($"{Table}?id=eq.{ingredientId}", payload);
+        }
+
     }
 }
 

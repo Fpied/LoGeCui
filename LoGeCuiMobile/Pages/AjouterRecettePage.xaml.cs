@@ -1,29 +1,260 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiMobile.Services;
 using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
+using LoGeCuiShared.Utils;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
+using Microsoft.Maui.Storage;
 
 namespace LoGeCuiMobile.Pages
 {
     public partial class AjouterRecettePage : ContentPage
     {
-        public AjouterRecettePage()
+        private Recette? _editingRecette;
+        private string? _photoLocalPath;
+
+        private readonly SupabaseStorageService _storage = new SupabaseStorageService();
+
+        // âœ… HttpClient rÃ©utilisÃ© (Ã©vite ANR/sockets)
+        private static readonly HttpClient _http = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(60)
+        };
+
+        public AjouterRecettePage(Recette? recette = null)
         {
             InitializeComponent();
 
-            // Valeurs conformes à ta DB Supabase (Entree / Plat / Dessert)
             CategoriePicker.ItemsSource = new List<string> { "Entree", "Plat", "Dessert" };
-            CategoriePicker.SelectedIndex = 1; // Plat par défaut
+            CategoriePicker.SelectedIndex = 1;
+
+            _editingRecette = recette;
+
+            if (_editingRecette != null)
+            {
+                Title = "Modifier recette";
+                _ = LoadRecetteForEditAsync();
+            }
+            else
+            {
+                Title = "Ajouter recette";
+                SetPhotoPreview(null);
+            }
         }
 
+        private async System.Threading.Tasks.Task LoadRecetteForEditAsync()
+        {
+            try
+            {
+                if (_editingRecette == null)
+                    return;
+
+                NomEntry.Text = _editingRecette.Nom;
+                TempsEntry.Text = _editingRecette.TempsPreparation.ToString(CultureInfo.InvariantCulture);
+                InstructionsEditor.Text = _editingRecette.Instructions ?? "";
+
+                var cat = string.IsNullOrWhiteSpace(_editingRecette.CategorieDb) ? "Plat" : _editingRecette.CategorieDb.Trim();
+                if (CategoriePicker.ItemsSource is List<string> cats && cats.Contains(cat))
+                    CategoriePicker.SelectedItem = cat;
+                else
+                    CategoriePicker.SelectedItem = "Plat";
+
+                // Photo : local d'abord, sinon URL
+                if (!string.IsNullOrWhiteSpace(_editingRecette.PhotoLocalPath) && File.Exists(_editingRecette.PhotoLocalPath))
+                {
+                    _photoLocalPath = _editingRecette.PhotoLocalPath;
+                    SetPhotoPreview(_photoLocalPath);
+                }
+                else if (!string.IsNullOrWhiteSpace(_editingRecette.PhotoUrl))
+                {
+                    _photoLocalPath = null;
+                    PhotoImage.Source = ImageSource.FromUri(new Uri(_editingRecette.PhotoUrl));
+                    RemovePhotoButton.IsVisible = true;
+                }
+                else
+                {
+                    _photoLocalPath = null;
+                    SetPhotoPreview(null);
+                }
+
+                // IngrÃ©dients (depuis Supabase)
+                var app = (App)Application.Current;
+                if (app.RecetteIngredientsService != null && _editingRecette.Id != Guid.Empty)
+                {
+                    var items = await app.RecetteIngredientsService.GetForRecetteAsync(_editingRecette.Id);
+
+                    IngredientsEditor.Text = (items.Count == 0)
+                        ? ""
+                        : string.Join("\n", items.Select(x =>
+                            string.IsNullOrWhiteSpace(x.quantite) && string.IsNullOrWhiteSpace(x.unite)
+                                ? x.nom
+                                : $"{x.quantite} {x.unite} {x.nom}".Replace("  ", " ").Trim()
+                        ));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
+            }
+        }
+
+        // ---------- PHOTO ----------
+        private async void OnPickPhotoClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var path = await PickOrTakeAsync(takePhoto: false);
+                if (path == null) return;
+
+                _photoLocalPath = path;
+                SetPhotoPreview(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
+            }
+        }
+
+        private async void OnTakePhotoClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+                if (status != PermissionStatus.Granted)
+                    status = await Permissions.RequestAsync<Permissions.Camera>();
+
+                if (status != PermissionStatus.Granted)
+                {
+                    await DisplayAlert(LocalizationResourceManager.Instance["PermissionTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_CameraPermission"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
+                    return;
+                }
+
+                if (!MediaPicker.Default.IsCaptureSupported)
+                {
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_CaptureNotSupported"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
+                    return;
+                }
+
+                var path = await PickOrTakeAsync(takePhoto: true);
+                if (path == null) return;
+
+                _photoLocalPath = path;
+                SetPhotoPreview(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
+            }
+        }
+
+        private void OnRemovePhotoClicked(object sender, EventArgs e)
+        {
+            _photoLocalPath = null;
+
+            if (_editingRecette != null)
+            {
+                _editingRecette.PhotoLocalPath = null;
+                _editingRecette.PhotoUrl = null;
+            }
+
+            SetPhotoPreview(null);
+        }
+
+        private void SetPhotoPreview(string? path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            {
+                PhotoImage.Source = ImageSource.FromFile(path);
+                RemovePhotoButton.IsVisible = true;
+            }
+            else
+            {
+                PhotoImage.Source = null;
+                RemovePhotoButton.IsVisible = false;
+            }
+        }
+
+        private async System.Threading.Tasks.Task<string?> PickOrTakeAsync(bool takePhoto)
+        {
+            FileResult? result = takePhoto
+                ? await MediaPicker.Default.CapturePhotoAsync()
+                : await MediaPicker.Default.PickPhotoAsync();
+
+            if (result == null) return null;
+
+            var ext = Path.GetExtension(result.FileName);
+            if (string.IsNullOrWhiteSpace(ext)) ext = ".jpg";
+
+            var fileName = $"recipe_{DateTime.UtcNow:yyyyMMdd_HHmmss}{ext}";
+            var destPath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+
+            await using var src = await result.OpenReadAsync();
+            await using var dest = File.OpenWrite(destPath);
+            await src.CopyToAsync(dest);
+
+            return destPath;
+        }
+
+        // âœ… UPDATE par ID (anti-duplicata)
+        private static async System.Threading.Tasks.Task UpdateRecetteByIdAsync(
+            string supabaseUrl,
+            string supabaseKey,
+            string accessToken,
+            Guid recetteId,
+            Guid userId,
+            Recette recette)
+        {
+            supabaseUrl = supabaseUrl.TrimEnd('/');
+
+            var url = $"{supabaseUrl}/rest/v1/recettes?id=eq.{recetteId}";
+
+            using var req = new HttpRequestMessage(HttpMethod.Patch, url);
+            req.Headers.Add("apikey", supabaseKey);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            req.Headers.Add("Prefer", "return=representation");
+
+            var payload = new
+            {
+                owner_user_id = userId,
+                external_id = recette.ExternalId,
+                nom = recette.Nom,
+                categorie = recette.CategorieDb,
+                temps_minutes = recette.TempsPreparation,
+                note = recette.Difficulte,
+                is_favorite = recette.IsFavorite,
+                instructions = recette.Instructions,
+                photo_url = recette.PhotoUrl
+            };
+
+            req.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+            using var res = await _http.SendAsync(req);
+            var body = await res.Content.ReadAsStringAsync();
+
+            if (!res.IsSuccessStatusCode)
+                throw new Exception($"Update recette failed ({(int)res.StatusCode}): {body}");
+        }
+
+        // ---------- SAVE ----------
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             try
@@ -32,131 +263,169 @@ namespace LoGeCuiMobile.Pages
 
                 if (app.CurrentUserId == null || app.RecipesService == null)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_LoginRequired"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
                 if (app.RecetteIngredientsService == null)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_ServiceNotReady"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(NomEntry.Text))
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_NameRequired"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
+                var userId = app.CurrentUserId.Value;
                 var categorie = (CategoriePicker.SelectedItem as string) ?? "Plat";
                 int temps = int.TryParse(TempsEntry.Text, out var t) ? t : 0;
 
-                // ExternalId stable pour retrouver l'id après upsert
-                var externalId = Guid.NewGuid().ToString("N");
+                bool isEdit = (_editingRecette != null && _editingRecette.Id != Guid.Empty);
 
-                var recette = new Recette
+                var recette = _editingRecette ?? new Recette();
+
+                // âœ… ExternalId stable : seulement si nouveau
+                if (string.IsNullOrWhiteSpace(recette.ExternalId))
+                    recette.ExternalId = Guid.NewGuid().ToString("N");
+
+                // âœ… owner
+                recette.OwnerUserId = userId;
+
+                // âœ… champs
+                recette.Nom = NomEntry.Text.Trim();
+                recette.CategorieDb = categorie;
+                recette.TempsPreparation = temps;
+                recette.Difficulte = 1;
+                recette.Instructions = InstructionsEditor.Text ?? "";
+                recette.IsFavorite = false;
+
+                // photo locale
+                recette.PhotoLocalPath = _photoLocalPath;
+
+                // 1) Save recette (anti-duplicata)
+                if (isEdit)
                 {
-                    Nom = NomEntry.Text.Trim(),
-                    CategorieDb = categorie,
-                    TempsPreparation = temps,
-                    Difficulte = 1,
-                    Instructions = InstructionsEditor.Text ?? "",
-                    IsFavorite = false,
-                    ExternalId = externalId
-                };
+                    if (string.IsNullOrWhiteSpace(app.CurrentAccessToken))
+                    {
+                        await DisplayAlert("Erreur", "Session invalide, reconnecte-toi.", "OK");
+                        return;
+                    }
 
-                // 1) Upsert recette (table recettes)
-                await app.RecipesService.UpsertRecetteAsync(app.CurrentUserId.Value, recette);
+                    recette.Id = _editingRecette!.Id;
 
-                // 2) Récupérer l'id réel de la recette (UUID en DB) via ExternalId
-                var recetteId = await app.RecipesService.GetRecetteIdByExternalIdAsync(externalId);
-                if (recetteId == null)
+                    await UpdateRecetteByIdAsync(
+                        ConfigurationHelper.GetSupabaseUrl(),
+                        ConfigurationHelper.GetSupabaseKey(),
+                        app.CurrentAccessToken!,
+                        recette.Id,
+                        userId,
+                        recette);
+                }
+                else
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
-                        LocalizationResourceManager.Instance["Recipes_Add_IdNotFound"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
-                    return;
+                    // CREATE via upsert(external_id)
+                    await app.RecipesService.UpsertRecetteAsync(userId, recette);
                 }
 
-                // 3) Parser les ingrédients (1 par ligne)
-                var lines = (IngredientsEditor.Text ?? "")
-                    .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(l => l.Trim())
-                    .Where(l => l.Length > 0)
-                    .ToList();
-
-                var items = new List<(string nom, string? quantite, string? unite)>();
-
-                foreach (var line in lines)
+                // 2) RÃ©cupÃ©rer l'ID DB
+                Guid recetteId;
+                if (isEdit)
                 {
-                    // Si vous ne gérez pas quantite/unite maintenant, gardez simple:
-                    // tout va dans ingredient_nom
-                    items.Add((line, null, null));
+                    recetteId = _editingRecette!.Id;
+                }
+                else
+                {
+                    // âœ… ta signature actuelle: (Guid userId, string externalId)
+                    var rid = await app.RecipesService.GetRecetteIdByExternalIdAsync(userId, recette.ExternalId!);
+
+                    if (rid == null)
+                    {
+                        await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
+                            LocalizationResourceManager.Instance["Recipes_Add_IdNotFound"],
+                            LocalizationResourceManager.Instance["Dialog_Ok"]);
+                        return;
+                    }
+
+                    recetteId = rid.Value;
                 }
 
-                // 4) Écriture dans recette_ingredients (delete + insert)
-                await app.RecetteIngredientsService.ReplaceForRecetteAsync(recetteId.Value, items);
+                // stabiliser
+                recette.Id = recetteId;
+                if (_editingRecette != null) _editingRecette.Id = recetteId;
 
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["SuccessTitle"],
+                // 3) Upload photo + UPDATE photo_url (jamais upsert ici)
+                if (!string.IsNullOrWhiteSpace(_photoLocalPath) && File.Exists(_photoLocalPath))
+                {
+                    if (string.IsNullOrWhiteSpace(app.CurrentAccessToken))
+                    {
+                        await DisplayAlert("Erreur", "Session invalide, reconnecte-toi.", "OK");
+                        return;
+                    }
+
+                    var url = await _storage.UploadRecipePhotoAndGetPublicUrlAsync(
+                        app.CurrentAccessToken!, userId, recetteId, _photoLocalPath);
+
+                    recette.PhotoUrl = url;
+
+                    await UpdateRecetteByIdAsync(
+                        ConfigurationHelper.GetSupabaseUrl(),
+                        ConfigurationHelper.GetSupabaseKey(),
+                        app.CurrentAccessToken!,
+                        recetteId,
+                        userId,
+                        recette);
+                }
+
+                // 4) IngrÃ©dients (NORMALISÃ‰S)
+                var items = ParseIngredientsEditorNormalized(IngredientsEditor.Text);
+
+                await app.RecetteIngredientsService.ReplaceForRecetteAsync(recetteId, items);
+
+                await DisplayAlert(LocalizationResourceManager.Instance["SuccessTitle"],
                     LocalizationResourceManager.Instance["Recipes_Add_Saved"],
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                    LocalizationResourceManager.Instance["Dialog_Ok"]);
 
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["ErrorTitle"],
-                    ex.Message,
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                Debug.WriteLine(ex.ToString());
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
         }
 
-        // Transforme le texte du multi-line editor en liste (nom, quantite, unite)
-        private static List<(string nom, string? quantite, string? unite)> ParseIngredientsEditor(string? text)
+        // ---------- INGREDIENTS PARSER (NORMALISÃ‰) ----------
+        private static List<(string nom, string? quantite, string? unite)> ParseIngredientsEditorNormalized(string? text)
         {
             text ??= "";
 
             return text
                 .Replace("\r\n", "\n")
+                .Replace("\r", "\n")
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .Select(l => l.Trim())
                 .Where(l => !string.IsNullOrWhiteSpace(l))
-                .Select(ParseIngredientLine)
+                .Select(ParseIngredientLineNormalized)
                 .Where(x => !string.IsNullOrWhiteSpace(x.nom))
                 .ToList();
         }
 
-        // Supporte:
-        // - "Tomate"
-        // - "200 g Farine"
-        // - "2 pcs Tomate"
-        // - "Farine - 200 g" (si tu colles depuis ToString)
-        private static (string nom, string? quantite, string? unite) ParseIngredientLine(string line)
+        private static (string nom, string? quantite, string? unite) ParseIngredientLineNormalized(string line)
         {
             // "Nom - Quantite Unite"
             var dashSplit = line.Split(" - ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             if (dashSplit.Length >= 2)
             {
-                var nomPart = dashSplit[0];
+                var nomPart = IngredientNormalizer.Normalize(dashSplit[0]); // âœ… normalize
                 var qtePart = dashSplit[1];
 
                 var parts = qtePart.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -172,41 +441,36 @@ namespace LoGeCuiMobile.Pages
             {
                 var quantite = tokens[0];
                 var unite = tokens[1];
-                var nom = string.Join(" ", tokens.Skip(2));
+                var nom = IngredientNormalizer.Normalize(string.Join(" ", tokens.Skip(2))); // âœ… normalize
                 return (nom, quantite, unite);
             }
 
             // Sinon : juste le nom
-            return (line, null, null);
+            return (IngredientNormalizer.Normalize(line), null, null); // âœ… normalize
         }
 
+        // ---------- OCR ----------
         private async void OnScanClicked(object sender, EventArgs e)
         {
             try
             {
-                // Permission caméra (Android 6+)
                 var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
                 if (status != PermissionStatus.Granted)
                     status = await Permissions.RequestAsync<Permissions.Camera>();
 
                 if (status != PermissionStatus.Granted)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["PermissionTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["PermissionTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_CameraPermission"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
-                // Capture supportée ?
                 if (!MediaPicker.Default.IsCaptureSupported)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_CaptureNotSupported"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
@@ -226,47 +490,31 @@ namespace LoGeCuiMobile.Pages
                     bytes = ms.ToArray();
                 }
 
-                Debug.WriteLine($"Image originale: {bytes.Length / 1024} KB");
-
-                // Compression pour rester sous la limite OCR.Space (souvent 1024 KB)
                 bytes = ImageCompressionHelper.CompressJpeg(bytes, maxWidth: 1600, jpegQuality: 75);
-                Debug.WriteLine($"Image compressée: {bytes.Length / 1024} KB");
-
-                // Si encore trop gros, on retente plus agressif automatiquement
                 if (bytes.Length > 1024 * 1024)
-                {
                     bytes = ImageCompressionHelper.CompressJpeg(bytes, maxWidth: 1200, jpegQuality: 65);
-                    Debug.WriteLine($"Image recompressée: {bytes.Length / 1024} KB");
-                }
 
                 if (bytes.Length > 1024 * 1024)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_ImageTooLarge"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
-                // OCR
-                var ocrKey = LoGeCuiShared.Services.ConfigurationHelper.GetOcrApiKey();
+                var ocrKey = ConfigurationHelper.GetOcrApiKey();
                 var ocr = new OcrService(ocrKey);
 
                 var fullText = await ocr.ExtractTextFromImageAsync(bytes, photo.FileName);
-
                 if (string.IsNullOrWhiteSpace(fullText))
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["OcrTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["OcrTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_NoTextDetected"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
                 fullText = NormalizeOcrText(fullText);
-
                 var (ingredients, instructions) = SplitRecipeText(fullText);
 
                 if (!string.IsNullOrWhiteSpace(instructions))
@@ -282,11 +530,9 @@ namespace LoGeCuiMobile.Pages
                         NomEntry.Text = title;
                 }
 
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["SuccessTitle"],
+                await DisplayAlert(LocalizationResourceManager.Instance["SuccessTitle"],
                     LocalizationResourceManager.Instance["Recipes_Add_OcrSuccess"],
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                    LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
             catch (Exception ex)
             {
@@ -299,14 +545,11 @@ namespace LoGeCuiMobile.Pages
                     msg = LocalizationResourceManager.Instance["Recipes_Add_ImageTooLarge"];
                 }
 
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["ErrorTitle"],
-                    msg,
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], msg, LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
         }
 
+        // ---------- OCR HELPERS ----------
         private static string NormalizeOcrText(string s)
         {
             s = s.Replace("\r\n", "\n").Replace("\r", "\n");
@@ -318,8 +561,8 @@ namespace LoGeCuiMobile.Pages
         {
             var lower = text.ToLowerInvariant();
 
-            int idxIng = IndexOfAny(lower, "ingrédients", "ingredients");
-            int idxPrep = IndexOfAny(lower, "préparation", "preparation", "instructions", "réalisation", "realisation", "étapes", "etapes");
+            int idxIng = IndexOfAny(lower, "ingrÃ©dients", "ingredients");
+            int idxPrep = IndexOfAny(lower, "prÃ©paration", "preparation", "instructions", "rÃ©alisation", "realisation", "Ã©tapes", "etapes");
 
             if (idxIng >= 0 && idxPrep > idxIng)
             {
@@ -385,7 +628,7 @@ namespace LoGeCuiMobile.Pages
             var lines = s.Replace("\r\n", "\n").Split('\n')
                 .Select(l => l.Trim())
                 .Where(l => l.Length > 0)
-                .Select(l => l.TrimStart('-', '•', '*', '–', '—', '·', ' '))
+                .Select(l => l.TrimStart('-', 'â€¢', '*', 'â€“', 'â€”', 'Â·', ' '))
                 .Where(l => l.Length > 0);
 
             return string.Join("\n", lines);
@@ -402,10 +645,10 @@ namespace LoGeCuiMobile.Pages
 
         private static bool LooksLikeIngredientLine(string line)
         {
-            if (line.StartsWith("-") || line.StartsWith("•") || line.StartsWith("*")) return true;
+            if (line.StartsWith("-") || line.StartsWith("â€¢") || line.StartsWith("*")) return true;
 
             var l = line.ToLowerInvariant();
-            string[] units = { " g", "kg", " ml", "cl", " l", "càs", "cas", "càc", "cac", "cuillère", "pincée", "tranche", "sachet" };
+            string[] units = { " g", "kg", " ml", "cl", " l", "cÃ s", "cas", "cÃ c", "cac", "cuillÃ¨re", "pincÃ©e", "tranche", "sachet" };
             if (units.Any(u => l.Contains(u))) return true;
 
             if (char.IsDigit(line.FirstOrDefault())) return true;
@@ -417,7 +660,7 @@ namespace LoGeCuiMobile.Pages
         {
             var l = line.Trim();
             if (l.StartsWith("1)") || l.StartsWith("1.") ||
-                l.StartsWith("Étape", StringComparison.OrdinalIgnoreCase) ||
+                l.StartsWith("Ã‰tape", StringComparison.OrdinalIgnoreCase) ||
                 l.StartsWith("Etape", StringComparison.OrdinalIgnoreCase))
                 return true;
 

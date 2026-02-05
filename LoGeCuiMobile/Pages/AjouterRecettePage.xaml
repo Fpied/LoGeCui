@@ -12,6 +12,39 @@
             <Entry x:Name="NomEntry"
                    Placeholder="{tr:Translate Recipes_Add_NamePlaceholder}" />
 
+            <!-- PHOTO RECETTE -->
+            <Label Text="Photo" />
+
+            <Frame Padding="0"
+                   CornerRadius="12"
+                   HasShadow="False"
+                   BorderColor="{AppThemeBinding Light=#DDD, Dark=#444}">
+                <Grid RowDefinitions="180,Auto" ColumnDefinitions="*,*"
+                      RowSpacing="10"
+                      Padding="0">
+
+                    <!-- Preview -->
+                    <Image x:Name="PhotoImage"
+                           Grid.Row="0" Grid.ColumnSpan="2"
+                           Aspect="AspectFill"
+                           HeightRequest="180" />
+
+                    <!-- Actions -->
+                    <Button Grid.Row="1" Grid.Column="0"
+                            Text="Choisir une photo"
+                            Clicked="OnPickPhotoClicked" />
+
+                    <Button Grid.Row="1" Grid.Column="1"
+                            Text="Prendre une photo"
+                            Clicked="OnTakePhotoClicked" />
+                </Grid>
+            </Frame>
+
+            <Button x:Name="RemovePhotoButton"
+                    Text="Supprimer la photo"
+                    IsVisible="False"
+                    Clicked="OnRemovePhotoClicked" />
+
             <Label Text="{tr:Translate Recipes_Add_CategoryLabel}" />
             <Picker x:Name="CategoriePicker"
                     Title="{tr:Translate Recipes_Add_CategoryPlaceholder}" />

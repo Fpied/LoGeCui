@@ -23,9 +23,6 @@ namespace LoGeCui
             // Créer l'instance UNE SEULE FOIS
             SupabaseService = new SupabaseService(url, key);
 
-            // afficher login
-            new LoginWindow().Show();
-
             // Ouvrir la fenêtre de connexion en premier
             var loginWindow = new LoginWindow();
             loginWindow.Show();

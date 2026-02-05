@@ -13,38 +13,64 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid Padding="16" RowDefinitions="Auto,*" RowSpacing="12">
+    <Grid Padding="16" RowDefinitions="Auto,Auto,*" RowSpacing="12">
 
-        <Button
-            Grid.Row="0"
-            Text="{tr:Translate Ingredients_AddButton}"
-            BackgroundColor="#28a745"
-            TextColor="White"
-            Clicked="OnAddIngredientClicked" />
+        <!-- Boutons -->
+        <Grid Grid.Row="0" ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <CollectionView
-            Grid.Row="1"
-            x:Name="IngredientsCollection"
-            SelectionMode="Single"
-            SelectionChanged="OnIngredientSelected">
+            <Button Grid.Column="0"
+                    Text="{tr:Translate Ingredients_AddButton}"
+                    BackgroundColor="#28a745"
+                    TextColor="White"
+                    Clicked="OnAddIngredientClicked" />
+
+            <Button Grid.Column="1"
+                    x:Name="BtnSupprimerSelectionIngredients"
+                    Text="Supprimer sélection"
+                    BackgroundColor="#E67E22"
+                    TextColor="White"
+                    Clicked="OnDeleteSelectedIngredientsClicked" />
+        </Grid>
+
+        <!-- Checkbox Tout sélectionner -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="10" Padding="4,0">
+            <CheckBox x:Name="ChkToutSelectionnerIngredients"
+                      CheckedChanged="ChkToutSelectionnerIngredients_CheckedChanged" />
+            <Label Text="Tout sélectionner"
+                   VerticalTextAlignment="Center"
+                   TextColor="Gray" />
+        </HorizontalStackLayout>
+
+        <!-- Liste -->
+        <CollectionView Grid.Row="2"
+                        x:Name="IngredientsCollection"
+                        SelectionMode="None">
+
+            <CollectionView.EmptyView>
+                <Label Text="Aucun ingrédient."
+                       HorizontalOptions="Center"
+                       Margin="0,20,0,0"
+                       TextColor="Gray"/>
+            </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-
-                    <Frame
-                        Padding="12"
-                        Margin="0,4"
-                        BorderColor="#ddd"
-                        CornerRadius="10">
+                    <Frame Padding="12"
+                           Margin="0,4"
+                           BorderColor="#ddd"
+                           CornerRadius="10">
 
                         <Grid ColumnDefinitions="*,Auto">
 
-                            <VerticalStackLayout Spacing="4">
+                            <VerticalStackLayout Spacing="6">
 
-                                <Label
-                                    Text="{Binding Nom}"
-                                    FontSize="18"
-                                    FontAttributes="Bold" />
+                                <Label Text="{Binding Nom}"
+                                       FontSize="18"
+                                       FontAttributes="Bold" />
 
                                 <Label FontSize="14" TextColor="Gray">
                                     <Label.Text>
@@ -55,27 +81,34 @@
                                     </Label.Text>
                                 </Label>
 
+                                <!-- Disponible -->
                                 <HorizontalStackLayout Spacing="6">
-                                    <CheckBox IsChecked="{Binding EstDisponible}" />
+                                    <CheckBox IsChecked="{Binding EstDisponible}"
+                                                CheckedChanged="OnDisponibleChanged" />
                                     <Label Text="{tr:Translate Ingredients_Available}"
                                            VerticalTextAlignment="Center"/>
                                 </HorizontalStackLayout>
 
+                                <!-- Sélection suppression -->
+                                <HorizontalStackLayout Spacing="6">
+                                    <CheckBox IsChecked="{Binding IsSelectedForDelete}" />
+                                    <Label Text="Supprimer"
+                                           VerticalTextAlignment="Center"
+                                           TextColor="Gray"/>
+                                </HorizontalStackLayout>
+
                             </VerticalStackLayout>
 
-                            <Button
-                                Grid.Column="1"
-                                Text="🗑"
-                                BackgroundColor="#e74c3c"
-                                Clicked="OnDeleteIngredientClicked" />
-
+                            <!-- Supprimer item -->
+                            <Button Grid.Column="1"
+                                    Text="🗑"
+                                    BackgroundColor="#e74c3c"
+                                    Clicked="OnDeleteIngredientClicked" />
                         </Grid>
                     </Frame>
-
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
         </CollectionView>
-
     </Grid>
 </ContentPage>

@@ -10,19 +10,25 @@ namespace LoGeCui.Views
 {
     public partial class MenuAleatoireView : UserControl
     {
-        private readonly RecetteService _recetteService;
         private MenuJournalier? _menuCourant;
+        private static readonly Random _random = new Random();
 
         public MenuAleatoireView()
         {
             InitializeComponent();
-            _recetteService = new RecetteService();
         }
 
-        private void BtnGenererMenu_Click(object sender, RoutedEventArgs e)
+        private async void BtnGenererMenu_Click(object sender, RoutedEventArgs e)
         {
-            // Charger les recettes (source locale actuelle)
-            var recettes = _recetteService.ChargerRecettes();
+            // Charger les recettes depuis Supabase
+            if (App.RecipesService == null || App.CurrentUserId == null)
+            {
+                MessageBox.Show("Connecte-toi d'abord (services non initialisés).");
+                return;
+            }
+
+            var recettes = await App.RecipesService.GetRecettesAsync(App.CurrentUserId.Value)
+                          ?? new List<Recette>();
 
             if (recettes.Count == 0)
             {
@@ -48,20 +54,82 @@ namespace LoGeCui.Views
                 Dessert = ChoisirRecetteAleatoire(desserts)
             };
 
-            // Afficher le menu
+            // Charger les ingrédients depuis Supabase
+            if (App.RestClient == null)
+            {
+                MessageBox.Show("RestClient non initialisé.");
+                return;
+            }
+
+            try
+            {
+                var ingSvc = new LoGeCuiShared.Services.RecetteIngredientsService(App.RestClient);
+
+                if (_menuCourant.Entree != null)
+                {
+                    var tuples = await ingSvc.GetForRecetteAsync(_menuCourant.Entree.Id);
+                    _menuCourant.Entree.Ingredients = tuples
+                        .Select(t => new IngredientRecette
+                        {
+                            Nom = t.nom,
+                            Quantite = t.quantite,
+                            Unite = t.unite
+                        })
+                        .ToList();
+                }
+
+                if (_menuCourant.Plat != null)
+                {
+                    var tuples = await ingSvc.GetForRecetteAsync(_menuCourant.Plat.Id);
+                    _menuCourant.Plat.Ingredients = tuples
+                        .Select(t => new IngredientRecette
+                        {
+                            Nom = t.nom,
+                            Quantite = t.quantite,
+                            Unite = t.unite
+                        })
+                        .ToList();
+                }
+
+                if (_menuCourant.Dessert != null)
+                {
+                    var tuples = await ingSvc.GetForRecetteAsync(_menuCourant.Dessert.Id);
+                    _menuCourant.Dessert.Ingredients = tuples
+                        .Select(t => new IngredientRecette
+                        {
+                            Nom = t.nom,
+                            Quantite = t.quantite,
+                            Unite = t.unite
+                        })
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erreur chargement ingrédients des recettes : {ex.Message}",
+                    "Erreur",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            // Afficher menu
             AfficherMenu();
 
-            // Vérifier les ingrédients (async, Supabase)
-            _ = VerifierIngredientsAsync();
+            IngredientsManquantsPanel.Visibility = Visibility.Collapsed;
+            ToutDisponiblePanel.Visibility = Visibility.Collapsed;
+            ListeIngredientsManquants.ItemsSource = null;
+
+            await VerifierIngredientsAsync();
         }
 
         private Recette? ChoisirRecetteAleatoire(List<Recette> recettes)
         {
-            if (recettes.Count == 0)
+            if (recettes == null || recettes.Count == 0)
                 return null;
 
-            var random = new Random();
-            return recettes[random.Next(recettes.Count)];
+            return recettes[_random.Next(recettes.Count)];
         }
 
         private void AfficherMenu()
@@ -70,46 +138,27 @@ namespace LoGeCui.Views
                 return;
 
             MenuPanel.Visibility = Visibility.Visible;
-
             TxtDate.Text = $"Menu généré le {_menuCourant.Date:dd/MM/yyyy à HH:mm}";
 
-            if (_menuCourant.Entree != null)
-            {
-                TxtEntree.Text = _menuCourant.Entree.Nom;
-                TxtEntreeDetails.Text = $"{_menuCourant.Entree.DifficulteTexte} • {_menuCourant.Entree.TempsPreparation} min";
-            }
-            else
-            {
-                TxtEntree.Text = "Aucune entrée disponible";
-                TxtEntreeDetails.Text = "Ajoutez des recettes de type 'Entrée'";
-            }
+            AfficherBlocRecette(_menuCourant.Entree, TxtEntree, TxtEntreeDetails, "entrée");
+            AfficherBlocRecette(_menuCourant.Plat, TxtPlat, TxtPlatDetails, "plat");
+            AfficherBlocRecette(_menuCourant.Dessert, TxtDessert, TxtDessertDetails, "dessert");
+        }
 
-            if (_menuCourant.Plat != null)
+        private void AfficherBlocRecette(Recette? recette, TextBlock titre, TextBlock details, string type)
+        {
+            if (recette != null)
             {
-                TxtPlat.Text = _menuCourant.Plat.Nom;
-                TxtPlatDetails.Text = $"{_menuCourant.Plat.DifficulteTexte} • {_menuCourant.Plat.TempsPreparation} min";
+                titre.Text = recette.Nom;
+                details.Text = $"{recette.DifficulteTexte} • {recette.TempsPreparation} min";
             }
             else
             {
-                TxtPlat.Text = "Aucun plat disponible";
-                TxtPlatDetails.Text = "Ajoutez des recettes de type 'Plat'";
-            }
-
-            if (_menuCourant.Dessert != null)
-            {
-                TxtDessert.Text = _menuCourant.Dessert.Nom;
-                TxtDessertDetails.Text = $"{_menuCourant.Dessert.DifficulteTexte} • {_menuCourant.Dessert.TempsPreparation} min";
-            }
-            else
-            {
-                TxtDessert.Text = "Aucun dessert disponible";
-                TxtDessertDetails.Text = "Ajoutez des recettes de type 'Dessert'";
+                titre.Text = $"Aucun {type} disponible";
+                details.Text = $"Ajoutez des recettes de type '{type}'";
             }
         }
 
-        /// <summary>
-        /// Vérifie les ingrédients disponibles dans Supabase et calcule les ingrédients manquants.
-        /// </summary>
         private async System.Threading.Tasks.Task VerifierIngredientsAsync()
         {
             if (_menuCourant == null)
@@ -117,146 +166,94 @@ namespace LoGeCui.Views
 
             try
             {
-                // Ingrédients disponibles (Supabase)
                 var ingredientsDisponibles = await App.SupabaseService.GetIngredientsAsync();
 
-                var disponibles = ingredientsDisponibles
+                var disponibles = (ingredientsDisponibles ?? new List<Ingredient>())
                     .Where(i => i.EstDisponible)
-                    .Select(i => (i.Nom ?? "").Trim().ToLower())
+                    .Select(i => (i.Nom ?? "").Trim().ToLowerInvariant())
                     .Where(n => !string.IsNullOrWhiteSpace(n))
                     .ToHashSet();
 
-                // Collecter tous les ingrédients nécessaires du menu
                 var necessaires = new List<IngredientRecette>();
 
                 if (_menuCourant.Entree != null)
-                    necessaires.AddRange(_menuCourant.Entree.Ingredients);
-
+                    necessaires.AddRange(_menuCourant.Entree.Ingredients ?? new List<IngredientRecette>());
                 if (_menuCourant.Plat != null)
-                    necessaires.AddRange(_menuCourant.Plat.Ingredients);
-
+                    necessaires.AddRange(_menuCourant.Plat.Ingredients ?? new List<IngredientRecette>());
                 if (_menuCourant.Dessert != null)
-                    necessaires.AddRange(_menuCourant.Dessert.Ingredients);
+                    necessaires.AddRange(_menuCourant.Dessert.Ingredients ?? new List<IngredientRecette>());
+
+                if (necessaires.Count == 0)
+                {
+                    IngredientsManquantsPanel.Visibility = Visibility.Collapsed;
+                    ToutDisponiblePanel.Visibility = Visibility.Collapsed;
+                    ListeIngredientsManquants.ItemsSource = null;
+                    return;
+                }
 
                 _menuCourant.IngredientsManquants.Clear();
 
                 foreach (var ingredient in necessaires)
                 {
                     var nom = (ingredient.Nom ?? "").Trim();
-                    if (string.IsNullOrWhiteSpace(nom))
-                        continue;
-
-                    if (!disponibles.Contains(nom.ToLower()))
+                    if (!disponibles.Contains(nom.ToLowerInvariant()))
                     {
-                        // éviter doublons
                         if (!_menuCourant.IngredientsManquants.Any(i =>
-                                i.Nom.Equals(nom, StringComparison.OrdinalIgnoreCase)))
+                                (i.Nom ?? "").Equals(nom, StringComparison.OrdinalIgnoreCase)))
                         {
                             _menuCourant.IngredientsManquants.Add(ingredient);
                         }
                     }
                 }
 
-                // Afficher
                 if (_menuCourant.IngredientsManquants.Any())
                 {
                     IngredientsManquantsPanel.Visibility = Visibility.Visible;
                     ToutDisponiblePanel.Visibility = Visibility.Collapsed;
 
                     ListeIngredientsManquants.ItemsSource = _menuCourant.IngredientsManquants
-                        .Select(i => $"• {i.Nom} - {i.Quantite} {i.Unite}")
+                        .Select(i => $"• {i.Quantite} {i.Unite} {i.Nom}".Replace("  ", " ").Trim())
                         .ToList();
                 }
                 else
                 {
                     IngredientsManquantsPanel.Visibility = Visibility.Collapsed;
                     ToutDisponiblePanel.Visibility = Visibility.Visible;
-
-                    ListeIngredientsManquants.ItemsSource = null;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Erreur vérification ingrédients (Supabase) : {ex.Message}",
-                    "Erreur",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show($"Erreur vérification ingrédients : {ex.Message}");
             }
         }
 
         private async void BtnAjouterListeCourses_Click(object sender, RoutedEventArgs e)
         {
             if (_menuCourant == null || !_menuCourant.IngredientsManquants.Any())
-            {
-                MessageBox.Show("Aucun ingrédient à ajouter.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
-            }
 
-            try
+            var supabase = App.SupabaseService;
+            var articlesExistants = await supabase.GetArticlesAsync();
+            var nomsExistants = (articlesExistants ?? new List<ArticleCourse>())
+                .Select(a => (a.Nom ?? "").Trim().ToLowerInvariant())
+                .ToHashSet();
+
+            foreach (var ingredient in _menuCourant.IngredientsManquants)
             {
-                // IMPORTANT : utiliser l'instance connectée (session OK)
-                var supabase = App.SupabaseService;
-
-                var articlesExistants = await supabase.GetArticlesAsync();
-                var nomsExistants = articlesExistants
-                    .Select(a => (a.Nom ?? "").Trim().ToLower())
-                    .Where(n => !string.IsNullOrWhiteSpace(n))
-                    .ToHashSet();
-
-                int nbAjoutes = 0;
-
-                foreach (var ingredient in _menuCourant.IngredientsManquants)
+                var nom = (ingredient.Nom ?? "").Trim();
+                if (!nomsExistants.Contains(nom.ToLowerInvariant()))
                 {
-                    var nom = (ingredient.Nom ?? "").Trim();
-                    if (string.IsNullOrWhiteSpace(nom))
-                        continue;
-
-                    if (!nomsExistants.Contains(nom.ToLower()))
+                    await supabase.AddArticleAsync(new ArticleCourse
                     {
-                        var article = new ArticleCourse
-                        {
-                            Nom = nom,
-                            Quantite = ingredient.Quantite,
-                            Unite = ingredient.Unite,
-                            EstAchete = false
-                        };
-
-                        await supabase.AddArticleAsync(article);
-                        nbAjoutes++;
-
-                        // Mettre à jour le set pour éviter doublons dans la même exécution
-                        nomsExistants.Add(nom.ToLower());
-                    }
-                }
-
-                if (nbAjoutes > 0)
-                {
-                    MessageBox.Show(
-                        $"{nbAjoutes} ingrédient(s) ajouté(s) à la liste de courses !\n\n" +
-                        "Consultez 'Liste de Courses' pour les voir.",
-                        "Succès",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "Tous ces ingrédients sont déjà dans votre liste de courses.",
-                        "Information",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        Nom = nom,
+                        Quantite = ingredient.Quantite,
+                        Unite = ingredient.Unite,
+                        EstAchete = false
+                    });
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"Erreur lors de l'ajout : {ex.Message}",
-                    "Erreur",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+
+            MessageBox.Show("Ingrédients ajoutés à la liste de courses !");
         }
     }
 }
-

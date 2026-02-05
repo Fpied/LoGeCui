@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -9,304 +10,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-              </xs:complexType>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-    </xs:schema>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-    </resheader>
+  </resheader>
   <resheader name="version">
     <value>2.0</value>
-    </resheader>
+  </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  </resheader>
   <data name="Email" xml:space="preserve">
     <value>E-mail</value>
-    </data>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Wachtwoord</value>
-    </data>
+  </data>
   <data name="StayConnected" xml:space="preserve">
     <value>In contact blijven</value>
-    </data>
+  </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Aanmelden</value>
-    </data>
+  </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Een account aanmaken</value>
-    </data>
+  </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Wachtwoord vergeten?</value>
-    </data>
+  </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Fout</value>
-    </data>
+  </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Verkeerd wachtwoord</value>
-    </data>
+  </data>
   <data name="Connecting" xml:space="preserve">
     <value>Verbinding wordt gemaakt...</value>
-    </data>
+  </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Vul alle velden in</value>
-    </data>
+  </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Fout bij verbinding</value>
-    </data>
+  </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Een account aanmaken...</value>
-    </data>
+  </data>
   <data name="SignupError" xml:space="preserve">
     <value>Fout bij registratie</value>
-    </data>
+  </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>Lijst van rassen</value>
-    </data>
+  </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Mijn boodschappenlijstje</value>
-    </data>
+  </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>Een item toevoegen</value>
-    </data>
+  </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Selectie verwijderen</value>
-    </data>
+  </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Nog geen artikel.</value>
-    </data>
+  </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Gekocht</value>
-    </data>
+  </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Verwijder</value>
-    </data>
+  </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Boodschappenlijst</value>
-    </data>
+  </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Mijn recepten</value>
-    </data>
+  </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Willekeurig menu</value>
-    </data>
+  </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>Ingrediënten</value>
-    </data>
+  </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Parameters</value>
-    </data>
+  </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>OK</value>
-    </data>
+  </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Ja</value>
-    </data>
+  </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Geen</value>
-    </data>
+  </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Annuleren</value>
-    </data>
+  </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>OK</value>
-    </data>
+  </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>🔒 Toestemming</value>
-    </data>
+  </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>OCR</value>
-    </data>
+  </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Onbekende fout.</value>
-    </data>
+  </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Service niet beschikbaar.</value>
-    </data>
+  </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>U moet ingelogd zijn.</value>
-    </data>
+  </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Sessie</value>
-    </data>
+  </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Sessie gemist of verlopen. Log opnieuw in.</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Een ingrediënt toevoegen</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>Naam ingrediënt</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Hoeveelheid (bijv. 10)</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Eenheid (bijv. kg, stuks)</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>Beschikbaar op</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>Register</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>De naam is verplicht.</value>
-    </data>
+  </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Ingrediënten beheren</value>
-    </data>
+  </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>Een ingrediënt toevoegen</value>
-    </data>
+  </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Hoeveelheid: {0} {1}</value>
-    </data>
+  </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>Beschikbaar op</value>
-    </data>
+  </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Ingrediënt</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Een recept toevoegen</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>Naam</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Naam van het recept</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Categorie</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Kies een categorie</value>
-    </data>
+  </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Tijd (minuten)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Ex : 30</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Ingrediënten (1 per regel)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Ex:
 2 eieren
 100 g bloem
 1 snufje zout</value>
-    </data>
+  </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Instructies</value>
-    </data>
+  </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Voorbeeld: Mengen, 10 minuten koken...</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Scannen (OCR)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Registreer</value>
-    </data>
+  </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>U moet ingelogd zijn.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>RecipeIngredientsService niet geïnitialiseerd.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>De naam is verplicht.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Onmogelijk om het recept-ID te vinden na het opslaan.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Ontvangst vastgelegd.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>Een recept scannen</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Voor het scannen is toegang tot de camera vereist.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Het vastleggen van foto's wordt niet ondersteund op dit apparaat.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>De afbeelding is te zwaar voor OCR. Probeer de afbeelding kleiner bij te snijden of verlaag de resolutie.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Geen tekst gedetecteerd. Probeer het met meer licht en zonder onscherpte.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Gescande tekst en vooraf ingevulde velden. Controleer en corrigeer indien nodig.</value>
-    </data>
+  </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Mijn recepten</value>
-    </data>
+  </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Categorie</value>
-    </data>
+  </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Vernieuw</value>
-    </data>
+  </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Een recept toevoegen</value>
-    </data>
+  </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Nog geen recept.</value>
-    </data>
+  </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Tijd : {0} min</value>
-    </data>
+  </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService is NULL (InitRestServices is niet aangeroepen na het aanmelden).</value>
-    </data>
+  </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>RecipeIngredientsService niet geïnitialiseerd.</value>
-    </data>
+  </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(geen ingrediënten vermeld)</value>
-    </data>
+  </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Categorie: {0}
 Tijd: {1} min
@@ -316,136 +317,139 @@ Ingrediënten:
 
 Instructies:
 {3}</value>
-    </data>
+  </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>Willekeurig menu</value>
-    </data>
+  </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>Willekeurig menu</value>
-    </data>
+  </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Druk op de knop om een menu te genereren</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>Stuur de ontbrekende ingrediënten naar het boodschappenlijstje</value>
-    </data>
+  </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Open de boodschappenlijst</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Verzenden?</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Vermist:</value>
-    </data>
+  </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>Ingrediënten verzonden</value>
-    </data>
+  </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Menu genereren (Voorgerecht / Hoofdgerecht / Dessert)...</value>
-    </data>
+  </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Geen recept beschikbaar.</value>
-    </data>
+  </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Kan geen menu voor voorgerecht/hoofdgerecht/dessert genereren.</value>
-    </data>
+  </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Voorgerechten: {0}
 Hoofdgerechten: {1}
 Nagerechten: {2}</value>
-    </data>
+  </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Controleer of je recepten 'categorie' = Hoofdgerecht / Hoofdgerecht / Dessert in de DB hebben.</value>
-    </data>
+  </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>Menu gegenereerd :</value>
-    </data>
+  </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Ingrediënten : (geen ingrediënten vermeld voor dit recept)</value>
-    </data>
+  </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>Ingrediënten:</value>
-    </data>
+  </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Ontbreekt: geen</value>
-    </data>
+  </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Vermist:</value>
-    </data>
+  </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Onmogelijk om ontbrekende ingrediënten te berekenen: in sommige recepten zijn geen ingrediënten opgenomen.</value>
-    </data>
+  </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>Alles is beschikbaar. Geen ontbrekende ingrediënten.</value>
-    </data>
+  </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Globale lijst van ontbrekende ingrediënten :</value>
-    </data>
+  </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Reset</value>
-    </data>
+  </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Wachtwoord opnieuw instellen</value>
-    </data>
+  </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Nieuw wachtwoord</value>
-    </data>
+  </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Wachtwoord bevestigen</value>
-    </data>
+  </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Bevestig</value>
-    </data>
+  </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Het wachtwoord moet minstens 6 tekens bevatten.</value>
-    </data>
+  </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>De wachtwoorden komen niet overeen.</value>
-    </data>
+  </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>Update wordt uitgevoerd...</value>
-    </data>
+  </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>Afgewerkt</value>
-    </data>
+  </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Je wachtwoord is gewijzigd. Je kunt nu inloggen.</value>
-    </data>
+  </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Kan wachtwoord niet wijzigen.</value>
-    </data>
+  </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Parameters</value>
-    </data>
+  </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Account</value>
-    </data>
+  </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Ontkoppeling</value>
-    </data>
+  </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Gevaarlijk gebied</value>
-    </data>
+  </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Afmelden</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Afmelden</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Weet je zeker dat je je account wilt verwijderen? Deze actie is onomkeerbaar.</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Ja, verwijderen</value>
-    </data>
+  </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabase niet geïnitialiseerd. Maak opnieuw verbinding.</value>
-    </data>
+  </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Kan niet worden verwijderd: {0}</value>
-    </data>
+  </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>Uw account is verwijderd.</value>
-    </data>
-  </root>
+  </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>Dit ingrediënt verwijderen?</value>
+  </data>
+</root>

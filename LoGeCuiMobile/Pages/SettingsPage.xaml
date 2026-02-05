@@ -8,9 +8,65 @@
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
 
-            <Label Text="{tr:Translate Settings_Account}"
+            <!-- ========================= -->
+            <!-- PARTAGE LISTE DE COURSES  -->
+            <!-- ========================= -->
+            <Label Text="Liste de courses partagée"
                    FontSize="18"
                    FontAttributes="Bold" />
+
+            <Frame Padding="12"
+                   CornerRadius="12"
+                   BorderColor="#DDDDDD"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Liste active :"
+                           FontAttributes="Bold" />
+
+                    <Label x:Name="LblActiveList"
+                           Text="(aucune)"
+                           TextColor="Gray" />
+
+                    <Label Text="Code de partage :"
+                           FontAttributes="Bold"
+                           Margin="0,6,0,0"/>
+
+                    <Label x:Name="LblShareCode"
+                           Text="(aucun)"
+                           TextColor="Gray" />
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Créer/voir mon code"
+                                Clicked="OnCreateOrShowMyCodeClicked"
+                                HorizontalOptions="FillAndExpand"/>
+
+                        <Button Text="Copier"
+                                Clicked="OnCopyCodeClicked"
+                                HorizontalOptions="End"/>
+                    </HorizontalStackLayout>
+
+                    <Button Text="Rejoindre avec un code"
+                            Clicked="OnJoinWithCodeClicked" />
+
+                    <Button Text="Choisir une liste active"
+                            Clicked="OnPickActiveListClicked" />
+
+                    <Button Text="Revenir à ma liste perso"
+                            BackgroundColor="#E67E22"
+                            TextColor="White"
+                            Clicked="OnDisableSharedListClicked" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- ========================= -->
+            <!-- COMPTE                    -->
+            <!-- ========================= -->
+            <Label Text="{tr:Translate Settings_Account}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
 
             <Frame Padding="12"
                    CornerRadius="12"
@@ -20,6 +76,7 @@
 
                     <Button Text="{tr:Translate Settings_Logout}"
                             BackgroundColor="#34495E"
+                            TextColor="White"
                             FontAttributes="Bold"
                             Clicked="OnLogoutClicked" />
 
@@ -30,6 +87,7 @@
 
                     <Button Text="{tr:Translate Settings_Unsubscribe}"
                             BackgroundColor="IndianRed"
+                            TextColor="White"
                             FontAttributes="Bold"
                             Clicked="OnDesinscriptionClicked" />
 

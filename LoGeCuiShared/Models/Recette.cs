@@ -24,7 +24,7 @@ namespace LoGeCuiShared.Models
         public DateTimeOffset CreatedAt { get; set; }
 
         [JsonPropertyName("owner_user_id")]
-        public Guid? OwnerUserId { get; set; }   // <-- nullable
+        public Guid? OwnerUserId { get; set; }
 
         [JsonPropertyName("external_id")]
         public string? ExternalId { get; set; }
@@ -54,6 +54,7 @@ namespace LoGeCuiShared.Models
             }
         }
 
+        // Colonne DB: temps_minutes
         [JsonPropertyName("temps_minutes")]
         public int TempsMinutesDb
         {
@@ -61,6 +62,7 @@ namespace LoGeCuiShared.Models
             set => TempsPreparation = value;
         }
 
+        // Colonne DB: note (1..5)
         [JsonPropertyName("note")]
         public int? NoteDb
         {
@@ -78,8 +80,16 @@ namespace LoGeCuiShared.Models
             set => Instructions = value ?? "";
         }
 
+        // ✅ Photo synchronisée (DB Supabase: photo_url)
+        [JsonPropertyName("photo_url")]
+        public string? PhotoUrl { get; set; }
+
+        // ✅ Photo locale (cache sur l'appareil) - NON envoyée à Supabase
+        [JsonIgnore]
+        public string? PhotoLocalPath { get; set; }
+
         // ----------------------------
-        // Propriétés métier
+        // Propriétés métier (non DB)
         // ----------------------------
 
         [JsonIgnore]
@@ -96,9 +106,8 @@ namespace LoGeCuiShared.Models
 
         [JsonIgnore]
         public string Instructions { get; set; } = "";
-    
 
-    [JsonIgnore]
+        [JsonIgnore]
         public string TypeTexte => Type switch
         {
             TypePlat.Entree => "Entrée",
@@ -111,6 +120,3 @@ namespace LoGeCuiShared.Models
         public string DifficulteTexte => new string('⭐', Math.Clamp(Difficulte, 1, 5));
     }
 }
-
-
-

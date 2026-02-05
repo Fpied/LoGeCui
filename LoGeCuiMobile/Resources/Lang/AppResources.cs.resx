@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -9,304 +10,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-              </xs:complexType>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-    </xs:schema>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-    </resheader>
+  </resheader>
   <resheader name="version">
     <value>2.0</value>
-    </resheader>
+  </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  </resheader>
   <data name="Email" xml:space="preserve">
     <value>E-mail</value>
-    </data>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Heslo</value>
-    </data>
+  </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Zůstat ve spojení</value>
-    </data>
+  </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Přihlásit se</value>
-    </data>
+  </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Vytvoření účtu</value>
-    </data>
+  </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Zapomněli jste heslo?</value>
-    </data>
+  </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Chyba</value>
-    </data>
+  </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Špatné heslo</value>
-    </data>
+  </data>
   <data name="Connecting" xml:space="preserve">
     <value>Připojení probíhá...</value>
-    </data>
+  </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Vyplňte prosím všechna pole</value>
-    </data>
+  </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Chyba připojení</value>
-    </data>
+  </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Vytvoření účtu...</value>
-    </data>
+  </data>
   <data name="SignupError" xml:space="preserve">
     <value>Chyba registrace</value>
-    </data>
+  </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>🛒 Seznam závodů</value>
-    </data>
+  </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Můj nákupní seznam</value>
-    </data>
+  </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>➕ Přidat položku</value>
-    </data>
+  </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Odstranit výběr</value>
-    </data>
+  </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Zatím žádný článek.</value>
-    </data>
+  </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Zakoupeno na</value>
-    </data>
+  </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Odstranit</value>
-    </data>
+  </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Nákupní seznam</value>
-    </data>
+  </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Moje recepty</value>
-    </data>
+  </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Náhodné menu</value>
-    </data>
+  </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>Složení</value>
-    </data>
+  </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Parametry</value>
-    </data>
+  </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>OK</value>
-    </data>
+  </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Ano</value>
-    </data>
+  </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Ne</value>
-    </data>
+  </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Zrušit</value>
-    </data>
+  </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>✅ OK</value>
-    </data>
+  </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>🔒 Povolení</value>
-    </data>
+  </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>OCR</value>
-    </data>
+  </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Neznámá chyba.</value>
-    </data>
+  </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Služba není k dispozici.</value>
-    </data>
+  </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>Musíte být přihlášeni.</value>
-    </data>
+  </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Relace</value>
-    </data>
+  </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Zmeškaná nebo vypršená relace. Přihlaste se znovu.</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Přidání složky</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>Název složky</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Množství (např. 10)</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Jednotka (např. kg, kusy)</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>K dispozici na adrese</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>💾 Registr</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>Název je povinný.</value>
-    </data>
+  </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Správa složek</value>
-    </data>
+  </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>➕ Přidat složku</value>
-    </data>
+  </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Množství: {0} {1}</value>
-    </data>
+  </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>K dispozici na adrese</value>
-    </data>
+  </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Přísady</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Přidání receptu</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>Název</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Název receptu</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Kategorie</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Vyberte kategorii</value>
-    </data>
+  </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Čas (v minutách)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Ex : 30</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Složení (1 na řádek)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Např:
 2 vejce
 100 g mouky
 1 špetka soli</value>
-    </data>
+  </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Pokyny</value>
-    </data>
+  </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Například: Smíchejte, vařte 10 minut...</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Skenování (OCR)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Registrace</value>
-    </data>
+  </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>Musíte být přihlášeni.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>Služba RecipeIngredientsService nebyla inicializována.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>Název je povinný.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Po uložení nelze najít ID receptu.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Zaznamenáno přijetí.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>📸 Naskenovat recept</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Pro skenování je nutný přístup ke kameře.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Pořizování fotografií není v tomto zařízení podporováno.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>Obrázek je pro OCR příliš těžký. Zkuste obrázek více oříznout nebo snížit rozlišení.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Nebyl zjištěn žádný text. Zkuste to s větším množstvím světla a bez rozmazání.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Naskenovaný text a předvyplněná pole. Zkontrolujte a případně opravte.</value>
-    </data>
+  </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Moje recepty</value>
-    </data>
+  </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Kategorie</value>
-    </data>
+  </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Obnovit</value>
-    </data>
+  </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Přidání receptu</value>
-    </data>
+  </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Zatím bez receptu.</value>
-    </data>
+  </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Čas : {0} min</value>
-    </data>
+  </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService je NULL (InitRestServices nebyl po přihlášení zavolán).</value>
-    </data>
+  </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>Služba RecipeIngredientsService nebyla inicializována.</value>
-    </data>
+  </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(složení není uvedeno)</value>
-    </data>
+  </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Kategorie: {0}
 Čas: {1} min
@@ -316,136 +317,139 @@ Složení: 1:
 
 Pokyny: 1:
 {3}</value>
-    </data>
+  </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>🎲 Náhodné menu</value>
-    </data>
+  </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>🎲 Náhodné menu</value>
-    </data>
+  </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Stisknutím tlačítka vygenerujete nabídku</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>🛒 Pošlete chybějící ingredience v nákupním seznamu</value>
-    </data>
+  </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Otevřít nákupní seznam</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Odeslat?</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Chybí:</value>
-    </data>
+  </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>🛒 Odeslané složky</value>
-    </data>
+  </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Tvorba menu (Předkrm / Hlavní chod / Dezert)...</value>
-    </data>
+  </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Žádný recept není k dispozici.</value>
-    </data>
+  </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Nelze vygenerovat nabídku předkrmů/hlavních chodů/dezertů.</value>
-    </data>
+  </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Startéry: {0}
 Hlavní jídla: {1}
 Dezerty: {2}</value>
-    </data>
+  </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Zkontrolujte, zda je v DB u vašich receptů uvedeno 'category' = Main course / Hlavní jídlo / Dezert.</value>
-    </data>
+  </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>✅ Vygenerované menu :</value>
-    </data>
+  </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Ingredience : (u tohoto receptu nejsou uvedeny žádné ingredience)</value>
-    </data>
+  </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>Složení:</value>
-    </data>
+  </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Chybí: žádný</value>
-    </data>
+  </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Chybí:</value>
-    </data>
+  </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Nelze vypočítat chybějící přísady: u některých receptů nejsou zaznamenány žádné přísady.</value>
-    </data>
+  </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>✅ Vše je k dispozici. Žádné chybějící ingredience.</value>
-    </data>
+  </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Globální seznam chybějících složek :</value>
-    </data>
+  </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Obnovení</value>
-    </data>
+  </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Obnovení hesla</value>
-    </data>
+  </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Nové heslo</value>
-    </data>
+  </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Potvrzení hesla</value>
-    </data>
+  </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Potvrďte</value>
-    </data>
+  </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Heslo musí obsahovat alespoň 6 znaků.</value>
-    </data>
+  </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>Hesla se neshodují.</value>
-    </data>
+  </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>⏳ Probíhá aktualizace...</value>
-    </data>
+  </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>✅ Dokončeno</value>
-    </data>
+  </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Vaše heslo bylo změněno. Nyní se můžete přihlásit.</value>
-    </data>
+  </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Nelze změnit heslo.</value>
-    </data>
+  </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Parametry</value>
-    </data>
+  </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Účet</value>
-    </data>
+  </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Odpojení</value>
-    </data>
+  </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Nebezpečná oblast</value>
-    </data>
+  </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Odhlásit se z odběru</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Odhlásit se z odběru</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Opravdu chcete svůj účet odstranit? Tato akce je nevratná.</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Ano, vymazat</value>
-    </data>
+  </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabáze nebyla inicializována. Znovu se připojte.</value>
-    </data>
+  </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Nelze smazat: {0}</value>
-    </data>
+  </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>✅ Váš účet byl smazán.</value>
-    </data>
-  </root>
+  </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>Odstranit tuto složku?</value>
+  </data>
+</root>

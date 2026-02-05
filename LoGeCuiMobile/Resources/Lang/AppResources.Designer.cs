@@ -97,6 +97,51 @@ namespace LoGeCuiMobile.Resources.Lang {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Annuler.
+        /// </summary>
+        public static string Dialog_Cancel {
+            get {
+                return ResourceManager.GetString("Dialog_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Supprimer cet ingrédient ?.
+        /// </summary>
+        public static string Dialog_DeleteConfirm {
+            get {
+                return ResourceManager.GetString("Dialog_DeleteConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Non.
+        /// </summary>
+        public static string Dialog_No {
+            get {
+                return ResourceManager.GetString("Dialog_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à OK.
+        /// </summary>
+        public static string Dialog_Ok {
+            get {
+                return ResourceManager.GetString("Dialog_Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Oui.
+        /// </summary>
+        public static string Dialog_Yes {
+            get {
+                return ResourceManager.GetString("Dialog_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Email.
         /// </summary>
         public static string Email {
@@ -133,11 +178,128 @@ namespace LoGeCuiMobile.Resources.Lang {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Disponible.
+        /// </summary>
+        public static string Ingredients_Add_Available {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Nom de l’ingrédient.
+        /// </summary>
+        public static string Ingredients_Add_NamePlaceholder {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_NamePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le nom est obligatoire..
+        /// </summary>
+        public static string Ingredients_Add_NameRequired {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_NameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Quantité (ex : 10).
+        /// </summary>
+        public static string Ingredients_Add_QuantityPlaceholder {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_QuantityPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 💾 Enregistrer.
+        /// </summary>
+        public static string Ingredients_Add_Save {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ajouter un ingrédient.
+        /// </summary>
+        public static string Ingredients_Add_Title {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Unité (ex : kg, pièces).
+        /// </summary>
+        public static string Ingredients_Add_UnitPlaceholder {
+            get {
+                return ResourceManager.GetString("Ingredients_Add_UnitPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ➕ Ajouter un ingrédient.
+        /// </summary>
+        public static string Ingredients_AddButton {
+            get {
+                return ResourceManager.GetString("Ingredients_AddButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Disponible.
+        /// </summary>
+        public static string Ingredients_Available {
+            get {
+                return ResourceManager.GetString("Ingredients_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ingrédient.
+        /// </summary>
+        public static string Ingredients_DialogTitle {
+            get {
+                return ResourceManager.GetString("Ingredients_DialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Quantité : {0} {1}.
+        /// </summary>
+        public static string Ingredients_QuantityFormat {
+            get {
+                return ResourceManager.GetString("Ingredients_QuantityFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Gestion des ingrédients.
+        /// </summary>
+        public static string Ingredients_Title {
+            get {
+                return ResourceManager.GetString("Ingredients_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Se connecter.
         /// </summary>
         public static string LoginButton {
             get {
                 return ResourceManager.GetString("LoginButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Vous devez être connecté..
+        /// </summary>
+        public static string LoginRequired {
+            get {
+                return ResourceManager.GetString("LoginRequired", resourceCulture);
             }
         }
         
@@ -187,11 +349,761 @@ namespace LoGeCuiMobile.Resources.Lang {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à OCR.
+        /// </summary>
+        public static string OcrTitle {
+            get {
+                return ResourceManager.GetString("OcrTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Mot de passe.
         /// </summary>
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🔒 Permission.
+        /// </summary>
+        public static string PermissionTitle {
+            get {
+                return ResourceManager.GetString("PermissionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ Tout est disponible. Aucun ingrédient manquant..
+        /// </summary>
+        public static string RandomMenu_AllAvailable {
+            get {
+                return ResourceManager.GetString("RandomMenu_AllAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Impossible de calculer les ingrédients manquants : certaines recettes n’ont pas d’ingrédients enregistrés..
+        /// </summary>
+        public static string RandomMenu_CannotComputeMissing {
+            get {
+                return ResourceManager.GetString("RandomMenu_CannotComputeMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Impossible de générer un menu Entrée/Plat/Dessert..
+        /// </summary>
+        public static string RandomMenu_CannotGenerate {
+            get {
+                return ResourceManager.GetString("RandomMenu_CannotGenerate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Vérifie que tes recettes ont bien &apos;categorie&apos; = Entree / Plat / Dessert en DB..
+        /// </summary>
+        public static string RandomMenu_CheckCategories {
+            get {
+                return ResourceManager.GetString("RandomMenu_CheckCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Entrées: {0}
+        ///Plats: {1}
+        ///Desserts: {2}.
+        /// </summary>
+        public static string RandomMenu_CountsFormat {
+            get {
+                return ResourceManager.GetString("RandomMenu_CountsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Appuyez sur le bouton pour générer un menu.
+        /// </summary>
+        public static string RandomMenu_DefaultText {
+            get {
+                return ResourceManager.GetString("RandomMenu_DefaultText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🎲 Menu aléatoire.
+        /// </summary>
+        public static string RandomMenu_GenerateButton {
+            get {
+                return ResourceManager.GetString("RandomMenu_GenerateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ Menu généré :.
+        /// </summary>
+        public static string RandomMenu_GeneratedHeader {
+            get {
+                return ResourceManager.GetString("RandomMenu_GeneratedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ⏳ Génération du menu (Entrée / Plat / Dessert)….
+        /// </summary>
+        public static string RandomMenu_Generating {
+            get {
+                return ResourceManager.GetString("RandomMenu_Generating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Liste globale des ingrédients manquants :.
+        /// </summary>
+        public static string RandomMenu_GlobalMissingHeader {
+            get {
+                return ResourceManager.GetString("RandomMenu_GlobalMissingHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ingrédients :.
+        /// </summary>
+        public static string RandomMenu_IngredientsHeader {
+            get {
+                return ResourceManager.GetString("RandomMenu_IngredientsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Manquants :.
+        /// </summary>
+        public static string RandomMenu_MissingHeader {
+            get {
+                return ResourceManager.GetString("RandomMenu_MissingHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Manquants : aucun.
+        /// </summary>
+        public static string RandomMenu_MissingNone {
+            get {
+                return ResourceManager.GetString("RandomMenu_MissingNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ingrédients : (aucun ingrédient enregistré pour cette recette).
+        /// </summary>
+        public static string RandomMenu_NoIngredientsForRecipe {
+            get {
+                return ResourceManager.GetString("RandomMenu_NoIngredientsForRecipe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Aucune recette disponible..
+        /// </summary>
+        public static string RandomMenu_NoRecipes {
+            get {
+                return ResourceManager.GetString("RandomMenu_NoRecipes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🛒 Ouvrir la liste de courses.
+        /// </summary>
+        public static string RandomMenu_OpenShopping {
+            get {
+                return ResourceManager.GetString("RandomMenu_OpenShopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Il manque :.
+        /// </summary>
+        public static string RandomMenu_SendConfirmBody {
+            get {
+                return ResourceManager.GetString("RandomMenu_SendConfirmBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Envoyer ?.
+        /// </summary>
+        public static string RandomMenu_SendConfirmTitle {
+            get {
+                return ResourceManager.GetString("RandomMenu_SendConfirmTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🛒 Envoyer les ingrédients manquants dans la liste de courses.
+        /// </summary>
+        public static string RandomMenu_SendMissingToShopping {
+            get {
+                return ResourceManager.GetString("RandomMenu_SendMissingToShopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🛒 Ingrédients envoyés.
+        /// </summary>
+        public static string RandomMenu_SentButton {
+            get {
+                return ResourceManager.GetString("RandomMenu_SentButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 🎲 Menu aléatoire.
+        /// </summary>
+        public static string RandomMenu_Title {
+            get {
+                return ResourceManager.GetString("RandomMenu_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ajouter une recette.
+        /// </summary>
+        public static string Recipes_Add {
+            get {
+                return ResourceManager.GetString("Recipes_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à L&apos;accès à la caméra est requis pour scanner..
+        /// </summary>
+        public static string Recipes_Add_CameraPermission {
+            get {
+                return ResourceManager.GetString("Recipes_Add_CameraPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Capture photo non supportée sur cet appareil..
+        /// </summary>
+        public static string Recipes_Add_CaptureNotSupported {
+            get {
+                return ResourceManager.GetString("Recipes_Add_CaptureNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Catégorie.
+        /// </summary>
+        public static string Recipes_Add_CategoryLabel {
+            get {
+                return ResourceManager.GetString("Recipes_Add_CategoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choisir une catégorie.
+        /// </summary>
+        public static string Recipes_Add_CategoryPlaceholder {
+            get {
+                return ResourceManager.GetString("Recipes_Add_CategoryPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Impossible de retrouver l&apos;ID de la recette après sauvegarde..
+        /// </summary>
+        public static string Recipes_Add_IdNotFound {
+            get {
+                return ResourceManager.GetString("Recipes_Add_IdNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à L&apos;image est trop lourde pour l&apos;OCR. Essayez de cadrer plus serré ou baissez la résolution..
+        /// </summary>
+        public static string Recipes_Add_ImageTooLarge {
+            get {
+                return ResourceManager.GetString("Recipes_Add_ImageTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ingrédients (1 par ligne).
+        /// </summary>
+        public static string Recipes_Add_IngredientsLabel {
+            get {
+                return ResourceManager.GetString("Recipes_Add_IngredientsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ex :
+        ///2 œufs
+        ///100g farine
+        ///1 pincée de sel.
+        /// </summary>
+        public static string Recipes_Add_IngredientsPlaceholder {
+            get {
+                return ResourceManager.GetString("Recipes_Add_IngredientsPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Instructions.
+        /// </summary>
+        public static string Recipes_Add_InstructionsLabel {
+            get {
+                return ResourceManager.GetString("Recipes_Add_InstructionsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ex : Mélanger, cuire 10 min....
+        /// </summary>
+        public static string Recipes_Add_InstructionsPlaceholder {
+            get {
+                return ResourceManager.GetString("Recipes_Add_InstructionsPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Vous devez être connecté..
+        /// </summary>
+        public static string Recipes_Add_LoginRequired {
+            get {
+                return ResourceManager.GetString("Recipes_Add_LoginRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Nom.
+        /// </summary>
+        public static string Recipes_Add_NameLabel {
+            get {
+                return ResourceManager.GetString("Recipes_Add_NameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Nom de la recette.
+        /// </summary>
+        public static string Recipes_Add_NamePlaceholder {
+            get {
+                return ResourceManager.GetString("Recipes_Add_NamePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le nom est obligatoire..
+        /// </summary>
+        public static string Recipes_Add_NameRequired {
+            get {
+                return ResourceManager.GetString("Recipes_Add_NameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Aucun texte détecté. Essayez avec plus de lumière et sans flou..
+        /// </summary>
+        public static string Recipes_Add_NoTextDetected {
+            get {
+                return ResourceManager.GetString("Recipes_Add_NoTextDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ Texte scanné et champs pré-remplis. Vérifiez et corrigez si besoin..
+        /// </summary>
+        public static string Recipes_Add_OcrSuccess {
+            get {
+                return ResourceManager.GetString("Recipes_Add_OcrSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Enregistrer.
+        /// </summary>
+        public static string Recipes_Add_Save {
+            get {
+                return ResourceManager.GetString("Recipes_Add_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ Recette enregistrée..
+        /// </summary>
+        public static string Recipes_Add_Saved {
+            get {
+                return ResourceManager.GetString("Recipes_Add_Saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Scanner (OCR).
+        /// </summary>
+        public static string Recipes_Add_ScanOcr {
+            get {
+                return ResourceManager.GetString("Recipes_Add_ScanOcr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à 📸 Scanner une recette.
+        /// </summary>
+        public static string Recipes_Add_ScanTitle {
+            get {
+                return ResourceManager.GetString("Recipes_Add_ScanTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à RecetteIngredientsService non initialisé..
+        /// </summary>
+        public static string Recipes_Add_ServiceNotReady {
+            get {
+                return ResourceManager.GetString("Recipes_Add_ServiceNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Temps (minutes).
+        /// </summary>
+        public static string Recipes_Add_TimeLabel {
+            get {
+                return ResourceManager.GetString("Recipes_Add_TimeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ex : 30.
+        /// </summary>
+        public static string Recipes_Add_TimePlaceholder {
+            get {
+                return ResourceManager.GetString("Recipes_Add_TimePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ajouter une recette.
+        /// </summary>
+        public static string Recipes_Add_Title {
+            get {
+                return ResourceManager.GetString("Recipes_Add_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Catégorie.
+        /// </summary>
+        public static string Recipes_Category {
+            get {
+                return ResourceManager.GetString("Recipes_Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Catégorie: {0}
+        ///Temps: {1} min
+        ///
+        ///Ingrédients:
+        ///{2}
+        ///
+        ///Instructions:
+        ///{3}.
+        /// </summary>
+        public static string Recipes_DetailsFormat {
+            get {
+                return ResourceManager.GetString("Recipes_DetailsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Aucune recette pour l&apos;instant..
+        /// </summary>
+        public static string Recipes_Empty {
+            get {
+                return ResourceManager.GetString("Recipes_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à RecetteIngredientsService non initialisé..
+        /// </summary>
+        public static string Recipes_IngredientsServiceNull {
+            get {
+                return ResourceManager.GetString("Recipes_IngredientsServiceNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à (aucun ingrédient renseigné).
+        /// </summary>
+        public static string Recipes_NoIngredients {
+            get {
+                return ResourceManager.GetString("Recipes_NoIngredients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Rafraîchir.
+        /// </summary>
+        public static string Recipes_Refresh {
+            get {
+                return ResourceManager.GetString("Recipes_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à RecipesService est NULL (InitRestServices n&apos;a pas été appelé après login)..
+        /// </summary>
+        public static string Recipes_ServiceNull {
+            get {
+                return ResourceManager.GetString("Recipes_ServiceNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Temps : {0} min.
+        /// </summary>
+        public static string Recipes_TimeFormat {
+            get {
+                return ResourceManager.GetString("Recipes_TimeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mes recettes.
+        /// </summary>
+        public static string Recipes_Title {
+            get {
+                return ResourceManager.GetString("Recipes_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Confirmer le mot de passe.
+        /// </summary>
+        public static string Reset_ConfirmPassword {
+            get {
+                return ResourceManager.GetString("Reset_ConfirmPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Votre mot de passe a été modifié. Vous pouvez vous connecter..
+        /// </summary>
+        public static string Reset_DoneBody {
+            get {
+                return ResourceManager.GetString("Reset_DoneBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ Terminé.
+        /// </summary>
+        public static string Reset_DoneTitle {
+            get {
+                return ResourceManager.GetString("Reset_DoneTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Impossible de modifier le mot de passe..
+        /// </summary>
+        public static string Reset_Failed {
+            get {
+                return ResourceManager.GetString("Reset_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Réinitialiser votre mot de passe.
+        /// </summary>
+        public static string Reset_Header {
+            get {
+                return ResourceManager.GetString("Reset_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Nouveau mot de passe.
+        /// </summary>
+        public static string Reset_NewPassword {
+            get {
+                return ResourceManager.GetString("Reset_NewPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le mot de passe doit contenir au moins 6 caractères..
+        /// </summary>
+        public static string Reset_PwdMinLength {
+            get {
+                return ResourceManager.GetString("Reset_PwdMinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Les mots de passe ne correspondent pas..
+        /// </summary>
+        public static string Reset_PwdMismatch {
+            get {
+                return ResourceManager.GetString("Reset_PwdMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Valider.
+        /// </summary>
+        public static string Reset_Submit {
+            get {
+                return ResourceManager.GetString("Reset_Submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Réinitialisation.
+        /// </summary>
+        public static string Reset_Title {
+            get {
+                return ResourceManager.GetString("Reset_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ⏳ Mise à jour en cours....
+        /// </summary>
+        public static string Reset_Updating {
+            get {
+                return ResourceManager.GetString("Reset_Updating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Service indisponible..
+        /// </summary>
+        public static string ServiceUnavailable {
+            get {
+                return ResourceManager.GetString("ServiceUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Session absente ou expirée. Veuillez vous reconnecter..
+        /// </summary>
+        public static string SessionExpired {
+            get {
+                return ResourceManager.GetString("SessionExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Session.
+        /// </summary>
+        public static string SessionTitle {
+            get {
+                return ResourceManager.GetString("SessionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Compte.
+        /// </summary>
+        public static string Settings_Account {
+            get {
+                return ResourceManager.GetString("Settings_Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Zone dangereuse.
+        /// </summary>
+        public static string Settings_DangerZone {
+            get {
+                return ResourceManager.GetString("Settings_DangerZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Es-tu sûr de vouloir supprimer ton compte ? Cette action est irréversible..
+        /// </summary>
+        public static string Settings_DeleteConfirmBody {
+            get {
+                return ResourceManager.GetString("Settings_DeleteConfirmBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Désinscription.
+        /// </summary>
+        public static string Settings_DeleteConfirmTitle {
+            get {
+                return ResourceManager.GetString("Settings_DeleteConfirmTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Oui, supprimer.
+        /// </summary>
+        public static string Settings_DeleteConfirmYes {
+            get {
+                return ResourceManager.GetString("Settings_DeleteConfirmYes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Suppression impossible : {0}.
+        /// </summary>
+        public static string Settings_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Settings_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ Votre compte a été supprimé..
+        /// </summary>
+        public static string Settings_DeleteSuccess {
+            get {
+                return ResourceManager.GetString("Settings_DeleteSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Déconnexion.
+        /// </summary>
+        public static string Settings_Logout {
+            get {
+                return ResourceManager.GetString("Settings_Logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Supabase non initialisé. Reconnectez-vous..
+        /// </summary>
+        public static string Settings_SupabaseNull {
+            get {
+                return ResourceManager.GetString("Settings_SupabaseNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Paramètres.
+        /// </summary>
+        public static string Settings_Title {
+            get {
+                return ResourceManager.GetString("Settings_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Désinscription.
+        /// </summary>
+        public static string Settings_Unsubscribe {
+            get {
+                return ResourceManager.GetString("Settings_Unsubscribe", resourceCulture);
             }
         }
         
@@ -282,6 +1194,24 @@ namespace LoGeCuiMobile.Resources.Lang {
         public static string StayConnected {
             get {
                 return ResourceManager.GetString("StayConnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ✅ OK.
+        /// </summary>
+        public static string SuccessTitle {
+            get {
+                return ResourceManager.GetString("SuccessTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Erreur inconnue..
+        /// </summary>
+        public static string UnknownError {
+            get {
+                return ResourceManager.GetString("UnknownError", resourceCulture);
             }
         }
     }

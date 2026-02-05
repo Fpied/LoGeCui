@@ -1,5 +1,6 @@
 ﻿using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace LoGeCui.Views
 {
     public partial class RecettesView : UserControl
     {
-        private ObservableCollection<Recette> _recettesAffichees = new();
+        private readonly ObservableCollection<Recette> _recettesAffichees = new();
         private List<Recette> _toutesLesRecettes = new();
 
         public RecettesView()
@@ -20,7 +21,6 @@ namespace LoGeCui.Views
 
             ListeRecettes.ItemsSource = _recettesAffichees;
 
-            // Charge depuis Supabase dès que le contrôle est prêt
             Loaded += RecettesView_Loaded;
         }
 
@@ -30,19 +30,38 @@ namespace LoGeCui.Views
             await RefreshDepuisSupabaseAsync();
         }
 
-        private async System.Threading.Tasks.Task RefreshDepuisSupabaseAsync()
+        private bool EnsureConnected(out Guid userId)
         {
+            userId = Guid.Empty;
+
             if (App.RecipesService == null || App.CurrentUserId == null)
             {
                 MessageBox.Show("Connecte-toi d'abord (services non initialisés).");
-                return;
+                return false;
             }
 
-            var recettes = await App.RecipesService.GetRecettesAsync(App.CurrentUserId.Value);
+            userId = App.CurrentUserId.Value;
+            return true;
+        }
 
+        private bool EnsureRestClient()
+        {
+            if (App.RestClient == null)
+            {
+                MessageBox.Show("RestClient non initialisé.");
+                return false;
+            }
+            return true;
+        }
+
+        private async System.Threading.Tasks.Task RefreshDepuisSupabaseAsync()
+        {
+            if (!EnsureConnected(out var userId))
+                return;
+
+            var recettes = await App.RecipesService!.GetRecettesAsync(userId);
             _toutesLesRecettes = recettes ?? new List<Recette>();
 
-            // Affichage initial = toutes
             _recettesAffichees.Clear();
             foreach (var r in _toutesLesRecettes)
                 _recettesAffichees.Add(r);
@@ -77,13 +96,10 @@ namespace LoGeCui.Views
         {
             try
             {
-                if (App.RestClient == null)
-                {
-                    MessageBox.Show("RestClient non initialisé.");
+                if (!EnsureRestClient())
                     return;
-                }
 
-                var ingSvc = new LoGeCuiShared.Services.RecetteIngredientsService(App.RestClient);
+                var ingSvc = new RecetteIngredientsService(App.RestClient!);
                 var items = await ingSvc.GetForRecetteAsync(recette.Id);
 
                 var ingredientsText = (items.Count == 0)
@@ -119,27 +135,34 @@ namespace LoGeCui.Views
             if (resultat != true || dialog.NouvelleRecette == null)
                 return;
 
-            if (App.RecipesService == null || App.CurrentUserId == null)
-            {
-                MessageBox.Show("Connecte-toi d'abord (services non initialisés).");
+            if (!EnsureConnected(out var userId))
                 return;
-            }
+
+            if (!EnsureRestClient())
+                return;
 
             var r = dialog.NouvelleRecette;
 
+            // ExternalId obligatoire pour upsert
             if (string.IsNullOrWhiteSpace(r.ExternalId))
-                r.ExternalId = System.Guid.NewGuid().ToString("N");
+                r.ExternalId = Guid.NewGuid().ToString("N");
 
-            await App.RecipesService.UpsertRecetteAsync(App.CurrentUserId.Value, r);
+            // owner important
+            r.OwnerUserId = userId;
 
-            // récupérer recetteId DB (uuid) à partir de ExternalId
-            var recetteId = await App.RecipesService.GetRecetteIdByExternalIdAsync(r.ExternalId);
-            if (recetteId == null) throw new Exception("Recette introuvable après upsert.");
+            // Save recette (upsert via external_id)
+            await App.RecipesService!.UpsertRecetteAsync(userId, r);
+
+            // récupérer recetteId DB à partir de ExternalId (⚠️ nouvelle signature: userId + externalId)
+            var recetteId = await App.RecipesService.GetRecetteIdByExternalIdAsync(userId, r.ExternalId);
+            if (recetteId == null)
+                throw new Exception("Recette introuvable après upsert.");
 
             // envoyer ingrédients
             var ingSvc = new RecetteIngredientsService(App.RestClient!);
             var items = (r.Ingredients ?? new List<IngredientRecette>())
-                .Select(i => (i.Nom, i.Quantite, i.Unite));
+                .Select(i => (i.Nom, i.Quantite, i.Unite))
+                .ToList();
 
             await ingSvc.ReplaceForRecetteAsync(recetteId.Value, items);
 
@@ -171,14 +194,10 @@ namespace LoGeCui.Views
 
             try
             {
-                if (App.RecipesService == null || App.CurrentUserId == null)
-                {
-                    MessageBox.Show("Connecte-toi d'abord (services non initialisés).");
+                if (!EnsureConnected(out _))
                     return;
-                }
 
-                // Suppression côté Supabase (il faut une méthode dans RecipesService)
-                await App.RecipesService.DeleteRecetteAsync(recette.Id);
+                await App.RecipesService!.DeleteRecetteAsync(recette.Id);
 
                 await RefreshDepuisSupabaseAsync();
 
@@ -188,7 +207,7 @@ namespace LoGeCui.Views
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Erreur suppression :\n{ex}");
             }
@@ -196,7 +215,6 @@ namespace LoGeCui.Views
 
         private async void BtnSyncRecettes_Click(object sender, RoutedEventArgs e)
         {
-            // En mode Supabase-first, ce bouton devient un "Rafraîchir"
             await RefreshDepuisSupabaseAsync();
             MessageBox.Show("Recettes rechargées depuis Supabase.");
         }

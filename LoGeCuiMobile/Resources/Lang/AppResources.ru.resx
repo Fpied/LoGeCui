@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -9,304 +10,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-              </xs:complexType>
-            </xs:element>
+            </xs:complexType>
+          </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-                </xs:sequence>
+              </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-              </xs:complexType>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-    </xs:schema>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-    </resheader>
+  </resheader>
   <resheader name="version">
     <value>2.0</value>
-    </resheader>
+  </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  </resheader>
   <data name="Email" xml:space="preserve">
     <value>Электронная почта</value>
-    </data>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Пароль</value>
-    </data>
+  </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Оставайтесь на связи</value>
-    </data>
+  </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Войти</value>
-    </data>
+  </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Создать учетную запись</value>
-    </data>
+  </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Забыли пароль?</value>
-    </data>
+  </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Ошибка</value>
-    </data>
+  </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Неверный пароль</value>
-    </data>
+  </data>
   <data name="Connecting" xml:space="preserve">
     <value>Подключение продолжается...</value>
-    </data>
+  </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Пожалуйста, заполните все поля</value>
-    </data>
+  </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Ошибка подключения</value>
-    </data>
+  </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Создание учетной записи...</value>
-    </data>
+  </data>
   <data name="SignupError" xml:space="preserve">
     <value>Ошибка регистрации</value>
-    </data>
+  </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>🛒 Список рас</value>
-    </data>
+  </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Мой список покупок</value>
-    </data>
+  </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>➕ Добавить элемент</value>
-    </data>
+  </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Удалить выбор</value>
-    </data>
+  </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Пока нет статьи.</value>
-    </data>
+  </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Приобретено</value>
-    </data>
+  </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Удалить</value>
-    </data>
+  </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Список покупок</value>
-    </data>
+  </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Мои рецепты</value>
-    </data>
+  </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Произвольное меню</value>
-    </data>
+  </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>Ингредиенты</value>
-    </data>
+  </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Параметры</value>
-    </data>
+  </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>OK</value>
-    </data>
+  </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Да</value>
-    </data>
+  </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Нет</value>
-    </data>
+  </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Отмена</value>
-    </data>
+  </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>✅ OK</value>
-    </data>
+  </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>🔒 Разрешение</value>
-    </data>
+  </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>OCR</value>
-    </data>
+  </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Неизвестная ошибка.</value>
-    </data>
+  </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Сервис недоступен.</value>
-    </data>
+  </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>Вы должны войти в систему.</value>
-    </data>
+  </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Сессия</value>
-    </data>
+  </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Пропущена или истекла сессия. Пожалуйста, войдите в систему снова.</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Добавить ингредиент</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>Название ингредиента</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Количество (например, 10)</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Единица измерения (например, кг, штук)</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>Доступно по адресу</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>💾 Регистр</value>
-    </data>
+  </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>Название является обязательным.</value>
-    </data>
+  </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Управление ингредиентами</value>
-    </data>
+  </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>➕ Добавить ингредиент</value>
-    </data>
+  </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Количество: {0} {1}</value>
-    </data>
+  </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>Доступно по адресу</value>
-    </data>
+  </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Ингредиент</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Добавить рецепт</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>Имя</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Название рецепта</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Категория</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Выберите категорию</value>
-    </data>
+  </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Время (минуты)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Экс : 30</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Ингредиенты (1 на строку)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Экз:
 2 яйца
 100 г муки
 1 щепотка соли</value>
-    </data>
+  </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Инструкции</value>
-    </data>
+  </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Например: смешать, варить 10 минут...</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Сканирование (OCR)</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Регистрация</value>
-    </data>
+  </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>Вы должны войти в систему.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>RecipeIngredientsService не инициализирован.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>Название является обязательным.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Невозможно найти идентификатор рецепта после сохранения.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Квитанция записана.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>📸 Сканирование рецепта</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Для сканирования необходим доступ к камере.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Захват фотографий не поддерживается на этом устройстве.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>Изображение слишком тяжелое для OCR. Попробуйте обрезать изображение или уменьшить разрешение.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Текст не обнаружен. Попробуйте при большем освещении и отсутствии размытия.</value>
-    </data>
+  </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Отсканированный текст и предварительно заполненные поля. Проверьте и исправьте при необходимости.</value>
-    </data>
+  </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Мои рецепты</value>
-    </data>
+  </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Категория</value>
-    </data>
+  </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Обновить</value>
-    </data>
+  </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Добавить рецепт</value>
-    </data>
+  </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Рецепта пока нет.</value>
-    </data>
+  </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Время : {0} мин</value>
-    </data>
+  </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService имеет значение NULL (InitRestServices не был вызван после входа в систему).</value>
-    </data>
+  </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>RecipeIngredientsService не инициализирован.</value>
-    </data>
+  </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(ингредиенты не указаны)</value>
-    </data>
+  </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Категория: {0}
 Время: {1} мин
@@ -316,136 +317,139 @@
 
 Инструкции:
 {3}</value>
-    </data>
+  </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>🎲 Произвольное меню</value>
-    </data>
+  </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>🎲 Произвольное меню</value>
-    </data>
+  </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Нажмите кнопку , чтобы создать меню</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>🛒 Внесите недостающие ингредиенты в список покупок</value>
-    </data>
+  </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Откройте список покупок</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Отправить?</value>
-    </data>
+  </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Пропажа:</value>
-    </data>
+  </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>🛒 Ингредиенты отправлены</value>
-    </data>
+  </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Составление меню (закуска / основное блюдо / десерт)...</value>
-    </data>
+  </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Рецепт отсутствует.</value>
-    </data>
+  </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Невозможно создать меню закусок, основных блюд и десертов.</value>
-    </data>
+  </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Закуски: {0}
 Основные блюда: {1}
 Десерты: {2}</value>
-    </data>
+  </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Убедитесь, что в DB у ваших рецептов есть 'category' = Main course / Main course / Dessert.</value>
-    </data>
+  </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>✅ Созданное меню :</value>
-    </data>
+  </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Ингредиенты : (для этого рецепта ингредиенты не указаны)</value>
-    </data>
+  </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>Ингредиенты:</value>
-    </data>
+  </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Отсутствует: нет</value>
-    </data>
+  </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Пропажа:</value>
-    </data>
+  </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Невозможно подсчитать недостающие ингредиенты: в некоторых рецептах ингредиенты не записаны.</value>
-    </data>
+  </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>✅ Все есть в наличии. Никаких недостающих ингредиентов.</value>
-    </data>
+  </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Глобальный список недостающих ингредиентов:</value>
-    </data>
+  </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Сброс</value>
-    </data>
+  </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Сбросить пароль</value>
-    </data>
+  </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Новый пароль</value>
-    </data>
+  </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Подтвердите пароль</value>
-    </data>
+  </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Подтвердите</value>
-    </data>
+  </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Пароль должен содержать не менее 6 символов.</value>
-    </data>
+  </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>Пароли не совпадают.</value>
-    </data>
+  </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>⏳ Обновление в процессе...</value>
-    </data>
+  </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>✅ Закончено</value>
-    </data>
+  </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Ваш пароль был изменен. Теперь вы можете войти в систему.</value>
-    </data>
+  </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Невозможно изменить пароль.</value>
-    </data>
+  </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Параметры</value>
-    </data>
+  </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Счет</value>
-    </data>
+  </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Отключение</value>
-    </data>
+  </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Опасная зона</value>
-    </data>
+  </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Отписаться от рассылки</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Отписаться от рассылки</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Вы уверены, что хотите удалить свою учетную запись? Это действие необратимо.</value>
-    </data>
+  </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Да, удалить</value>
-    </data>
+  </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabase не инициализирована. Переподключитесь.</value>
-    </data>
+  </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Невозможно удалить: {0}</value>
-    </data>
+  </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>✅ Ваша учетная запись была удалена.</value>
-    </data>
-  </root>
+  </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>Удалить этот ингредиент?</value>
+  </data>
+</root>

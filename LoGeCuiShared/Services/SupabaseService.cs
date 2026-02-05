@@ -290,18 +290,15 @@ namespace LoGeCuiShared.Services
             {
                 RequireAccessToken();
 
-                System.Diagnostics.Debug.WriteLine("=== DELETE ACCOUNT DEBUG ===");
-                System.Diagnostics.Debug.WriteLine($"Token: {_accessToken?.Substring(0, 30)}");
+                System.Diagnostics.Debug.WriteLine("=== DELETE ACCOUNT ===");
 
-                // ✅ IMPORTANT : Créer une nouvelle requête à chaque fois
-                using var request = new HttpRequestMessage(HttpMethod.Post,
-                    $"{_supabaseUrl}/functions/v1/delete-account");
+                // ✅ IMPORTANT : Headers corrects pour RPC
+                var request = new HttpRequestMessage(HttpMethod.Post,
+                    $"{_supabaseUrl}/rest/v1/rpc/delete_user_account");
 
-                // ✅ Ajouter les headers dans le bon ordre
                 request.Headers.TryAddWithoutValidation("apikey", _supabaseKey);
                 request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {_accessToken}");
-
-                System.Diagnostics.Debug.WriteLine($"Headers added: {request.Headers.Count()}");
+                request.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.SendAsync(request);
                 var content = await response.Content.ReadAsStringAsync();
@@ -313,18 +310,19 @@ namespace LoGeCuiShared.Services
                     return (false, $"Erreur : {content}");
                 }
 
-                // Nettoyage local
-                var userGuid = RequireCurrentUserGuid();
-                await _client.Table<ArticleCourseDb>()
-                    .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                    .Delete();
+                var json = JsonDocument.Parse(content);
+                if (json.RootElement.TryGetProperty("success", out var success) && success.GetBoolean())
+                {
+                    ClearSession();
+                    return (true, null);
+                }
 
-                await _client.Table<IngredientDb>()
-                    .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                    .Delete();
+                if (json.RootElement.TryGetProperty("error", out var error))
+                {
+                    return (false, error.GetString());
+                }
 
-                ClearSession();
-                return (true, null);
+                return (false, "Erreur inconnue");
             }
             catch (Exception ex)
             {
