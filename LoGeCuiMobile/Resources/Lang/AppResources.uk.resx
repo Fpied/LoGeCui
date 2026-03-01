@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,304 +9,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Електронна пошта</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Пароль</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Залишатися на зв'язку</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Увійдіть в систему</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Створіть обліковий запис</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Забули пароль?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Помилка.</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Неправильний пароль</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>Триває підключення...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Будь ласка, заповніть усі поля</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Помилка підключення</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Створення облікового запису...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>Помилка реєстрації</value>
-  </data>
+    </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>🛒 Список перегонів</value>
-  </data>
+    </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Мій список покупок</value>
-  </data>
+    </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>➕ Додати елемент</value>
-  </data>
+    </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Видалити вибір</value>
-  </data>
+    </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Статті ще немає.</value>
-  </data>
+    </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Куплено</value>
-  </data>
+    </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Видалити</value>
-  </data>
+    </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Список покупок</value>
-  </data>
+    </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Мої рецепти</value>
-  </data>
+    </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Випадкове меню</value>
-  </data>
+    </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>Інгредієнти</value>
-  </data>
+    </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Параметри</value>
-  </data>
+    </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>ГАРАЗД.</value>
-  </data>
+    </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Так.</value>
-  </data>
+    </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Ні.</value>
-  </data>
+    </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Скасувати</value>
-  </data>
+    </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>ГАРАЗД.</value>
-  </data>
+    </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>Дозвіл</value>
-  </data>
+    </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>РОЗПІЗНАВАННЯ ТЕКСТУ</value>
-  </data>
+    </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Невідома помилка.</value>
-  </data>
+    </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Послуга недоступна.</value>
-  </data>
+    </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>Ви повинні увійти в систему.</value>
-  </data>
+    </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Сесія</value>
-  </data>
+    </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Пропущена або прострочена сесія. Будь ласка, увійдіть знову.</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Додати інгредієнт</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>Назва інгредієнта</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Кількість (наприклад, 10)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Одиниця виміру (наприклад, кг, шт.)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>Доступно за адресою</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>💾 Зареєструватися</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>Ім'я обов'язкове.</value>
-  </data>
+    </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Керування інгредієнтами</value>
-  </data>
+    </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>➕ Додайте інгредієнт</value>
-  </data>
+    </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Кількість: {0} {1}</value>
-  </data>
+    </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>Доступно за адресою</value>
-  </data>
+    </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Інгредієнт</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Додати рецепт</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>Ім'я</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Назва рецепта</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Категорія</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Виберіть категорію</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Час (хвилини)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Ex : 30</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Інгредієнти (1 на рядок)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Колишній:
 2 яйця
 100 г борошна
 1 щіпка солі</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Інструкція</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Приклад: перемішати, варити 10 хвилин...</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Сканування (OCR)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Зареєструватися</value>
-  </data>
+    </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>Ви повинні увійти в систему.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>RecipeIngredientsService не ініціалізовано.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>Ім'я обов'язкове.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Неможливо знайти ідентифікатор рецепта після збереження.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Квитанція зафіксована.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>Відскануйте рецепт</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Для сканування потрібен доступ до камери.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Зйомка фотографій не підтримується на цьому пристрої.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>Зображення занадто велике для розпізнавання. Спробуйте обрізати зображення або зменшити роздільну здатність.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Текст не виявлено. Спробуйте з більшою кількістю світла і без розмиття.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Відсканований текст та попередньо заповнені поля. Перевірте та виправте, якщо потрібно.</value>
-  </data>
+    </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Мої рецепти</value>
-  </data>
+    </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Категорія</value>
-  </data>
+    </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Оновити</value>
-  </data>
+    </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Додати рецепт</value>
-  </data>
+    </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Рецепту ще немає.</value>
-  </data>
+    </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Час : {0} хв</value>
-  </data>
+    </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService дорівнює NULL (після входу не було викликано InitRestServices).</value>
-  </data>
+    </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>RecipeIngredientsService не ініціалізовано.</value>
-  </data>
+    </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(інгредієнти не вказані)</value>
-  </data>
+    </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Категорія: {0}
 Час: {1} хв
@@ -317,139 +316,362 @@
 
 Інструкції:
 {3}</value>
-  </data>
+    </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>Випадкове меню</value>
-  </data>
+    </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>Випадкове меню</value>
-  </data>
+    </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Натисніть кнопку, щоб згенерувати меню</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>🛒 Надішліть відсутні інгредієнти у списку покупок</value>
-  </data>
+    </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Відкрийте список покупок</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Надіслати?</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Пропав:</value>
-  </data>
+    </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>🛒 Інгредієнти відправлені</value>
-  </data>
+    </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Формування меню (Закуска / Основна страва / Десерт)...</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Рецепту немає.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Не вдається створити меню "Закуски/Основні страви/Десерти".</value>
-  </data>
+    </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Закуски: {0}
 Другі страви: {1}
 Десерти: {2}</value>
-  </data>
+    </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Переконайтеся, що ваші рецепти мають у БД 'category' = Основна страва / Друга страва / Десерт.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>✅ Меню сформовано :</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Інгредієнти: (для цього рецепта інгредієнти не вказані)</value>
-  </data>
+    </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>Інгредієнти:</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Відсутні: немає</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Пропав:</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Неможливо обчислити відсутні інгредієнти: деякі рецепти не містять жодного інгредієнта.</value>
-  </data>
+    </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>✅ Все є в наявності. Немає відсутніх інгредієнтів.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Глобальний список відсутніх інгредієнтів :</value>
-  </data>
+    </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Перезавантаження</value>
-  </data>
+    </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Скинути пароль</value>
-  </data>
+    </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Новий пароль</value>
-  </data>
+    </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Підтвердити пароль</value>
-  </data>
+    </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Підтвердити</value>
-  </data>
+    </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Пароль повинен містити щонайменше 6 символів.</value>
-  </data>
+    </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>Паролі не збігаються.</value>
-  </data>
+    </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>Оновлення в процесі...</value>
-  </data>
+    </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>✅ Готово</value>
-  </data>
+    </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Ваш пароль було змінено. Тепер ви можете увійти в систему.</value>
-  </data>
+    </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Не вдалося змінити пароль.</value>
-  </data>
+    </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Параметри</value>
-  </data>
+    </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Обліковий запис</value>
-  </data>
+    </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Відключення</value>
-  </data>
+    </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Небезпечна зона</value>
-  </data>
+    </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Відмовитися від підписки</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Відмовитися від підписки</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Ви впевнені, що хочете видалити свій обліковий запис? Ця дія є незворотною.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Так, видалити</value>
-  </data>
+    </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabase не ініціалізовано. Перепідключись.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Неможливо видалити: {0}</value>
-  </data>
+    </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>✅ Ваш обліковий запис видалено.</value>
-  </data>
+    </data>
   <data name="Dialog_DeleteConfirm" xml:space="preserve">
     <value>Вилучити цей інгредієнт?</value>
-  </data>
-</root>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Сесія закінчилася</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Твоя сесія закінчилася. Будь ласка, увійди знову.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR: відсутній ApiKey в appsettings.json</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>Неможливо завантажити appsettings.json з пакета MAUI.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: відсутня URL-адреса в appsettings.json</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: відсутній ключ в appsettings.json</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>Електронна адреса</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Забули пароль</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Надіслати</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Назад</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Введіть свою електронну адресу, щоб отримати посилання для скидання пароля.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>Електронний лист надіслано ✅ Перевірте свою поштову скриньку (та спам).</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Помилка:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Інтерфейс не ініціалізовано (XAML). Перевірте x:Class та x:Name.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Відправлення в процесі...</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Введіть дійсну адресу електронної пошти.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Вхід</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Мова</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Натисніть мене</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>Ласкаво просимо до 
+.NET Multi-platform App UI</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>Привіт, світ!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Фотографія</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Зробити фотографію</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Вибрати фотографію</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Видалити фотографію</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Сесія недійсна, підключись знову.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Вибрати все</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Додати</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Кількість (опціонально):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>Не вибрано жодної статті.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Одиниця (опціонально):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Інформація</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Назва статті:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>Позначте принаймні одну категорію.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Інформація</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Вибери категорії</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Жодних інгредієнтів.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Видалити вибір</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>Не вибрано жодного рецепта.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>Неможливо додати до списку покупок.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>Неможливо обчислити інгредієнти (офлайн або відсутні дані).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>У тебе вже є всі інгредієнти для цього рецепту ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Додати до списку</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Вибрати активний список</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(немає)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Приєднатися за допомогою коду</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Спільний список покупок</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Код для спільного використання:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(немає)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Повернутися до мого особистого списку</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Активний список:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Копіювати</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Вибрати активний список</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>У тебе немає спільних списків.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Мій список</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Недійсна сесія.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Ваш обліковий запис було видалено.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Недійсний код (список не знайдено).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Успіх</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Ти повинен бути авторизований.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>Видалити свій обліковий запис назавжди? Ця дія є незворотною.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Ви повинні бути авторизовані, щоб приєднатися до списку.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(автономний режим)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>Не потрібно копіювати код.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Повернутися до особистого списку ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>Створення списку неможливе.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Код скопійовано ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Підтвердження</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Приєднатися до списку</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Введіть код для спільного використання:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Особистий список (не для спільного використання)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Недійсна сесія. Спочатку підключись знову.</value>
+    </data>
+  </root>

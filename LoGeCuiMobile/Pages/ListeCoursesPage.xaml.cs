@@ -4,6 +4,7 @@ using System.Linq;
 using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
 using LoGeCuiMobile.Models;
+using LoGeCuiMobile.Services.Local;
 
 namespace LoGeCuiMobile.Pages
 {
@@ -28,7 +29,8 @@ namespace LoGeCuiMobile.Pages
 
             ListeCourses.ItemsSource = _articles;
 
-            ChargerDonnees();
+
+            
         }
 
         private async void ChargerDonnees()
@@ -60,7 +62,8 @@ namespace LoGeCuiMobile.Pages
             }
         }
 
-        private async void BtnSupprimerSelection_Clicked(object sender, EventArgs e)
+
+    private async void BtnSupprimerSelection_Clicked(object sender, EventArgs e)
         {
             var selected = _articles.Where(a => a.IsSelectedForDelete).ToList();
 
@@ -184,24 +187,47 @@ namespace LoGeCuiMobile.Pages
                     return;
                 }
 
-                var article = new ArticleCourse
+                bool hasInternet = Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+
+                if (hasInternet)
                 {
-                    UserId = app.CurrentUserId.Value,
-                    Nom = nom,
-                    Quantite = quantite,
-                    Unite = unite,
-                    EstAchete = false
-                };
+                    var article = new ArticleCourse
+                    {
+                        UserId = app.CurrentUserId.Value,
+                        Nom = nom,
+                        Quantite = quantite,
+                        Unite = unite,
+                        EstAchete = false
+                    };
 
-                var added = await _supabase.AddArticleAsync(article);
-                if (added != null)
+                    var added = await _supabase.AddArticleAsync(article);
+                    if (added != null)
+                    {
+                        _articles.Add(new ArticleCourseUi(added));
+                        RefreshSelectAllCheckBox();
+                        await DisplayAlert("Succès", $"'{added.Nom}' ajouté !", "OK");
+                    }
+                }
+                else
                 {
-                    _articles.Add(new ArticleCourseUi(added));
+                    var articleLocal = new ArticleLocal
+                    {
+                        Nom = nom,
+                        Quantite = quantite ?? "",
+                        Unite = unite ?? "",
+                        EstAchete = false,
+                        IsPendingSync = true
+                    };
 
-                    // Nouveau item => on met à jour la checkbox "Tout sélectionner"
-                    RefreshSelectAllCheckBox();
+                    await App.LocalDb.AddArticleLocalAsync(articleLocal);
 
-                    await DisplayAlert("Succès", $"'{added.Nom}' ajouté !", "OK");
+                    _articles.Add(new ArticleCourseUi(articleLocal.ToModel()));
+                    RefreshSelectAllCheckBox();
+
+                    await DisplayAlert(
+                        "Ajouté localement",
+                        $"'{nom}' sera synchronisé dès que le réseau revient.",
+                        "OK");
                 }
             }
             catch (Exception ex)
@@ -209,5 +235,56 @@ namespace LoGeCuiMobile.Pages
                 await DisplayAlert("Erreur", $"Impossible d'ajouter : {ex.Message}", "OK");
             }
         }
+        protected override void OnAppearing() 
+        {
+            base.OnAppearing();
+            Connectivity.Current.ConnectivityChanged += OnConnectivityChanged; // <- réabonnement
+            ChargerDonnees();
+        }
+
+        protected override void OnDisappearing() 
+        {
+            base.OnDisappearing();
+            Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged; // <- désabonnement
+        }
+
+        private async void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e) 
+        {
+            if (e.NetworkAccess == NetworkAccess.Internet)
+            {
+                await SyncPendingArticlesAsync();
+                MainThread.BeginInvokeOnMainThread(() => ChargerDonnees());
+            }
+        }
+
+        private async Task SyncPendingArticlesAsync()
+        {
+            var pending = await App.LocalDb.GetPendingArticlesAsync();
+            foreach (var local in pending)
+            {
+                try
+                {
+                    var article = new ArticleCourse
+                    {
+                        UserId = ((App)Application.Current).CurrentUserId ?? Guid.Empty,
+                        Nom = local.Nom,
+                        Quantite = local.Quantite,
+                        Unite = local.Unite,
+                        EstAchete = local.EstAchete
+                    };
+                    var added = await _supabase.AddArticleAsync(article);
+                    if (added != null)
+                    {
+                        await App.LocalDb.DeleteArticleLocalAsync(local.Id);
+                    }
+                }
+                catch
+                {
+                    // Si ça échoue, on laisse pour réessayer plus tard.
+                }
+            }
+        }
     }
 }
+
+

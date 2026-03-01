@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,304 +9,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Sähköposti</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Salasana</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Yhteyden pitäminen</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Kirjaudu sisään</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Luo tili</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Unohditko salasanasi?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Virhe</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Väärä salasana</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>Yhteys käynnissä...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Täytä kaikki kentät</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Yhteysvirhe</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Tilin luominen...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>Rekisteröintivirhe</value>
-  </data>
+    </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>🛒 Luettelo kilpailuista</value>
-  </data>
+    </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Ostoslistani</value>
-  </data>
+    </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>➕ Lisää kohde</value>
-  </data>
+    </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Poista valinta</value>
-  </data>
+    </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Ei vielä artikkelia.</value>
-  </data>
+    </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Ostettu</value>
-  </data>
+    </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Poista</value>
-  </data>
+    </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Ostoslista</value>
-  </data>
+    </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Minun reseptini</value>
-  </data>
+    </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Satunnainen valikko</value>
-  </data>
+    </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>Ainesosat</value>
-  </data>
+    </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Parametrit</value>
-  </data>
+    </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>OK</value>
-  </data>
+    </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Kyllä</value>
-  </data>
+    </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Ei</value>
-  </data>
+    </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Peruuta</value>
-  </data>
+    </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>✅ OK</value>
-  </data>
+    </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>🔒 Lupa</value>
-  </data>
+    </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>OCR</value>
-  </data>
+    </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Tuntematon virhe.</value>
-  </data>
+    </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Palvelu ei ole käytettävissä.</value>
-  </data>
+    </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>Sinun täytyy olla kirjautuneena sisään.</value>
-  </data>
+    </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Istunto</value>
-  </data>
+    </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Unohdettu tai vanhentunut istunto. Kirjaudu uudelleen.</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Lisää ainesosa</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>Ainesosan nimi</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Määrä (esim. 10)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Yksikkö (esim. kg, kpl)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>Saatavilla osoitteessa</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>💾 Rekisteri</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>Nimi on pakollinen.</value>
-  </data>
+    </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Ainesosien hallinta</value>
-  </data>
+    </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>➕ Lisää ainesosa</value>
-  </data>
+    </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Määrä: {0} {1}</value>
-  </data>
+    </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>Saatavilla osoitteessa</value>
-  </data>
+    </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Ainesosa</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Lisää resepti</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>Nimi</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Reseptin nimi</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Luokka</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Valitse luokka</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Aika (minuuttia)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Ex : 30</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Ainesosat (1 per rivi)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Ex:
 2 munaa
 100 g jauhoja
 1 ripaus suolaa</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Ohjeet</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Esim: Sekoita, kypsennä 10 minuuttia...</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Skannaus (OCR)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Rekisteröi</value>
-  </data>
+    </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>Sinun täytyy olla kirjautuneena sisään.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>RecipeIngredientsService ei ole alustettu.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>Nimi on pakollinen.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Reseptin tunnusta on mahdotonta löytää tallennuksen jälkeen.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Kuitti kirjattu.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>📸 Skannaa resepti</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Skannaaminen edellyttää pääsyä kameraan.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Valokuvien ottamista ei tueta tällä laitteella.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>Kuva on liian raskas OCR:lle. Yritä rajata kuvaa tiukemmaksi tai pienentää resoluutiota.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Tekstiä ei havaittu. Kokeile enemmän valoa ja ilman epätarkkuutta.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Skannattu teksti ja esitäytetyt kentät. Tarkista ja korjaa tarvittaessa.</value>
-  </data>
+    </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Minun reseptini</value>
-  </data>
+    </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Luokka</value>
-  </data>
+    </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Päivitä</value>
-  </data>
+    </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Lisää resepti</value>
-  </data>
+    </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Ei vielä reseptiä.</value>
-  </data>
+    </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Aika : {0} min</value>
-  </data>
+    </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService on NULL (InitRestServices-palvelua ei ole kutsuttu kirjautumisen jälkeen).</value>
-  </data>
+    </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>RecipeIngredientsService ei ole alustettu.</value>
-  </data>
+    </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(ainesosia ei ole ilmoitettu)</value>
-  </data>
+    </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Kategoria: {0}
 Aika: {1} min
@@ -317,139 +316,362 @@ Ainesosat: Ainesosat: Ainesosat: Ainesosat: Ainesosat: Ainesosat: Ainesosat:
 
 Ohjeet:
 {3}</value>
-  </data>
+    </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>🎲 Satunnainen valikko</value>
-  </data>
+    </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>🎲 Satunnainen valikko</value>
-  </data>
+    </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Luo valikko painamalla painiketta</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>🛒 Lähetä puuttuvat ainesosat ostoslistalle.</value>
-  </data>
+    </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Avaa ostoslista</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Lähettää?</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Puuttuu:</value>
-  </data>
+    </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>🛒 Lähetetyt ainesosat</value>
-  </data>
+    </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Valikon luominen (alkuruoka / pääruoka / jälkiruoka)...</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Reseptiä ei ole saatavilla.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Alkuruoka/pääruoka/jälkiruokavalion luominen ei onnistu.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Aloittajat: {0}
 Pääruoat: {1}
 Jälkiruoat: {2}</value>
-  </data>
+    </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Tarkista, että resepteissäsi on DB:ssä 'category' = Pääruoka / Pääruoka / Jälkiruoka.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>✅ Valikko luotu :</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Ainesosat : (tässä reseptissä ei ole lueteltu ainesosia)</value>
-  </data>
+    </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>Ainesosat:</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Puuttuu: ei yhtään</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Puuttuu:</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Puuttuvien ainesosien laskeminen on mahdotonta: joihinkin resepteihin ei ole kirjattu yhtään ainesosaa.</value>
-  </data>
+    </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>✅ Kaikki on saatavilla. Ei puuttuvia ainesosia.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Yleinen luettelo puuttuvista ainesosista :</value>
-  </data>
+    </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Nollaa</value>
-  </data>
+    </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Nollaa salasanasi</value>
-  </data>
+    </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Uusi salasana</value>
-  </data>
+    </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Vahvista salasana</value>
-  </data>
+    </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Vahvista</value>
-  </data>
+    </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Salasanan on sisällettävä vähintään 6 merkkiä.</value>
-  </data>
+    </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>Salasanat eivät täsmää.</value>
-  </data>
+    </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>⏳ Päivitys käynnissä...</value>
-  </data>
+    </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>✅ Valmis</value>
-  </data>
+    </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Salasanasi on vaihdettu. Voit nyt kirjautua sisään.</value>
-  </data>
+    </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Salasanaa ei voi vaihtaa.</value>
-  </data>
+    </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Parametrit</value>
-  </data>
+    </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Tili</value>
-  </data>
+    </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Kytkennän katkaisu</value>
-  </data>
+    </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Vaarallinen alue</value>
-  </data>
+    </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Poistu tilauksesta</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Poistu tilauksesta</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Haluatko varmasti poistaa tilisi? Tämä toimenpide on peruuttamaton.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Kyllä, poista</value>
-  </data>
+    </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabase ei ole alustettu. Yhdistä uudelleen.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Ei voida poistaa: {0}</value>
-  </data>
+    </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>✅ Tilisi on poistettu.</value>
-  </data>
+    </data>
   <data name="Dialog_DeleteConfirm" xml:space="preserve">
     <value>Poista tämä ainesosa?</value>
-  </data>
-</root>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Istunto päättynyt</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Istuntosi on päättynyt. Kirjaudu uudelleen sisään.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR: ApiKey puuttuu tiedostosta appsettings.json</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>appsettings.json-tiedostoa ei voi ladata MAUI-paketista.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Puuttuva URL-osoite tiedostossa appsettings.json</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Puuttuva avain appsettings.json-tiedostossa</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>Sähköpostiosoite</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Unohtuiko salasana?</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Lähetä</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Takaisin</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Syötä sähköpostiosoitteesi, niin saat linkin salasanan nollaamista varten.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>Sähköposti lähetetty ✅ Tarkista sähköpostisi (ja roskapostikansio).</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Virhe:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Käyttöliittymä ei ole alustettu (XAML). Tarkista x:Class ja x:Name.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Lähetys käynnissä…</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Syötä kelvollinen sähköpostiosoite.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Kirjautuminen</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Kieli</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Klikkaa minua</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>Tervetuloa 
+.NET-monialustaisen sovelluksen käyttöliittymään</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>Hei, maailma!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Kuva</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Ota valokuva</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Valitse valokuva</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Poista valokuva</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Istunto ei kelpaa, kirjaudu uudelleen.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Valitse kaikki</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Lisää</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Määrä (valinnainen):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>Ei valittuja artikkeleita.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Yksikkö (valinnainen):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Tiedot</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Tuotteen nimi:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>Valitse vähintään yksi kategoria.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Tiedot</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Valitse kategoriat</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Ei ainesosia.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Poista valinta</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>Ei valittuja reseptejä.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>Ei voi lisätä ostoslistaan.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>Ainesosia ei voida laskea (offline-tilassa tai tiedot puuttuvat).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>Sinulla on jo kaikki tämän reseptin ainekset ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Lisää luetteloon</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Valitse aktiivinen luettelo</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(ei mitään)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Liity koodilla</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Jaettu ostoslista</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Jakokoodi:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(ei mitään)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Palaa henkilökohtaiseen luettelooni</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Aktiivinen luettelo:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Kopioi</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Valitse aktiivinen luettelo</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>Sinulla ei ole jaettuja luetteloita.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Oma lista</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Istunto ei kelpaa.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Tilisi on poistettu.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Virheellinen koodi (luetteloa ei löydy).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Menestys</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Sinun on oltava kirjautuneena sisään.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>Haluatko poistaa tilisi lopullisesti? Tämä toiminto on peruuttamaton.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Sinun on oltava kirjautuneena sisään voidaksesi liittyä luetteloon.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(offline-tila)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>Ei kopioitavaa koodia.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Palaa henkilökohtaiseen luetteloosi ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>Luettelon luominen ei onnistu.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Koodi kopioitu ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Vahvistus</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Liity listaan</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Syötä jakokoodi:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Henkilökohtainen luettelo (ei jaettu)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Istunto ei kelpaa. Kirjaudu ensin uudelleen.</value>
+    </data>
+  </root>

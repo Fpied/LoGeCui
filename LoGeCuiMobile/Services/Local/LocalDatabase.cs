@@ -40,7 +40,7 @@ public class LocalDatabase
         {
             tran.DeleteAll<ArticleLocal>();
             foreach (var a in articles)
-                tran.Insert(new ArticleLocal(a));
+                tran.InsertOrReplace(new ArticleLocal(a));  // ← InsertOrReplace au lieu de Insert
         });
     }
 
@@ -56,4 +56,17 @@ public class LocalDatabase
                 tran.Insert(new RecetteLocal(r));
         });
     }
+
+    // Ajoute un seul article (utilisé hors ligne)
+    public Task AddArticleLocalAsync(ArticleLocal article) => _db.InsertAsync(article);
+
+    // Récupère uniquement les articles pas encore envoyés à Supabase
+    public Task<List<ArticleLocal>> GetPendingArticlesAsync() =>
+        _db.Table<ArticleLocal>().Where(a => a.IsPendingSync).ToListAsync();
+
+    // Met à jour un article (pour passer IsPendingSync à false après sync)
+    public Task UpdateArticleLocalAsync(ArticleLocal article) => _db.UpdateAsync(article);
+
+    public Task DeleteArticleLocalAsync(int id) =>
+    _db.DeleteAsync<ArticleLocal>(id);
 }

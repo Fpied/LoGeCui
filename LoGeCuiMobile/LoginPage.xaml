@@ -39,6 +39,26 @@
                     <x:String>🇯🇵 日本語</x:String>
                     <x:String>🇹🇭 ไทย</x:String>
                     <x:String>🇮🇳 हिन्दी</x:String>
+                    <x:String>🇨🇳 中文</x:String>
+                    <x:String>🇧🇬 Български</x:String>
+                    <x:String>🇩🇰 Dansk</x:String>
+                    <x:String>🇬🇷 Ελληνικά</x:String>
+                    <x:String>🇪🇪 Eesti</x:String>
+                    <x:String>🇫🇮 Suomi</x:String>
+                    <x:String>🇭🇺 Magyar</x:String>
+                    <x:String>🇮🇩 Indonesia</x:String>
+                    <x:String>🇱🇹 Lietuvių</x:String>
+                    <x:String>🇱🇻 Latviešu</x:String>
+                    <x:String>🇳🇴 Norsk</x:String>
+                    <x:String>🇳🇱 Nederlands</x:String>
+                    <x:String>🇧🇷 Português (BR)</x:String>
+                    <x:String>🇵🇹 Português (PT)</x:String>
+                    <x:String>🇷🇺 Русский</x:String>
+                    <x:String>🇸🇰 Slovenčina</x:String>
+                    <x:String>🇸🇮 Slovenščina</x:String>
+                    <x:String>🇸🇪 Svenska</x:String>
+                    <x:String>🇺🇦 Українська</x:String>
+                    <x:String>🇹🇼 繁體中文</x:String>
                 </Picker.Items>
             </Picker>
 

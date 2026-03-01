@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,304 +9,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>E-mail</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Adgangskode</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>At holde forbindelsen</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Log ind</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Opret en konto</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Har du glemt din adgangskode?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Fejl</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Forkert adgangskode</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>Forbindelse i gang...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Udfyld venligst alle felter</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Forbindelsesfejl</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Oprettelse af en konto...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>Registreringsfejl</value>
-  </data>
+    </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>🛒 Liste over racer</value>
-  </data>
+    </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Min indkøbsliste</value>
-  </data>
+    </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>➕ Tilføj et emne</value>
-  </data>
+    </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Slet valg</value>
-  </data>
+    </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Ingen artikel endnu.</value>
-  </data>
+    </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Købt</value>
-  </data>
+    </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Sletning</value>
-  </data>
+    </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Indkøbsliste</value>
-  </data>
+    </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Mine opskrifter</value>
-  </data>
+    </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Tilfældig menu</value>
-  </data>
+    </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>Ingredienser</value>
-  </data>
+    </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Parametre</value>
-  </data>
+    </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>OK</value>
-  </data>
+    </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Ja</value>
-  </data>
+    </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Nej</value>
-  </data>
+    </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Annuller</value>
-  </data>
+    </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>✅ OK</value>
-  </data>
+    </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>🔒 Tilladelse</value>
-  </data>
+    </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>OCR</value>
-  </data>
+    </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Ukendt fejl.</value>
-  </data>
+    </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Servicen er ikke tilgængelig.</value>
-  </data>
+    </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>Du skal være logget ind.</value>
-  </data>
+    </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Session</value>
-  </data>
+    </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Ubesvaret eller udløbet session. Log venligst ind igen.</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Tilføj en ingrediens</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>Navn på ingrediens</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Antal (f.eks. 10)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Enhed (f.eks. kg, stykker)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>Tilgængelig på</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>💾 Register</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>Navnet er obligatorisk.</value>
-  </data>
+    </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Håndtering af ingredienser</value>
-  </data>
+    </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>➕ Tilføj en ingrediens</value>
-  </data>
+    </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Mængde: {0} {1}</value>
-  </data>
+    </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>Tilgængelig på</value>
-  </data>
+    </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Ingrediens</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Tilføj en opskrift</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>Navn</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Navn på opskriften</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Kategori</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Vælg en kategori</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Tid (minutter)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Ex : 30</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Ingredienser (1 pr. linje)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Eks:
 2 æg
 100 g mel
 1 knivspids salt</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Instruktioner</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Fx: Bland, kog i 10 minutter...</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Scanning (OCR)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Registrer dig</value>
-  </data>
+    </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>Du skal være logget ind.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>RecipeIngredientsService ikke initialiseret.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>Navnet er obligatorisk.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Umuligt at finde opskrifts-ID'et efter at have gemt.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Kvittering registreret.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>📸 Scan en opskrift</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Der kræves adgang til kameraet for at kunne scanne.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Fotooptagelse understøttes ikke på denne enhed.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>Billedet er for tungt til OCR. Prøv at beskære billedet tættere eller sænk opløsningen.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Ingen tekst registreret. Prøv med mere lys og uden sløring.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Scannet tekst og forudfyldte felter. Tjek og ret om nødvendigt.</value>
-  </data>
+    </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Mine opskrifter</value>
-  </data>
+    </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Kategori</value>
-  </data>
+    </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Opdatering</value>
-  </data>
+    </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Tilføj en opskrift</value>
-  </data>
+    </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Ingen opskrift endnu.</value>
-  </data>
+    </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Tid : {0} min</value>
-  </data>
+    </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService er NULL (InitRestServices er ikke blevet kaldt efter login).</value>
-  </data>
+    </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>RecipeIngredientsService ikke initialiseret.</value>
-  </data>
+    </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(ingen ingredienser angivet)</value>
-  </data>
+    </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Kategori: {0}
 Tid: {1} min
@@ -317,139 +316,362 @@ Ingredienser:
 
 Instruktioner:
 {3}</value>
-  </data>
+    </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>🎲 Tilfældig menu</value>
-  </data>
+    </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>🎲 Tilfældig menu</value>
-  </data>
+    </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Tryk på knappen for at generere en menu</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>🛒 Send de manglende ingredienser på indkøbslisten</value>
-  </data>
+    </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Åbn indkøbslisten</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Sende?</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Mangler:</value>
-  </data>
+    </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>🛒 Ingredienser sendt</value>
-  </data>
+    </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Menugenerering (forret/hovedret/dessert)...</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Ingen opskrift tilgængelig.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Det er ikke muligt at generere en forret/hovedret/dessert-menu.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Forretter: {0}
 Hovedretter: {1}
 Desserter: {2}</value>
-  </data>
+    </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Tjek, at dine opskrifter har 'category' = Main course / Main course / Dessert i DB.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>✅ Menu genereret :</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Ingredienser: (ingen ingredienser anført for denne opskrift)</value>
-  </data>
+    </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>Ingredienser:</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Mangler: ingen</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Mangler:</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Umuligt at beregne manglende ingredienser: Nogle opskrifter har ingen registrerede ingredienser.</value>
-  </data>
+    </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>✅ Alt er tilgængeligt. Ingen manglende ingredienser.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Global liste over manglende ingredienser :</value>
-  </data>
+    </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Nulstil</value>
-  </data>
+    </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Nulstil din adgangskode</value>
-  </data>
+    </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Ny adgangskode</value>
-  </data>
+    </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Bekræft adgangskode</value>
-  </data>
+    </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Bekræft</value>
-  </data>
+    </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Adgangskoden skal indeholde mindst 6 tegn.</value>
-  </data>
+    </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>Adgangskoderne stemmer ikke overens.</value>
-  </data>
+    </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>⏳ Opdatering i gang...</value>
-  </data>
+    </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>✅ Færdig</value>
-  </data>
+    </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Din adgangskode er blevet ændret. Du kan nu logge ind.</value>
-  </data>
+    </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Kan ikke ændre adgangskode.</value>
-  </data>
+    </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Parametre</value>
-  </data>
+    </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Konto</value>
-  </data>
+    </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Afbrydelse</value>
-  </data>
+    </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Farligt område</value>
-  </data>
+    </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Afmeld dit abonnement</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Afmeld dit abonnement</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Er du sikker på, at du vil slette din konto? Denne handling er irreversibel.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Ja, slet</value>
-  </data>
+    </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabase ikke initialiseret. Opret forbindelse igen.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Kan ikke slettes: {0}</value>
-  </data>
+    </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>✅ Din konto er blevet slettet.</value>
-  </data>
+    </data>
   <data name="Dialog_DeleteConfirm" xml:space="preserve">
     <value>Fjerne denne ingrediens?</value>
-  </data>
-</root>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Session udløbet</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Din session er udløbet. Log venligst ind igen.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR: ApiKey mangler i appsettings.json</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>Det er ikke muligt at indlæse appsettings.json fra MAUI-pakken.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Manglende URL i appsettings.json</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Manglende nøgle i appsettings.json</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>E-mailadresse</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Glemt adgangskode</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Send</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Tilbage</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Indtast din e-mailadresse for at modtage et link til at nulstille din adgangskode.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>E-mail sendt ✅ Tjek din e-mail (og spam).</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Fejl:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Grænseflade ikke initialiseret (XAML). Kontroller x:Class og x:Name.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Sender...</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Indtast en gyldig e-mailadresse.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Login</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Sprog</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Klik på mig</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>Velkommen til
+.NET Multi-platform App UI</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>Hej, verden!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Foto</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Tag et billede</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Vælg et foto</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Slet foto</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Ugyldig session, log ind igen.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Vælg alt</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Tilføj</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Mængde (valgfrit):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>Ingen artikler valgt.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Enhed (valgfrit):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Information</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Artiklens navn:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>Markér mindst én kategori.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Info</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Vælg kategorier</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Ingen ingredienser.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Slet valg</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>Ingen opskrifter valgt.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>Kan ikke føjes til indkøbslisten.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>Det er ikke muligt at beregne ingredienserne (offline eller manglende data).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>Du har allerede alle ingredienserne til denne opskrift ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Føj til listen</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Vælg en aktiv liste</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(ingen)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Tilmeld dig med en kode</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Delt indkøbsliste</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Delingskode:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(ingen)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Tilbage til min personlige liste</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Aktiv liste:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Kopiere</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Vælg den aktive liste</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>Du har ingen delte lister.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Min liste</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Ugyldig session.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Din konto er blevet slettet.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Ugyldig kode (listen kan ikke findes).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Succes</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Du skal være logget ind.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>Vil du slette din konto permanent? Denne handling kan ikke fortrydes.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Du skal være logget ind for at tilmelde dig en liste.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(offline-tilstand)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>Ingen kode skal kopieres.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Tilbage til din personlige liste ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>Det er ikke muligt at oprette en liste.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Kode kopieret ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Bekræftelse</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Tilmeld dig en liste</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Indtast delingskoden:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Personlig liste (ikke delt)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Ugyldig session. Log ind igen først.</value>
+    </data>
+  </root>

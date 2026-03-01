@@ -1,144 +1,651 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+                </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Mot de passe</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Rester connecté</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Se connecter</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Créer un compte</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Mot de passe oublié ?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Erreur</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Mauvais mot de passe</value>
-  </data>
-</root>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>OK</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>Jah</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>Ei</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Tühista</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ OK</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 Luba</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Tundmatu viga.</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>Teenus pole kättesaadav.</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>Peate olema sisse logitud.</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>Istungjärk</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Sessioon puudub või on aegunud. Palun logige uuesti sisse.</value>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 Ostunimekiri</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>Minu ostunimekiri</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ Lisa artikkel</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ Valiku kustutamine</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>Hetkel pole artikleid.</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>Ostetud</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>Kustuta</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>Lisa koostisosa</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>Koostisosa nimi</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>Kogus (nt 10)</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>Ühik (nt kg, tükid)</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>Saadaval</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 Salvestada</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>Nimi on kohustuslik.</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>Koostisosade haldamine</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ Lisa koostisosa</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>Kogus:{0}  {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>Saadaval</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>Koostisosa</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>Retsepti lisamine</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>Nimi</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>Retsepti nimi</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>Kategooria</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>Vali kategooria</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>Aeg (minutites)</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>Näide: 30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>Koostisosad (1 rida)</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>Näide:
+2 muna
+100 g jahu
+1 näputäis soola</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>Juhised</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>Näide: segada, küpsetada 10 minutit...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>Skanner (OCR)</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>Salvestada</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>Peate olema sisse logitud.</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>RetseptKoostisosadTeenus pole algatatud.</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>Nimi on kohustuslik.</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>Pärast salvestamist ei ole võimalik retsepti ID-d leida.</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ Retsept salvestatud.</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 Retsepti skaneerimine</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>Skaneerimiseks on vaja kaamerale juurdepääsu.</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>Foto salvestamine ei ole sellel seadmel toetatud.</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>Pilt on OCR-ile liiga suur. Proovige kadreerida tihedamalt või vähendage resolutsiooni.</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>Teksti ei leitud. Proovige uuesti, kasutades rohkem valgust ja vältides udust.</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ Skaneeritud tekst ja eeltäidetud väljad. Kontrollige ja parandage vajadusel.</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>Minu retseptid</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>Kategooria</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>Värskenda</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>Retsepti lisamine</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>Hetkel pole retsepte.</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>Aeg:{0}  min</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesService on NULL (InitRestServices ei ole pärast sisselogimist kutsutud).</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>RetseptKoostisosadTeenus pole algatatud.</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(koostisained pole märgitud)</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>Kategooria: 
+{0}
+
+Aeg:  min{1}
+
+
+
+Koostisosad:
+{2}
+
+Juhised:
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 Juhuslik menüü</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 Juhuslik menüü</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>Vajutage nuppu, et kuvada menüü</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 Saada puuduvad koostisosad ostunimekirja</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 Avada ostunimekiri</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>Saata?</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>Puudub:</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 Saadetud koostisosad</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ Menüü koostamine (eelroog / põhiroog / magustoit)…</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>Retsepte pole saadaval.</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>Ei ole võimalik luua menüüd „Eelroog/Põhiroog/Magustoit”.</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>Eelroad: 
+{0}Põhiroad: 
+{1}Magustoidud: {2}</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>Kontrolli, et su retseptidel oleks DB-s õige kategooria = eelroog / põhiroog / magustoit.</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ Loodud menüü:</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>Koostisosad: (selle retsepti jaoks pole koostisosi registreeritud)</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>Koostisosad:</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>Puuduvad: puuduvad</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>Puuduvad:</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>Puuduvate koostisosade arvutamine pole võimalik: mõned retseptid ei sisalda registreeritud koostisosi.</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ Kõik on olemas. Ühtegi koostisosa ei puudu.</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>Puuduvate koostisosade üldine loetelu:</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>Taastamine</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>Parooli taastamine</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>Uus parool</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>Kinnita parool</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>Kinnitada</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>Parool peab sisaldama vähemalt 6 tähemärki.</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>Paroolid ei klapi.</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ Uuendamine käimas...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ Lõpetatud</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>Teie parool on muudetud. Võite sisse logida.</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>Parooli ei ole võimalik muuta.</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Seaded</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>Konto</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>Väljalülitamine</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>Ohtlik ala</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>Registreerimise tühistamine</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>Registreerimise tühistamine</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>Kas oled kindel, et soovid oma konto kustutada? See tegevus on pöördumatu.</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>Jah, kustuta</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>Supabase pole algatatud. Logige uuesti sisse.</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>Kustutamine pole võimalik: {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>✅ Teie konto on kustutatud.</value>
+    </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>Kustutada see koostisosa?</value>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Sessioon aegunud</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Teie sessioon on aegunud. Palun logige uuesti sisse.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR:ApiKey puudub failis appsettings.json</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>Ei ole võimalik laadida appsettings.json MAUI paketist.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: puuduv URL failis appsettings.json</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: appsettings.json-failist puudub võti</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>E-posti aadress</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Unustasid parooli?</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Saada</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Tagasi</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Sisestage oma e-posti aadress, et saada link parooli taastamiseks.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>E-kiri saadetud ✅ Kontrollige oma postkasti (ja rämpsposti kausta).</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Viga:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Liides pole algseadistatud (XAML). Kontrolli x:Class ja x:Name.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Saadetakse...</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Palun sisestage kehtiv e-posti aadress.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Sisselogimine</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Keel</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Kliki mind</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>Tere tulemast 
+.NET Multi-platform App UI</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>Tere, maailm!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Foto</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Foto tegemine</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Foto valimine</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Foto kustutamine</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Kehtetu sessioon, logi uuesti sisse.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Kõik valida</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Lisada</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Kogus (valikuline):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>Ühtegi artiklit ei valitud.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Üksus (valikuline):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Teave</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Artikli nimi:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>Märgi vähemalt üks kategooria.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Info</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Vali kategooriad</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Ei sisalda koostisosi.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Valiku kustutamine</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>Valitud retsepte pole.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>Ei ole võimalik ostunimekirja lisada.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>Koostisosi ei ole võimalik arvutada (offline või puuduvad andmed).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>Sul on juba kõik selle retsepti koostisosad olemas ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Lisa nimekirja</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Aktiivse nimekirja valimine</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(puudub)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Liituge koodiga</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Jagatud ostunimekiri</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Jagamiskood:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(puudub)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Tagasi minu isiklikule nimekirjale</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Aktiivne nimekiri:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Kopeerida</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Aktiivse nimekirja valimine</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>Sul pole ühtegi jagatud nimekirja.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Minu nimekiri</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Kehtetu sessioon.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Sinu konto on kustutatud.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Kehtetu kood (nimekirja ei leitud).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Edu</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Sa pead olema sisse logitud.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>Soovid oma konto lõplikult kustutada? See tegevus on pöördumatu.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Sa pead olema sisse logitud, et nimekirjaga liituda.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(offline-režiim)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>Koodi pole vaja kopeerida.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Tagasi oma isiklikule nimekirjale ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>Loendi loomine pole võimalik.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Kood kopeeritud ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Kinnitus</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Liitu nimekirjaga</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Sisestage jagamiskood:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Isiklik nimekiri (ei jagata)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Kehtetu sessioon. Ühenda esmalt uuesti.</value>
+    </data>
+  </root>

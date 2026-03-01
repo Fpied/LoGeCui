@@ -1,6 +1,6 @@
 # CONCAT OUTPUT
 # Root: C:\Users\Francois\source\repos\LoGeCui\LoGeCuiMobile
-# Files: 62
+# Files: 64
 
 
 ================================================================================
@@ -38,6 +38,8 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using LoGeCuiMobile.Services.Local;
+using Microsoft.Maui.Networking;
+using Supabase; // ✅ pour SupabaseRestClient
 
 namespace LoGeCuiMobile
 {
@@ -52,17 +54,29 @@ namespace LoGeCuiMobile
         public IngredientsService? IngredientsService { get; private set; }
         public ListeCoursesSupabaseService? ListeCoursesSupabaseService { get; private set; }
 
+        public ShoppingListsService? ShoppingListsService { get; private set; }
+
         public static LocalDatabase LocalDb { get; private set; } = null!;
+
+        // ✅ Token RAM (upload storage etc.)
+        public string? CurrentAccessToken { get; private set; }
+
+        // ✅ Liste de courses active
+        public Guid? CurrentShoppingListId { get; private set; }
+        public void SetCurrentShoppingListId(Guid listId) => CurrentShoppingListId = listId;
 
         public Guid? CurrentUserId { get; private set; }
         public string OcrApiKey { get; private set; } = "";
 
+        // ✅ Inclure ShoppingListsService dans la condition “connecté”
         public bool IsConnected =>
             CurrentUserId != null &&
             RestClient != null &&
             RecipesService != null &&
             IngredientsService != null &&
-            ListeCoursesSupabaseService != null;
+            ListeCoursesSupabaseService != null &&
+            RecetteIngredientsService != null &&
+            ShoppingListsService != null;
 
         private IConfigurationRoot? _config;
 
@@ -92,13 +106,11 @@ namespace LoGeCuiMobile
 
         public static bool IsJwtExpiredException(Exception ex)
         {
-            // "JWT expired" est dans le message renvoyé par PostgREST / Supabase
             return ex.ToString().Contains("JWT expired", StringComparison.OrdinalIgnoreCase);
         }
 
         public void HandleJwtExpired()
         {
-            // Session expirée => on nettoie + retour login
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 try
@@ -109,10 +121,7 @@ namespace LoGeCuiMobile
                         "OK"
                     );
                 }
-                catch
-                {
-                    // pas bloquant
-                }
+                catch { }
 
                 Logout(silent: true);
             });
@@ -191,7 +200,6 @@ namespace LoGeCuiMobile
             }
             catch (Exception ex)
             {
-                // ✅ Ne pas crasher si appsettings absent
                 System.Diagnostics.Debug.WriteLine("⚠️ appsettings.json introuvable ou illisible: " + ex.Message);
                 _config = null;
             }
@@ -232,7 +240,7 @@ namespace LoGeCuiMobile
 
             CurrentUserId = guidUserId;
 
-            // Init services REST avec bearer
+            // ✅ Init services REST avec bearer + token RAM
             InitRestServicesInternal(accessToken);
 
             // ✅ Validation si internet : si token expiré -> logout propre
@@ -246,11 +254,18 @@ namespace LoGeCuiMobile
                 }
             }
 
+            // ✅ Charger / assurer list_id (liste de courses active)
+            await EnsureActiveShoppingListAsync();
+
             ShowAppShell();
         }
 
         public async void OnLoginSuccess(string accessToken, string userId)
         {
+            // ✅ Toujours garder le token dispo pour Storage (même si remember_me n'est pas activé)
+            await SecureStorage.SetAsync("sb_access_token", accessToken);
+            await SecureStorage.SetAsync("sb_user_id", userId);
+
             Supabase ??= new SupabaseService(
                 ConfigurationHelper.GetSupabaseUrl(),
                 ConfigurationHelper.GetSupabaseKey()
@@ -266,9 +281,10 @@ namespace LoGeCuiMobile
 
             CurrentUserId = guidUserId;
 
+            // ✅ Init services REST avec bearer + token RAM
             InitRestServicesInternal(accessToken);
 
-            // Optionnel: validation immédiate si internet
+            // ✅ Validation si internet
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
             {
                 var ok = await ValidateSessionAsync();
@@ -278,6 +294,9 @@ namespace LoGeCuiMobile
                     return;
                 }
             }
+
+            // ✅ Charger / assurer list_id (liste de courses active)
+            await EnsureActiveShoppingListAsync();
 
             ShowAppShell();
         }
@@ -290,11 +309,49 @@ namespace LoGeCuiMobile
             var client = new SupabaseRestClient(url, key);
             client.SetBearerToken(accessToken);
 
+            // ✅ Stocker le token en RAM
+            CurrentAccessToken = accessToken;
+
             RestClient = client;
+
+            // ✅ IMPORTANT : instancier les services AVEC le client non-null
+            ShoppingListsService = new ShoppingListsService(client);
             RecipesService = new RecipesService(client);
             IngredientsService = new IngredientsService(client);
             ListeCoursesSupabaseService = new ListeCoursesSupabaseService(client);
             RecetteIngredientsService = new RecetteIngredientsService(client);
+        }
+
+        // ✅ Garantit qu'on a toujours une liste active (sinon création/récupération)
+        private async Task EnsureActiveShoppingListAsync()
+        {
+            if (RestClient == null || CurrentUserId == null)
+            {
+                CurrentShoppingListId = null;
+                return;
+            }
+
+            try
+            {
+                var url = $"shopping_lists?select=id&owner_user_id=eq.{CurrentUserId.Value}&limit=1";
+                var json = await RestClient.GetAsync<string>(url);
+
+                if (!string.IsNullOrWhiteSpace(json) && json.Contains("\"id\""))
+                {
+                    var start = json.IndexOf("\"id\":\"") + 6;
+                    var end = json.IndexOf("\"", start);
+                    if (start > 5 && end > start)
+                    {
+                        CurrentShoppingListId = Guid.Parse(json.Substring(start, end - start));
+                        System.Diagnostics.Debug.WriteLine($"✅ Liste: {CurrentShoppingListId}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ {ex.Message}");
+                CurrentShoppingListId = null;
+            }
         }
 
         // ✅ Test simple qui provoque JWT expired si token mort
@@ -305,7 +362,6 @@ namespace LoGeCuiMobile
                 if (RecipesService == null || CurrentUserId == null)
                     return false;
 
-                // Petit appel léger: si JWT expiré, ça throw
                 _ = await RecipesService.GetRecettesAsync(CurrentUserId.Value);
                 return true;
             }
@@ -314,7 +370,6 @@ namespace LoGeCuiMobile
                 if (IsJwtExpiredException(ex))
                     return false;
 
-                // Autre erreur réseau : on ne force pas logout
                 System.Diagnostics.Debug.WriteLine("⚠️ ValidateSessionAsync: " + ex.Message);
                 return true;
             }
@@ -354,17 +409,43 @@ namespace LoGeCuiMobile
 
             Supabase?.ClearSession();
             CurrentUserId = null;
+            CurrentAccessToken = null;
+            CurrentShoppingListId = null;
 
             RestClient = null;
             RecipesService = null;
             IngredientsService = null;
             ListeCoursesSupabaseService = null;
             RecetteIngredientsService = null;
+            ShoppingListsService = null;
 
             if (!silent)
                 ShowLogin();
             else
                 MainThread.BeginInvokeOnMainThread(() => MainPage = RootPage.CreateLoginRoot());
+        }
+
+        // ✅ Assure que l'utilisateur est membre de la liste (utile pour bootstrap + RLS)
+        private async Task EnsureMembershipAsync(Guid listId, Guid userId)
+        {
+            if (RestClient == null) return;
+
+            var payload = new[]
+            {
+                new { list_id = listId, user_id = userId, role = "owner" }
+            };
+
+            try
+            {
+                await RestClient.PostAsync<object>(
+                    "shopping_list_members",
+                    payload,
+                    returnRepresentation: false);
+            }
+            catch
+            {
+                // Déjà membre / conflit / policy : on ignore.
+            }
         }
 
         // ------------------ MISC ------------------
@@ -789,8 +870,8 @@ FILE: LoGeCuiMobile.csproj
 		<ApplicationId>com.companyname.logecuimobile</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
-		<ApplicationVersion>6</ApplicationVersion>
+		<ApplicationDisplayVersion>4.5.0</ApplicationDisplayVersion>
+		<ApplicationVersion>10</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -1595,6 +1676,1458 @@ namespace LoGeCuiMobile.Models
 }
 
 ================================================================================
+FILE: output_concat.txt
+================================================================================
+
+# CONCAT OUTPUT
+# Root: C:\Users\Francois\source\repos\LoGeCui\LoGeCuiMobile
+# Files: 64
+
+
+================================================================================
+FILE: App.xaml
+================================================================================
+
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:LoGeCuiMobile"
+             x:Class="LoGeCuiMobile.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
+
+================================================================================
+FILE: App.xaml.cs
+================================================================================
+
+﻿using LoGeCuiMobile.Pages;
+using LoGeCuiMobile.Resources.Lang;
+using LoGeCuiShared.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
+using System;
+using System.Globalization;
+using System.IO;
+using System.Threading.Tasks;
+using LoGeCuiMobile.Services.Local;
+using Microsoft.Maui.Networking;
+using Supabase; // ✅ pour SupabaseRestClient
+
+namespace LoGeCuiMobile
+{
+    public partial class App : Application
+    {
+        public RecetteIngredientsService? RecetteIngredientsService { get; private set; }
+
+        public SupabaseService? Supabase { get; private set; }
+        public SupabaseRestClient? RestClient { get; private set; }
+
+        public RecipesService? RecipesService { get; private set; }
+        public IngredientsService? IngredientsService { get; private set; }
+        public ListeCoursesSupabaseService? ListeCoursesSupabaseService { get; private set; }
+
+        public ShoppingListsService? ShoppingListsService { get; private set; }
+
+        public static LocalDatabase LocalDb { get; private set; } = null!;
+
+        // ✅ Token RAM (upload storage etc.)
+        public string? CurrentAccessToken { get; private set; }
+
+        // ✅ Liste de courses active
+        public Guid? CurrentShoppingListId { get; private set; }
+        public void SetCurrentShoppingListId(Guid listId) => CurrentShoppingListId = listId;
+
+        public Guid? CurrentUserId { get; private set; }
+        public string OcrApiKey { get; private set; } = "";
+
+        // ✅ Inclure ShoppingListsService dans la condition “connecté”
+        public bool IsConnected =>
+            CurrentUserId != null &&
+            RestClient != null &&
+            RecipesService != null &&
+            IngredientsService != null &&
+            ListeCoursesSupabaseService != null &&
+            RecetteIngredientsService != null &&
+            ShoppingListsService != null;
+
+        private IConfigurationRoot? _config;
+
+        public App()
+        {
+            InitializeComponent();
+
+            // ✅ Langue & thème avant l'UI
+            ApplySavedLanguage();
+            ApplySavedTheme();
+
+            // ✅ Local DB
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "logecui.db3");
+            LocalDb = new LocalDatabase(dbPath);
+
+            // ✅ Init services de base (anon + OCR)
+            InitBaseServices();
+
+            // ✅ Page par défaut : Login (avant auto-login)
+            MainPage = RootPage.CreateLoginRoot();
+
+            // ✅ Init async (config + auto-login)
+            _ = InitAsync();
+        }
+
+        // ------------------ JWT EXPIRED HANDLING ------------------
+
+        public static bool IsJwtExpiredException(Exception ex)
+        {
+            return ex.ToString().Contains("JWT expired", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public void HandleJwtExpired()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await Current?.MainPage?.DisplayAlert(
+                        "Session expirée",
+                        "Ta session a expiré. Merci de te reconnecter.",
+                        "OK"
+                    );
+                }
+                catch { }
+
+                Logout(silent: true);
+            });
+        }
+
+        // ------------------ UI SETTINGS ------------------
+
+        private void ApplySavedLanguage()
+        {
+            try
+            {
+                var lang = Preferences.Get("app_language", "fr");
+                var culture = new CultureInfo(lang);
+                LocalizationResourceManager.Instance.SetCulture(culture);
+            }
+            catch
+            {
+                LocalizationResourceManager.Instance.SetCulture(new CultureInfo("fr"));
+            }
+        }
+
+        private void ApplySavedTheme()
+        {
+            var theme = Preferences.Get("app_theme", "system");
+
+            Current.UserAppTheme = theme switch
+            {
+                "light" => AppTheme.Light,
+                "dark" => AppTheme.Dark,
+                _ => AppTheme.Unspecified
+            };
+        }
+
+        // ------------------ INIT SERVICES ------------------
+
+        private void InitBaseServices()
+        {
+            var url = ConfigurationHelper.GetSupabaseUrl();
+            var key = ConfigurationHelper.GetSupabaseKey();
+            Supabase = new SupabaseService(url, key);
+
+            try
+            {
+                OcrApiKey = ConfigurationHelper.GetOcrApiKey();
+                if (!string.IsNullOrWhiteSpace(OcrApiKey) && OcrApiKey.Length >= 5)
+                    System.Diagnostics.Debug.WriteLine($"✅ OCR Key chargée: {OcrApiKey.Substring(0, 5)}...");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ ERREUR OCR: {ex.Message}");
+                OcrApiKey = "K86867725288957"; // ⚠️ debug only
+            }
+        }
+
+        private async Task InitAsync()
+        {
+            try
+            {
+                await InitConfigurationAsync();
+                await TryAutoLoginAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ InitAsync: {ex}");
+                ShowLogin();
+            }
+        }
+
+        private async Task InitConfigurationAsync()
+        {
+            try
+            {
+                using var stream = await FileSystem.OpenAppPackageFileAsync("appsettings.json");
+                var builder = new ConfigurationBuilder().AddJsonStream(stream);
+                _config = builder.Build();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ appsettings.json introuvable ou illisible: " + ex.Message);
+                _config = null;
+            }
+        }
+
+        // ------------------ AUTO LOGIN ------------------
+
+        private async Task TryAutoLoginAsync()
+        {
+            var rememberMe = await SecureStorage.GetAsync("remember_me");
+            if (!string.Equals(rememberMe, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowLogin();
+                return;
+            }
+
+            var accessToken = await SecureStorage.GetAsync("sb_access_token");
+            var userId = await SecureStorage.GetAsync("sb_user_id");
+
+            if (string.IsNullOrWhiteSpace(accessToken) || string.IsNullOrWhiteSpace(userId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
+
+            // ✅ Init services REST avec bearer + token RAM
+            InitRestServicesInternal(accessToken);
+
+            // ✅ Validation si internet : si token expiré -> logout propre
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                var ok = await ValidateSessionAsync();
+                if (!ok)
+                {
+                    HandleJwtExpired();
+                    return;
+                }
+            }
+
+            // ✅ Charger / assurer list_id (liste de courses active)
+            await EnsureActiveShoppingListAsync();
+
+            ShowAppShell();
+        }
+
+        public async void OnLoginSuccess(string accessToken, string userId)
+        {
+            // ✅ Toujours garder le token dispo pour Storage (même si remember_me n'est pas activé)
+            await SecureStorage.SetAsync("sb_access_token", accessToken);
+            await SecureStorage.SetAsync("sb_user_id", userId);
+
+            Supabase ??= new SupabaseService(
+                ConfigurationHelper.GetSupabaseUrl(),
+                ConfigurationHelper.GetSupabaseKey()
+            );
+
+            Supabase.SetSession(accessToken, userId);
+
+            if (!Guid.TryParse(userId, out var guidUserId))
+            {
+                ShowLogin();
+                return;
+            }
+
+            CurrentUserId = guidUserId;
+
+            // ✅ Init services REST avec bearer + token RAM
+            InitRestServicesInternal(accessToken);
+
+            // ✅ Validation si internet
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                var ok = await ValidateSessionAsync();
+                if (!ok)
+                {
+                    HandleJwtExpired();
+                    return;
+                }
+            }
+
+            // ✅ Charger / assurer list_id (liste de courses active)
+            await EnsureActiveShoppingListAsync();
+
+            ShowAppShell();
+        }
+
+        private void InitRestServicesInternal(string accessToken)
+        {
+            var url = ConfigurationHelper.GetSupabaseUrl();
+            var key = ConfigurationHelper.GetSupabaseKey();
+
+            var client = new SupabaseRestClient(url, key);
+            client.SetBearerToken(accessToken);
+
+            // ✅ Stocker le token en RAM
+            CurrentAccessToken = accessToken;
+
+            RestClient = client;
+
+            // ✅ IMPORTANT : instancier les services AVEC le client non-null
+            ShoppingListsService = new ShoppingListsService(client);
+            RecipesService = new RecipesService(client);
+            IngredientsService = new IngredientsService(client);
+            ListeCoursesSupabaseService = new ListeCoursesSupabaseService(client);
+            RecetteIngredientsService = new RecetteIngredientsService(client);
+        }
+
+        // ✅ Garantit qu'on a toujours une liste active (sinon création/récupération)
+        private async Task EnsureActiveShoppingListAsync()
+        {
+            if (RestClient == null || CurrentUserId == null)
+            {
+                CurrentShoppingListId = null;
+                return;
+            }
+
+            try
+            {
+                var url = $"shopping_lists?select=id&owner_user_id=eq.{CurrentUserId.Value}&limit=1";
+                var json = await RestClient.GetAsync<string>(url);
+
+                if (!string.IsNullOrWhiteSpace(json) && json.Contains("\"id\""))
+                {
+                    var start = json.IndexOf("\"id\":\"") + 6;
+                    var end = json.IndexOf("\"", start);
+                    if (start > 5 && end > start)
+                    {
+                        CurrentShoppingListId = Guid.Parse(json.Substring(start, end - start));
+                        System.Diagnostics.Debug.WriteLine($"✅ Liste: {CurrentShoppingListId}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ {ex.Message}");
+                CurrentShoppingListId = null;
+            }
+        }
+
+        // ✅ Test simple qui provoque JWT expired si token mort
+        private async Task<bool> ValidateSessionAsync()
+        {
+            try
+            {
+                if (RecipesService == null || CurrentUserId == null)
+                    return false;
+
+                _ = await RecipesService.GetRecettesAsync(CurrentUserId.Value);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (IsJwtExpiredException(ex))
+                    return false;
+
+                System.Diagnostics.Debug.WriteLine("⚠️ ValidateSessionAsync: " + ex.Message);
+                return true;
+            }
+        }
+
+        // ------------------ NAV ------------------
+
+        public void ShowAppShell()
+        {
+            if (!IsConnected)
+            {
+                ShowLogin();
+                return;
+            }
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                MainPage = new AppShell();
+            });
+        }
+
+        public void ShowLogin()
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                MainPage = RootPage.CreateLoginRoot();
+            });
+        }
+
+        // ------------------ LOGOUT ------------------
+
+        public void Logout(bool silent = false)
+        {
+            SecureStorage.Remove("remember_me");
+            SecureStorage.Remove("sb_access_token");
+            SecureStorage.Remove("sb_user_id");
+
+            Supabase?.ClearSession();
+            CurrentUserId = null;
+            CurrentAccessToken = null;
+            CurrentShoppingListId = null;
+
+            RestClient = null;
+            RecipesService = null;
+            IngredientsService = null;
+            ListeCoursesSupabaseService = null;
+            RecetteIngredientsService = null;
+            ShoppingListsService = null;
+
+            if (!silent)
+                ShowLogin();
+            else
+                MainThread.BeginInvokeOnMainThread(() => MainPage = RootPage.CreateLoginRoot());
+        }
+
+        // ✅ Assure que l'utilisateur est membre de la liste (utile pour bootstrap + RLS)
+        private async Task EnsureMembershipAsync(Guid listId, Guid userId)
+        {
+            if (RestClient == null) return;
+
+            var payload = new[]
+            {
+                new { list_id = listId, user_id = userId, role = "owner" }
+            };
+
+            try
+            {
+                await RestClient.PostAsync<object>(
+                    "shopping_list_members",
+                    payload,
+                    returnRepresentation: false);
+            }
+            catch
+            {
+                // Déjà membre / conflit / policy : on ignore.
+            }
+        }
+
+        // ------------------ MISC ------------------
+
+        public Task HandleDeepLinkAsync(Uri uri) => Task.CompletedTask;
+
+        public void SetSupabase(SupabaseService supabase) => Supabase = supabase;
+        public void SetCurrentUserId(Guid userId) => CurrentUserId = userId;
+
+        public void InitRestServices(string accessToken)
+        {
+            InitRestServicesInternal(accessToken);
+        }
+    }
+}
+
+================================================================================
+FILE: appsettings.json
+================================================================================
+
+{
+  "Supabase": {
+    "Url": "https://wzctiypsadqktzcnswri.supabase.co",
+    "Key": "sb_publishable_ZFk8ONON5qMA0vZ3V0nVAg_TZZrO1F1"
+  },
+
+  "OCR": {
+    "ApiKey": "K86867725288957"
+  }
+
+}
+
+================================================================================
+FILE: AppShell.xaml
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="LoGeCuiMobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:LoGeCuiMobile.Pages"
+    xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
+    FlyoutBehavior="Flyout">
+
+    <FlyoutItem Title="{tr:Translate Nav_ShoppingList}" Route="liste-courses">
+        <ShellContent Route="liste-courses"
+                      ContentTemplate="{DataTemplate pages:ListeCoursesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="{tr:Translate Nav_Recipes}" Route="mes-recettes">
+        <ShellContent Route="mes-recettes"
+                      ContentTemplate="{DataTemplate pages:MesRecettesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="{tr:Translate Nav_RandomMenu}" Route="menu-aleatoire">
+        <ShellContent Route="menu-aleatoire"
+                      ContentTemplate="{DataTemplate pages:MenuAleatoirePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="{tr:Translate Nav_Ingredients}" Route="mes-ingredients">
+        <ShellContent Route="mes-ingredients"
+                      ContentTemplate="{DataTemplate pages:MesIngredientsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="{tr:Translate Nav_Settings}" Route="settings">
+        <ShellContent Route="settings"
+                      ContentTemplate="{DataTemplate pages:SettingsPage}" />
+    </FlyoutItem>
+
+</Shell>
+
+
+================================================================================
+FILE: AppShell.xaml.cs
+================================================================================
+
+﻿using LoGeCuiMobile.Pages;
+using LoGeCuiMobile; // si ForgotPasswordPage est à la racine du projet
+
+namespace LoGeCuiMobile;
+
+public partial class AppShell : Shell
+{
+    public AppShell()
+    {
+        InitializeComponent();
+
+        Routing.RegisterRoute(nameof(ListeCoursesPage), typeof(ListeCoursesPage));
+        Routing.RegisterRoute(nameof(ForgotPasswordPage), typeof(ForgotPasswordPage));
+        Routing.RegisterRoute(nameof(AjouterIngredientPage), typeof(AjouterIngredientPage));
+        Routing.RegisterRoute(nameof(AjouterRecettePage), typeof(AjouterRecettePage));
+        Routing.RegisterRoute(nameof(MenuAleatoirePage), typeof(MenuAleatoirePage));
+
+    }
+}
+
+================================================================================
+FILE: ConfigurationHelper.cs
+================================================================================
+
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.Storage;
+using System;
+using System.IO;
+
+namespace LoGeCuiMobile
+{
+    public static class ConfigurationHelper
+    {
+        private static IConfiguration? _configuration;
+        private static readonly object _lock = new();
+
+        private static IConfiguration Configuration
+        {
+            get
+            {
+                if (_configuration != null)
+                    return _configuration;
+
+                lock (_lock)
+                {
+                    if (_configuration != null)
+                        return _configuration;
+
+                    try
+                    {
+                        // Lire le fichier depuis le package MAUI
+                        using var streamTask = FileSystem.OpenAppPackageFileAsync("appsettings.json");
+                        streamTask.Wait();
+                        using var stream = streamTask.Result;
+
+                        // Copie en mémoire pour éviter tout souci de stream non seekable / lecture partielle
+                        using var ms = new MemoryStream();
+                        stream.CopyTo(ms);
+                        ms.Position = 0;
+
+                        var builder = new ConfigurationBuilder()
+                            .AddJsonStream(ms);
+
+                        _configuration = builder.Build();
+
+#if DEBUG
+                        System.Diagnostics.Debug.WriteLine("[CONFIG] appsettings.json chargé");
+                        System.Diagnostics.Debug.WriteLine("[CONFIG] Supabase:Url=" + (_configuration["Supabase:Url"] ?? "<null>"));
+                        System.Diagnostics.Debug.WriteLine("[CONFIG] OCR:ApiKey present=" + (!string.IsNullOrWhiteSpace(_configuration["OCR:ApiKey"])));
+#endif
+
+                        return _configuration;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(
+                            "Impossible de charger appsettings.json depuis le package MAUI. " +
+                            "Vérifie qu'il est bien dans LoGeCuiMobile, Build Action = MauiAsset, et que tu as fait Clean/Rebuild. " +
+                            $"Détail: {ex.Message}", ex);
+                    }
+                }
+            }
+        }
+
+
+        // =========================
+        // SUPABASE
+        // =========================
+
+        public static string GetSupabaseUrl()
+            => Configuration["Supabase:Url"]
+               ?? throw new Exception("Supabase:Url manquant dans appsettings.json");
+
+        public static string GetSupabaseKey()
+            => Configuration["Supabase:Key"]
+               ?? throw new Exception("Supabase:Key manquant dans appsettings.json");
+
+        // =========================
+        // OCR
+        // =========================
+
+        public static string GetOcrApiKey()
+        {
+            var key = Configuration["OCR:ApiKey"];
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new Exception("OCR:ApiKey manquant dans appsettings.json");
+
+            return key;
+        }
+    }
+}
+
+
+
+
+
+================================================================================
+FILE: Converters\BoolToStrikethroughConverter.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Globalization;
+
+namespace LoGeCuiMobile.Converters
+{
+    public class BoolToStrikethroughConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            => (value is bool b && b) ? TextDecorations.Strikethrough : TextDecorations.None;
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
+}
+
+================================================================================
+FILE: Converters\QuantityFormatConverter.cs
+================================================================================
+
+﻿using System;
+using System.Globalization;
+using LoGeCuiMobile.Resources.Lang;
+using Microsoft.Maui.Controls;
+
+namespace LoGeCuiMobile.Converters
+{
+    public class QuantityFormatConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var q = values.Length > 0 ? values[0]?.ToString() ?? "" : "";
+            var u = values.Length > 1 ? values[1]?.ToString() ?? "" : "";
+
+            var fmt = LocalizationResourceManager.Instance["Ingredients_QuantityFormat"];
+            // Ex: "Quantité : {0} {1}" / "Menge: {0} {1}"
+            return string.Format(fmt, q, u).Trim();
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+            => throw new NotSupportedException();
+    }
+}
+
+================================================================================
+FILE: ForgotPasswordPage.xaml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="LoGeCuiMobile.ForgotPasswordPage"
+    Title="Mot de passe oublié">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+
+            <Label Text="Mot de passe oublié"
+                   FontSize="20"
+                   FontAttributes="Bold" />
+
+            <Label Text="Entrez votre email pour recevoir un lien de réinitialisation."
+                   FontSize="14" />
+
+            <Entry x:Name="EmailEntry"
+                   Placeholder="Adresse email"
+                   Keyboard="Email" />
+
+            <Button x:Name="SendButton"
+                    Text="Envoyer"
+                    Clicked="OnSendClicked" />
+
+            <Label x:Name="StatusLabel"
+                   FontSize="13" />
+
+            <Button Text="Retour"
+                    Clicked="OnBackClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+
+================================================================================
+FILE: ForgotPasswordPage.xaml.cs
+================================================================================
+
+﻿using LoGeCuiShared.Services;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System;
+
+namespace LoGeCuiMobile
+{
+    // Optionnel : permet de pré-remplir l'email si tu navigues avec ?email=...
+    [QueryProperty(nameof(PrefillEmail), "email")]
+    public partial class ForgotPasswordPage : ContentPage
+    {
+        private readonly SupabaseService _supabaseService;
+
+        // Valeur passée via Shell : ?email=...
+        public string PrefillEmail
+        {
+            set
+            {
+                // Evite crash si EmailEntry n'est pas encore prêt
+                try
+                {
+                    var decoded = Uri.UnescapeDataString(value ?? "");
+                    if (!string.IsNullOrWhiteSpace(decoded))
+                        EmailEntry.Text = decoded;
+                }
+                catch { /* ignore */ }
+            }
+        }
+
+        public ForgotPasswordPage()
+        {
+            InitializeComponent();
+
+            var url = ConfigurationHelper.GetSupabaseUrl();
+            var key = ConfigurationHelper.GetSupabaseKey();
+
+            _supabaseService = new SupabaseService(url, key);
+
+            StatusLabel.Text = "";
+        }
+
+        private async void OnSendClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                // Sécurité si un contrôle est null (mauvais x:Name / x:Class)
+                if (EmailEntry == null || SendButton == null || StatusLabel == null)
+                {
+                    await DisplayAlert("Erreur", "Interface non initialisée (XAML). Vérifie x:Class et x:Name.", "OK");
+                    return;
+                }
+
+                var email = (EmailEntry.Text ?? "").Trim();
+
+                // ✅ Validation obligatoire
+                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@") || !email.Contains("."))
+                {
+                    StatusLabel.TextColor = Colors.Red;
+                    StatusLabel.Text = "Veuillez saisir une adresse email valide.";
+                    return;
+                }
+
+                SendButton.IsEnabled = false;
+                StatusLabel.TextColor = Colors.Black;
+                StatusLabel.Text = "Envoi en cours…";
+
+                var result = await _supabaseService.SendPasswordResetAsync(email);
+
+                if (result.success)
+                {
+                    StatusLabel.TextColor = Colors.Green;
+                    StatusLabel.Text = "Email envoyé ✅ Vérifiez votre boîte mail (et les spams).";
+                }
+                else
+                {
+                    StatusLabel.TextColor = Colors.Red;
+                    StatusLabel.Text = result.error ?? "Impossible d'envoyer l'email.";
+                }
+            }
+            catch (Exception ex)
+            {
+                // ✅ évite le crash et donne une erreur lisible
+                StatusLabel.TextColor = Colors.Red;
+                StatusLabel.Text = "Erreur : " + ex.Message;
+            }
+            finally
+            {
+                if (SendButton != null)
+                    SendButton.IsEnabled = true;
+            }
+        }
+
+        private async void OnBackClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                await Navigation.PopAsync();
+            }
+            catch
+            {
+                // au cas où
+                await Shell.Current?.GoToAsync("..");
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: LoGeCuiMobile.csproj
+================================================================================
+
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>LoGeCuiMobile</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Display name -->
+		<ApplicationTitle>LoGeCuiMobile</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.companyname.logecuimobile</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>4.5.0</ApplicationDisplayVersion>
+		<ApplicationVersion>10</ApplicationVersion>
+
+		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<AndroidSigningKeyStore>logecui.keystore</AndroidSigningKeyStore>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<UserSecretsId>votre-guid-unique</UserSecretsId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>LoGeCui2025</AndroidSigningStorePass>
+	  <AndroidSigningKeyAlias>LoGeCui</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyPass>LoGeCui2025</AndroidSigningKeyPass>
+	  <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>LoGeCui2025</AndroidSigningStorePass>
+	  <AndroidSigningKeyAlias>LoGeCui</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyPass>LoGeCui2025</AndroidSigningKeyPass>
+	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\postriticone.png" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\postriticone.png" Color="#FFFFFF" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+		
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiAsset Include="appsettings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</MauiAsset>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
+		<PackageReference Include="SkiaSharp" Version="3.119.1" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="Supabase.Postgrest" Version="4.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\LoGeCuiShared\LoGeCuiShared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="ForgotPasswordPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\AjouterIngredientPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\AjouterRecettePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ListeCoursesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\MenuAleatoirePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\MesIngredientsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\MesRecettesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ResetPasswordPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\SettingsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Platforms\Android\Resources\Raw\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Resources\Lang\AppResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AppResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Lang\AppResources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+</Project>
+
+================================================================================
+FILE: LoGeCuiMobile.sln
+================================================================================
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoGeCuiMobile", "LoGeCuiMobile.csproj", "{718860EB-0CC0-D204-6424-4B05AD96CB46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718860EB-0CC0-D204-6424-4B05AD96CB46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE3EFD92-D10C-4693-8095-DE23E3011D74}
+	EndGlobalSection
+EndGlobal
+
+================================================================================
+FILE: LoginPage.xaml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lang="clr-namespace:LoGeCuiMobile.Resources.Lang"
+             xmlns:tr="clr-namespace:LoGeCuiMobile.Resources.Lang"
+             x:Class="LoGeCuiMobile.Pages.LoginPage"
+             Title="LoGeCui - Connexion"
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+
+            
+
+            <!-- Logo -->
+            <Label Text="🛒 LoGeCui"
+                   FontSize="42"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                   Margin="0,10,0,30"/>
+
+            <!-- 🌍 Choix de langue -->
+            <Picker x:Name="LanguagePicker"
+        Title="🌍 Language"
+        SelectedIndexChanged="LanguagePicker_SelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>🇫🇷 Français</x:String>
+                    <x:String>🇬🇧 English</x:String>
+                    <x:String>🇩🇪 Deutsch</x:String>
+                    <x:String>🇪🇸 Español</x:String>
+                    <x:String>🇮🇹 Italiano</x:String>
+                    <x:String>🇸🇦 العربية</x:String>
+                    <x:String>🇵🇱 Polski</x:String>
+                    <x:String>🇹🇷 Türkçe</x:String>
+                    <x:String>🇷🇴 Română</x:String>
+                    <x:String>🇨🇿 Čeština</x:String>
+                    <x:String>🇰🇷 한국어</x:String>
+                    <x:String>🇯🇵 日本語</x:String>
+                    <x:String>🇹🇭 ไทย</x:String>
+                    <x:String>🇮🇳 हिन्दी</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Email -->
+            <Label Text="{tr:Translate Email}"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <Entry x:Name="TxtEmail"
+                   Placeholder="email@example.com"
+                   Keyboard="Email"
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <!-- Mot de passe -->
+            <Label Text="{tr:Translate Password}"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <Grid ColumnDefinitions="*,Auto"
+                  BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                  Padding="8">
+
+                <Entry x:Name="TxtPassword"
+                       Placeholder="••••••••"
+                       IsPassword="True"
+                       BackgroundColor="Transparent"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+                <Button Grid.Column="1"
+                        Text="👁"
+                        BackgroundColor="Transparent"
+                        Clicked="TogglePassword"/>
+            </Grid>
+
+            <!-- Rester connecté -->
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="ChkRememberMe" Color="#27AE60"/>
+                <Label Text="{tr:Translate StayConnected}"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+            </HorizontalStackLayout>
+
+            <!-- Connexion -->
+            <Button x:Name="BtnConnexion"
+                    Text="{tr:Translate LoginButton}"
+                    BackgroundColor="#27AE60"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    Clicked="BtnConnexion_Clicked"/>
+
+            <!-- Inscription -->
+            <Button x:Name="BtnInscription"
+                    Text="{tr:Translate SignupButton}"
+                    BackgroundColor="#3498DB"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    Clicked="BtnInscription_Clicked"/>
+
+            <!-- Message -->
+            <Label x:Name="TxtMessage"
+                   TextColor="Red"
+                   HorizontalOptions="Center"
+                   IsVisible="False"/>
+
+            <!-- Mot de passe oublié -->
+            <Button Text="{tr:Translate ForgotPassword}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=Blue, Dark=#4DA3FF}"
+                    Clicked="BtnForgotPassword_Clicked"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
+
+================================================================================
+FILE: LoginPage.xaml.cs
+================================================================================
+
+﻿using LoGeCuiMobile; // ForgotPasswordPage / RootPage
+using LoGeCuiMobile.Resources.Lang;
+using LoGeCuiShared.Services;
+using Microsoft.Maui.Storage;
+using System.Globalization;
+
+namespace LoGeCuiMobile.Pages
+{
+    public partial class LoginPage : ContentPage
+    {
+        private readonly SupabaseService _supabase;
+        private bool _isPasswordVisible = false;
+
+        // Empêche SelectedIndexChanged pendant l'init
+        private bool _isInitializingLanguage = false;
+
+        public LoginPage()
+        {
+            InitializeComponent();
+
+            _isInitializingLanguage = true;
+            InitLanguagePickerSelection();
+            _isInitializingLanguage = false;
+
+            var url = ConfigurationHelper.GetSupabaseUrl();
+            var key = ConfigurationHelper.GetSupabaseKey();
+            _supabase = new SupabaseService(url, key);
+
+            _ = LoadSavedUserAsync();
+        }
+
+        // =========================
+        // LANGUE (Picker)
+        // =========================
+        private void LanguagePicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_isInitializingLanguage)
+                return;
+
+            if (LanguagePicker.SelectedIndex < 0)
+                return;
+
+            var langCode = LanguagePicker.SelectedIndex switch
+            {
+                0 => "fr",
+                1 => "en",
+                2 => "de",
+                3 => "es",
+                4 => "it",
+                5 => "ar",
+                6 => "pl",
+                7 => "tr",
+                8 => "ro",
+                9 => "cs",
+                10 => "ko",
+                11 => "ja",
+                12 => "th",
+                13 => "hi",
+                _ => "fr"
+            };
+
+            var current = Preferences.Get("app_language", "fr");
+            if (string.Equals(current, langCode, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            Preferences.Set("app_language", langCode);
+
+            var culture = new CultureInfo(langCode);
+
+            // ✅ Applique la culture + notifie l'UI (si tu utilises TranslateExtension)
+            LocalizationResourceManager.Instance.SetCulture(culture);
+
+            // ⚠️ Si ton XAML est encore en x:Static et que tu veux quand même voir le changement,
+            // dé-commente ce bloc (mais évite de le faire pendant l'init) :
+            // MainThread.BeginInvokeOnMainThread(() =>
+            // {
+            //     Application.Current.MainPage = RootPage.CreateLoginRoot();
+            // });
+        }
+
+        private void InitLanguagePickerSelection()
+        {
+            var lang = Preferences.Get("app_language", "fr");
+
+            var index = lang switch
+            {
+                "fr" => 0,
+                "en" => 1,
+                "de" => 2,
+                "es" => 3,
+                "it" => 4,
+                "ar" => 5,
+                "pl" => 6,
+                "tr" => 7,
+                "ro" => 8,
+                "cs" => 9,
+                "ko" => 10,
+                "ja" => 11,
+                "th" => 12,
+                "hi" => 13,
+                _ => 0
+            };
+
+            LanguagePicker.SelectedIndex = index;
+        }
+
+        // =========================
+        // LOGIN
+        // =========================
+        private async void BtnConnexion_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                SetStatus(AppResources.Connecting, Colors.Blue);
+
+                var email = TxtEmail.Text?.Trim() ?? string.Empty;
+                var password = TxtPassword.Text ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    SetStatus(AppResources.FillAllFields, Colors.Red);
+                    return;
+                }
+
+                var (success, accessToken, userId, error) =
+                    await _supabase.SignInAsync(email, password);
+
+                if (!success)
+                {
+                    SetStatus(error ?? AppResources.ConnectionError, Colors.Red);
+                    await DisplayAlert(AppResources.ErrorTitle, AppResources.BadPassword, "OK");
+                    return;
+                }
+
+                accessToken ??= string.Empty;
+                userId ??= string.Empty;
+
+                if (ChkRememberMe?.IsChecked == true)
+                {
+                    await SecureStorage.SetAsync("remember_me", "true");
+                    await SecureStorage.SetAsync("sb_access_token", accessToken);
+                    await SecureStorage.SetAsync("sb_user_id", userId);
+                    await SecureStorage.SetAsync("user_email", email);
+                }
+                else
+                {
+                    SecureStorage.Remove("remember_me");
+                    SecureStorage.Remove("sb_access_token");
+                    SecureStorage.Remove("sb_user_id");
+                    SecureStorage.Remove("user_email");
+                }
+
+                if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(userId))
+                    _supabase.SetSession(accessToken, userId);
+
+                var app = (App)Application.Current;
+                app.SetSupabase(_supabase);
+
+                if (Guid.TryParse(userId, out var guidUserId))
+                    app.SetCurrentUserId(guidUserId);
+
+                app.InitRestServices(accessToken);
+
+
+                app.ShowAppShell();
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"{AppResources.ErrorTitle} : {ex.Message}", Colors.Red);
+            }
+        }
+
+        private async Task LoadSavedUserAsync()
+        {
+            try
+            {
+                var rememberMe = await SecureStorage.GetAsync("remember_me");
+                if (!string.Equals(rememberMe, "true", StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                var email = await SecureStorage.GetAsync("user_email");
+                if (!string.IsNullOrEmpty(email))
+                {
+                    TxtEmail.Text = email;
+                    ChkRememberMe.IsChecked = true;
+                }
+            }
+            catch
+            {
+                // ignore SecureStorage errors
+            }
+        }
+
+        private async void BtnInscription_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                SetStatus(AppResources.CreatingAccount, Colors.Blue);
+
+                var email = TxtEmail.Text?.Trim() ?? string.Empty;
+                var password = TxtPassword.Text ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    SetStatus(AppResources.FillAllFields, Colors.Red);
+                    return;
+                }
+
+                var (success, accessToken, userId, error) =
+                    await _supabase.SignUpThenSignInAsync(email, password);
+
+                if (!success)
+                {
+                    SetStatus(error ?? AppResources.SignupError, Colors.Red);
+                    return;
+                }
+
+                accessToken ??= string.Empty;
+                userId ??= string.Empty;
+
+                if (ChkRememberMe?.IsChecked == true)
+                {
+                    await SecureStorage.SetAsync("remember_me", "true");
+                    await SecureStorage.SetAsync("sb_access_token", accessToken);
+                    await SecureStorage.SetAsync("sb_user_id", userId);
+                    await SecureStorage.SetAsync("user_email", email);
+                }
+                else
+                {
+                    SecureStorage.Remove("remember_me");
+                    SecureStorage.Remove("sb_access_token");
+                    SecureStorage.Remove("sb_user_id");
+                    SecureStorage.Remove("user_email");
+                }
+
+                if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(userId))
+                    _supabase.SetSession(accessToken, userId);
+
+                var app = (App)Application.Current;
+                app.SetSupabase(_supabase);
+
+                if (Guid.TryParse(userId, out var guidUserId))
+                    app.SetCurrentUserId(guidUserId);
+
+                app.InitRestServices(accessToken);
+                app.ShowAppShell();
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"{AppResources.ErrorTitle} : {ex.Message}", Colors.Red);
+            }
+        }
+
+        private async void BtnForgotPassword_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                await Navigation.PushAsync(new ForgotPasswordPage());
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert(AppResources.ErrorTitle, ex.ToString(), "OK");
+            }
+        }
+
+        private void TogglePassword(object sender, EventArgs e)
+        {
+            _isPasswordVisible = !_isPasswordVisible;
+
+            TxtPassword.IsPassword = !_isPasswordVisible;
+
+            if (sender is Button btn)
+                btn.Text = _isPasswordVisible ? "🙈" : "👁";
+
+            if (!string.IsNullOrEmpty(TxtPassword.Text))
+            {
+                var t = TxtPassword.Text;
+                TxtPassword.Text = string.Empty;
+                TxtPassword.Text = t;
+            }
+        }
+
+        private void SetStatus(string message, Color color)
+        {
+            TxtMessage.Text = message;
+            TxtMessage.TextColor = color;
+            TxtMessage.IsVisible = true;
+        }
+    }
+}
+
+================================================================================
 FILE: Pages\AjouterIngredientPage.xaml
 ================================================================================
 
@@ -1739,6 +3272,39 @@ FILE: Pages\AjouterRecettePage.xaml
             <Entry x:Name="NomEntry"
                    Placeholder="{tr:Translate Recipes_Add_NamePlaceholder}" />
 
+            <!-- PHOTO RECETTE -->
+            <Label Text="Photo" />
+
+            <Frame Padding="0"
+                   CornerRadius="12"
+                   HasShadow="False"
+                   BorderColor="{AppThemeBinding Light=#DDD, Dark=#444}">
+                <Grid RowDefinitions="180,Auto" ColumnDefinitions="*,*"
+                      RowSpacing="10"
+                      Padding="0">
+
+                    <!-- Preview -->
+                    <Image x:Name="PhotoImage"
+                           Grid.Row="0" Grid.ColumnSpan="2"
+                           Aspect="AspectFill"
+                           HeightRequest="180" />
+
+                    <!-- Actions -->
+                    <Button Grid.Row="1" Grid.Column="0"
+                            Text="Choisir une photo"
+                            Clicked="OnPickPhotoClicked" />
+
+                    <Button Grid.Row="1" Grid.Column="1"
+                            Text="Prendre une photo"
+                            Clicked="OnTakePhotoClicked" />
+                </Grid>
+            </Frame>
+
+            <Button x:Name="RemovePhotoButton"
+                    Text="Supprimer la photo"
+                    IsVisible="False"
+                    Clicked="OnRemovePhotoClicked" />
+
             <Label Text="{tr:Translate Recipes_Add_CategoryLabel}" />
             <Picker x:Name="CategoriePicker"
                     Title="{tr:Translate Recipes_Add_CategoryPlaceholder}" />
@@ -1775,34 +3341,47 @@ FILE: Pages\AjouterRecettePage.xaml
 FILE: Pages\AjouterRecettePage.xaml.cs
 ================================================================================
 
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiMobile.Services;
 using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
+using LoGeCuiShared.Utils;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
+using Microsoft.Maui.Storage;
 
 namespace LoGeCuiMobile.Pages
 {
     public partial class AjouterRecettePage : ContentPage
     {
         private Recette? _editingRecette;
+        private string? _photoLocalPath;
+
+        private readonly SupabaseStorageService _storage = new SupabaseStorageService();
+
+        // ✅ HttpClient réutilisé (évite ANR/sockets)
+        private static readonly HttpClient _http = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(60)
+        };
 
         public AjouterRecettePage(Recette? recette = null)
         {
             InitializeComponent();
 
-            // Valeurs conformes � ta DB Supabase (Entree / Plat / Dessert)
             CategoriePicker.ItemsSource = new List<string> { "Entree", "Plat", "Dessert" };
-            CategoriePicker.SelectedIndex = 1; // Plat par d�faut
+            CategoriePicker.SelectedIndex = 1;
 
             _editingRecette = recette;
 
@@ -1814,6 +3393,7 @@ namespace LoGeCuiMobile.Pages
             else
             {
                 Title = "Ajouter recette";
+                SetPhotoPreview(null);
             }
         }
 
@@ -1828,21 +3408,36 @@ namespace LoGeCuiMobile.Pages
                 TempsEntry.Text = _editingRecette.TempsPreparation.ToString(CultureInfo.InvariantCulture);
                 InstructionsEditor.Text = _editingRecette.Instructions ?? "";
 
-                // Cat�gorie
                 var cat = string.IsNullOrWhiteSpace(_editingRecette.CategorieDb) ? "Plat" : _editingRecette.CategorieDb.Trim();
                 if (CategoriePicker.ItemsSource is List<string> cats && cats.Contains(cat))
                     CategoriePicker.SelectedItem = cat;
                 else
                     CategoriePicker.SelectedItem = "Plat";
 
-                // Charger ingr�dients depuis Supabase
+                // Photo : local d'abord, sinon URL
+                if (!string.IsNullOrWhiteSpace(_editingRecette.PhotoLocalPath) && File.Exists(_editingRecette.PhotoLocalPath))
+                {
+                    _photoLocalPath = _editingRecette.PhotoLocalPath;
+                    SetPhotoPreview(_photoLocalPath);
+                }
+                else if (!string.IsNullOrWhiteSpace(_editingRecette.PhotoUrl))
+                {
+                    _photoLocalPath = null;
+                    PhotoImage.Source = ImageSource.FromUri(new Uri(_editingRecette.PhotoUrl));
+                    RemovePhotoButton.IsVisible = true;
+                }
+                else
+                {
+                    _photoLocalPath = null;
+                    SetPhotoPreview(null);
+                }
+
+                // Ingrédients (depuis Supabase)
                 var app = (App)Application.Current;
                 if (app.RecetteIngredientsService != null && _editingRecette.Id != Guid.Empty)
                 {
                     var items = await app.RecetteIngredientsService.GetForRecetteAsync(_editingRecette.Id);
 
-                    // On remplit l'editor ingr�dients en "1 par ligne"
-                    // NOTE: items = (nom, quantite, unite)
                     IngredientsEditor.Text = (items.Count == 0)
                         ? ""
                         : string.Join("\n", items.Select(x =>
@@ -1855,14 +3450,154 @@ namespace LoGeCuiMobile.Pages
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["ErrorTitle"],
-                    ex.Message,
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
         }
 
+        // ---------- PHOTO ----------
+        private async void OnPickPhotoClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var path = await PickOrTakeAsync(takePhoto: false);
+                if (path == null) return;
+
+                _photoLocalPath = path;
+                SetPhotoPreview(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
+            }
+        }
+
+        private async void OnTakePhotoClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+                if (status != PermissionStatus.Granted)
+                    status = await Permissions.RequestAsync<Permissions.Camera>();
+
+                if (status != PermissionStatus.Granted)
+                {
+                    await DisplayAlert(LocalizationResourceManager.Instance["PermissionTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_CameraPermission"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
+                    return;
+                }
+
+                if (!MediaPicker.Default.IsCaptureSupported)
+                {
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
+                        LocalizationResourceManager.Instance["Recipes_Add_CaptureNotSupported"],
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
+                    return;
+                }
+
+                var path = await PickOrTakeAsync(takePhoto: true);
+                if (path == null) return;
+
+                _photoLocalPath = path;
+                SetPhotoPreview(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
+            }
+        }
+
+        private void OnRemovePhotoClicked(object sender, EventArgs e)
+        {
+            _photoLocalPath = null;
+
+            if (_editingRecette != null)
+            {
+                _editingRecette.PhotoLocalPath = null;
+                _editingRecette.PhotoUrl = null;
+            }
+
+            SetPhotoPreview(null);
+        }
+
+        private void SetPhotoPreview(string? path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            {
+                PhotoImage.Source = ImageSource.FromFile(path);
+                RemovePhotoButton.IsVisible = true;
+            }
+            else
+            {
+                PhotoImage.Source = null;
+                RemovePhotoButton.IsVisible = false;
+            }
+        }
+
+        private async System.Threading.Tasks.Task<string?> PickOrTakeAsync(bool takePhoto)
+        {
+            FileResult? result = takePhoto
+                ? await MediaPicker.Default.CapturePhotoAsync()
+                : await MediaPicker.Default.PickPhotoAsync();
+
+            if (result == null) return null;
+
+            var ext = Path.GetExtension(result.FileName);
+            if (string.IsNullOrWhiteSpace(ext)) ext = ".jpg";
+
+            var fileName = $"recipe_{DateTime.UtcNow:yyyyMMdd_HHmmss}{ext}";
+            var destPath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+
+            await using var src = await result.OpenReadAsync();
+            await using var dest = File.OpenWrite(destPath);
+            await src.CopyToAsync(dest);
+
+            return destPath;
+        }
+
+        // ✅ UPDATE par ID (anti-duplicata)
+        private static async System.Threading.Tasks.Task UpdateRecetteByIdAsync(
+            string supabaseUrl,
+            string supabaseKey,
+            string accessToken,
+            Guid recetteId,
+            Guid userId,
+            Recette recette)
+        {
+            supabaseUrl = supabaseUrl.TrimEnd('/');
+
+            var url = $"{supabaseUrl}/rest/v1/recettes?id=eq.{recetteId}";
+
+            using var req = new HttpRequestMessage(HttpMethod.Patch, url);
+            req.Headers.Add("apikey", supabaseKey);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            req.Headers.Add("Prefer", "return=representation");
+
+            var payload = new
+            {
+                owner_user_id = userId,
+                external_id = recette.ExternalId,
+                nom = recette.Nom,
+                categorie = recette.CategorieDb,
+                temps_minutes = recette.TempsPreparation,
+                note = recette.Difficulte,
+                is_favorite = recette.IsFavorite,
+                instructions = recette.Instructions,
+                photo_url = recette.PhotoUrl
+            };
+
+            req.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+            using var res = await _http.SendAsync(req);
+            var body = await res.Content.ReadAsStringAsync();
+
+            if (!res.IsSuccessStatusCode)
+                throw new Exception($"Update recette failed ({(int)res.StatusCode}): {body}");
+        }
+
+        // ---------- SAVE ----------
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             try
@@ -1871,31 +3606,25 @@ namespace LoGeCuiMobile.Pages
 
                 if (app.CurrentUserId == null || app.RecipesService == null)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_LoginRequired"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
                 if (app.RecetteIngredientsService == null)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_ServiceNotReady"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(NomEntry.Text))
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_NameRequired"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
@@ -1903,9 +3632,18 @@ namespace LoGeCuiMobile.Pages
                 var categorie = (CategoriePicker.SelectedItem as string) ?? "Plat";
                 int temps = int.TryParse(TempsEntry.Text, out var t) ? t : 0;
 
-                // Mode �dition => on reprend la recette, sinon cr�ation
+                bool isEdit = (_editingRecette != null && _editingRecette.Id != Guid.Empty);
+
                 var recette = _editingRecette ?? new Recette();
 
+                // ✅ ExternalId stable : seulement si nouveau
+                if (string.IsNullOrWhiteSpace(recette.ExternalId))
+                    recette.ExternalId = Guid.NewGuid().ToString("N");
+
+                // ✅ owner
+                recette.OwnerUserId = userId;
+
+                // ✅ champs
                 recette.Nom = NomEntry.Text.Trim();
                 recette.CategorieDb = categorie;
                 recette.TempsPreparation = temps;
@@ -1913,65 +3651,103 @@ namespace LoGeCuiMobile.Pages
                 recette.Instructions = InstructionsEditor.Text ?? "";
                 recette.IsFavorite = false;
 
-                // ExternalId stable (requis pour l�upsert + r�cup�ration d'id si besoin)
-                if (string.IsNullOrWhiteSpace(recette.ExternalId))
-                    recette.ExternalId = Guid.NewGuid().ToString("N");
+                // photo locale
+                recette.PhotoLocalPath = _photoLocalPath;
 
-                // 1) Upsert recette (table recettes)
-                await app.RecipesService.UpsertRecetteAsync(userId, recette);
-
-                // 2) Obtenir l'UUID DB (recette_id) pour recette_ingredients
-                Guid recetteId;
-
-                // Si on est en �dition et qu'on a un Id valide, on l'utilise directement
-                if (_editingRecette != null && _editingRecette.Id != Guid.Empty)
+                // 1) Save recette (anti-duplicata)
+                if (isEdit)
                 {
-                    recetteId = _editingRecette.Id;
+                    if (string.IsNullOrWhiteSpace(app.CurrentAccessToken))
+                    {
+                        await DisplayAlert("Erreur", "Session invalide, reconnecte-toi.", "OK");
+                        return;
+                    }
+
+                    recette.Id = _editingRecette!.Id;
+
+                    await UpdateRecetteByIdAsync(
+                        ConfigurationHelper.GetSupabaseUrl(),
+                        ConfigurationHelper.GetSupabaseKey(),
+                        app.CurrentAccessToken!,
+                        recette.Id,
+                        userId,
+                        recette);
                 }
                 else
                 {
-                    // Sinon fallback via ExternalId (fiable apr�s upsert)
-                    var rid = await app.RecipesService.GetRecetteIdByExternalIdAsync(recette.ExternalId);
+                    // CREATE via upsert(external_id)
+                    await app.RecipesService.UpsertRecetteAsync(userId, recette);
+                }
+
+                // 2) Récupérer l'ID DB
+                Guid recetteId;
+                if (isEdit)
+                {
+                    recetteId = _editingRecette!.Id;
+                }
+                else
+                {
+                    // ✅ ta signature actuelle: (Guid userId, string externalId)
+                    var rid = await app.RecipesService.GetRecetteIdByExternalIdAsync(userId, recette.ExternalId!);
+
                     if (rid == null)
                     {
-                        await DisplayAlert(
-                            LocalizationResourceManager.Instance["ErrorTitle"],
+                        await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                             LocalizationResourceManager.Instance["Recipes_Add_IdNotFound"],
-                            LocalizationResourceManager.Instance["Dialog_Ok"]
-                        );
+                            LocalizationResourceManager.Instance["Dialog_Ok"]);
                         return;
                     }
 
                     recetteId = rid.Value;
                 }
 
-                // 3) Parser les ingr�dients depuis l'�diteur
-                var items = ParseIngredientsEditor(IngredientsEditor.Text);
+                // stabiliser
+                recette.Id = recetteId;
+                if (_editingRecette != null) _editingRecette.Id = recetteId;
 
-                // 4) �criture dans recette_ingredients (delete + insert)
+                // 3) Upload photo + UPDATE photo_url (jamais upsert ici)
+                if (!string.IsNullOrWhiteSpace(_photoLocalPath) && File.Exists(_photoLocalPath))
+                {
+                    if (string.IsNullOrWhiteSpace(app.CurrentAccessToken))
+                    {
+                        await DisplayAlert("Erreur", "Session invalide, reconnecte-toi.", "OK");
+                        return;
+                    }
+
+                    var url = await _storage.UploadRecipePhotoAndGetPublicUrlAsync(
+                        app.CurrentAccessToken!, userId, recetteId, _photoLocalPath);
+
+                    recette.PhotoUrl = url;
+
+                    await UpdateRecetteByIdAsync(
+                        ConfigurationHelper.GetSupabaseUrl(),
+                        ConfigurationHelper.GetSupabaseKey(),
+                        app.CurrentAccessToken!,
+                        recetteId,
+                        userId,
+                        recette);
+                }
+
+                // 4) Ingrédients (NORMALISÉS)
+                var items = ParseIngredientsEditorNormalized(IngredientsEditor.Text);
+
                 await app.RecetteIngredientsService.ReplaceForRecetteAsync(recetteId, items);
 
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["SuccessTitle"],
+                await DisplayAlert(LocalizationResourceManager.Instance["SuccessTitle"],
                     LocalizationResourceManager.Instance["Recipes_Add_Saved"],
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                    LocalizationResourceManager.Instance["Dialog_Ok"]);
 
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["ErrorTitle"],
-                    ex.Message,
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
         }
 
-        // Transforme le texte du multi-line editor en liste (nom, quantite, unite)
-        private static List<(string nom, string? quantite, string? unite)> ParseIngredientsEditor(string? text)
+        // ---------- INGREDIENTS PARSER (NORMALISÉ) ----------
+        private static List<(string nom, string? quantite, string? unite)> ParseIngredientsEditorNormalized(string? text)
         {
             text ??= "";
 
@@ -1981,23 +3757,18 @@ namespace LoGeCuiMobile.Pages
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .Select(l => l.Trim())
                 .Where(l => !string.IsNullOrWhiteSpace(l))
-                .Select(ParseIngredientLine)
+                .Select(ParseIngredientLineNormalized)
                 .Where(x => !string.IsNullOrWhiteSpace(x.nom))
                 .ToList();
         }
 
-        // Supporte:
-        // - "Tomate"
-        // - "200 g Farine"
-        // - "2 pcs Tomate"
-        // - "Farine - 200 g"
-        private static (string nom, string? quantite, string? unite) ParseIngredientLine(string line)
+        private static (string nom, string? quantite, string? unite) ParseIngredientLineNormalized(string line)
         {
             // "Nom - Quantite Unite"
             var dashSplit = line.Split(" - ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             if (dashSplit.Length >= 2)
             {
-                var nomPart = dashSplit[0];
+                var nomPart = IngredientNormalizer.Normalize(dashSplit[0]); // ✅ normalize
                 var qtePart = dashSplit[1];
 
                 var parts = qtePart.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -2013,41 +3784,36 @@ namespace LoGeCuiMobile.Pages
             {
                 var quantite = tokens[0];
                 var unite = tokens[1];
-                var nom = string.Join(" ", tokens.Skip(2));
+                var nom = IngredientNormalizer.Normalize(string.Join(" ", tokens.Skip(2))); // ✅ normalize
                 return (nom, quantite, unite);
             }
 
             // Sinon : juste le nom
-            return (line, null, null);
+            return (IngredientNormalizer.Normalize(line), null, null); // ✅ normalize
         }
 
+        // ---------- OCR ----------
         private async void OnScanClicked(object sender, EventArgs e)
         {
             try
             {
-                // Permission cam�ra (Android 6+)
                 var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
                 if (status != PermissionStatus.Granted)
                     status = await Permissions.RequestAsync<Permissions.Camera>();
 
                 if (status != PermissionStatus.Granted)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["PermissionTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["PermissionTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_CameraPermission"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
-                // Capture support�e ?
                 if (!MediaPicker.Default.IsCaptureSupported)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_CaptureNotSupported"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
@@ -2067,47 +3833,31 @@ namespace LoGeCuiMobile.Pages
                     bytes = ms.ToArray();
                 }
 
-                Debug.WriteLine($"Image originale: {bytes.Length / 1024} KB");
-
-                // Compression pour rester sous la limite OCR.Space (souvent 1024 KB)
                 bytes = ImageCompressionHelper.CompressJpeg(bytes, maxWidth: 1600, jpegQuality: 75);
-                Debug.WriteLine($"Image compress�e: {bytes.Length / 1024} KB");
-
-                // Si encore trop gros, on retente plus agressif automatiquement
                 if (bytes.Length > 1024 * 1024)
-                {
                     bytes = ImageCompressionHelper.CompressJpeg(bytes, maxWidth: 1200, jpegQuality: 65);
-                    Debug.WriteLine($"Image recompress�e: {bytes.Length / 1024} KB");
-                }
 
                 if (bytes.Length > 1024 * 1024)
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["ErrorTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_ImageTooLarge"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
-                // OCR
-                var ocrKey = LoGeCuiShared.Services.ConfigurationHelper.GetOcrApiKey();
+                var ocrKey = ConfigurationHelper.GetOcrApiKey();
                 var ocr = new OcrService(ocrKey);
 
                 var fullText = await ocr.ExtractTextFromImageAsync(bytes, photo.FileName);
-
                 if (string.IsNullOrWhiteSpace(fullText))
                 {
-                    await DisplayAlert(
-                        LocalizationResourceManager.Instance["OcrTitle"],
+                    await DisplayAlert(LocalizationResourceManager.Instance["OcrTitle"],
                         LocalizationResourceManager.Instance["Recipes_Add_NoTextDetected"],
-                        LocalizationResourceManager.Instance["Dialog_Ok"]
-                    );
+                        LocalizationResourceManager.Instance["Dialog_Ok"]);
                     return;
                 }
 
                 fullText = NormalizeOcrText(fullText);
-
                 var (ingredients, instructions) = SplitRecipeText(fullText);
 
                 if (!string.IsNullOrWhiteSpace(instructions))
@@ -2123,11 +3873,9 @@ namespace LoGeCuiMobile.Pages
                         NomEntry.Text = title;
                 }
 
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["SuccessTitle"],
+                await DisplayAlert(LocalizationResourceManager.Instance["SuccessTitle"],
                     LocalizationResourceManager.Instance["Recipes_Add_OcrSuccess"],
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                    LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
             catch (Exception ex)
             {
@@ -2140,14 +3888,11 @@ namespace LoGeCuiMobile.Pages
                     msg = LocalizationResourceManager.Instance["Recipes_Add_ImageTooLarge"];
                 }
 
-                await DisplayAlert(
-                    LocalizationResourceManager.Instance["ErrorTitle"],
-                    msg,
-                    LocalizationResourceManager.Instance["Dialog_Ok"]
-                );
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], msg, LocalizationResourceManager.Instance["Dialog_Ok"]);
             }
         }
 
+        // ---------- OCR HELPERS ----------
         private static string NormalizeOcrText(string s)
         {
             s = s.Replace("\r\n", "\n").Replace("\r", "\n");
@@ -2159,8 +3904,8 @@ namespace LoGeCuiMobile.Pages
         {
             var lower = text.ToLowerInvariant();
 
-            int idxIng = IndexOfAny(lower, "ingr�dients", "ingredients");
-            int idxPrep = IndexOfAny(lower, "pr�paration", "preparation", "instructions", "r�alisation", "realisation", "�tapes", "etapes");
+            int idxIng = IndexOfAny(lower, "ingrédients", "ingredients");
+            int idxPrep = IndexOfAny(lower, "préparation", "preparation", "instructions", "réalisation", "realisation", "étapes", "etapes");
 
             if (idxIng >= 0 && idxPrep > idxIng)
             {
@@ -2226,7 +3971,7 @@ namespace LoGeCuiMobile.Pages
             var lines = s.Replace("\r\n", "\n").Split('\n')
                 .Select(l => l.Trim())
                 .Where(l => l.Length > 0)
-                .Select(l => l.TrimStart('-', '�', '*', '�', '�', '�', ' '))
+                .Select(l => l.TrimStart('-', '•', '*', '–', '—', '·', ' '))
                 .Where(l => l.Length > 0);
 
             return string.Join("\n", lines);
@@ -2243,10 +3988,10 @@ namespace LoGeCuiMobile.Pages
 
         private static bool LooksLikeIngredientLine(string line)
         {
-            if (line.StartsWith("-") || line.StartsWith("�") || line.StartsWith("*")) return true;
+            if (line.StartsWith("-") || line.StartsWith("•") || line.StartsWith("*")) return true;
 
             var l = line.ToLowerInvariant();
-            string[] units = { " g", "kg", " ml", "cl", " l", "c�s", "cas", "c�c", "cac", "cuill�re", "pinc�e", "tranche", "sachet" };
+            string[] units = { " g", "kg", " ml", "cl", " l", "càs", "cas", "càc", "cac", "cuillère", "pincée", "tranche", "sachet" };
             if (units.Any(u => l.Contains(u))) return true;
 
             if (char.IsDigit(line.FirstOrDefault())) return true;
@@ -2258,7 +4003,7 @@ namespace LoGeCuiMobile.Pages
         {
             var l = line.Trim();
             if (l.StartsWith("1)") || l.StartsWith("1.") ||
-                l.StartsWith("�tape", StringComparison.OrdinalIgnoreCase) ||
+                l.StartsWith("Étape", StringComparison.OrdinalIgnoreCase) ||
                 l.StartsWith("Etape", StringComparison.OrdinalIgnoreCase))
                 return true;
 
@@ -2439,9 +4184,9 @@ namespace LoGeCuiMobile.Pages
         private readonly ObservableCollection<ArticleCourseUi> _articles = new();
         private readonly SupabaseService _supabase;
 
-        // Empêche la checkbox "Tout sélectionner" de déclencher une sélection de masse
-        // quand on la met à jour depuis le code.
-        private bool _suppressSelectAllEvent;
+        // Empêche la checkbox "Tout sélectionner" de déclencher une sélection de masse
+        // quand on la met à jour depuis le code.
+        private bool _suppressSelectAllEvent;
 
         public ListeCoursesPage()
         {
@@ -2450,10 +4195,10 @@ namespace LoGeCuiMobile.Pages
             _supabase = ((App)Application.Current).Supabase
                 ?? throw new InvalidOperationException("Supabase non initialisé.");
 
-            // IMPORTANT : ne pas re-s'abonner ici si ton XAML a déjà Clicked="BtnSupprimerSelection_Clicked"
-            // BtnSupprimerSelection.Clicked += BtnSupprimerSelection_Clicked;  <-- SUPPRIMÉ
+            // IMPORTANT : ne pas re-s'abonner ici si ton XAML a déjà Clicked="BtnSupprimerSelection_Clicked"
+            // BtnSupprimerSelection.Clicked += BtnSupprimerSelection_Clicked;  <-- SUPPRIMÉ
 
-            ListeCourses.ItemsSource = _articles;
+            ListeCourses.ItemsSource = _articles;
 
             ChargerDonnees();
         }
@@ -2462,14 +4207,14 @@ namespace LoGeCuiMobile.Pages
         {
             try
             {
-                // 1️⃣ Charger depuis le cache local
-                var local = await App.LocalDb.GetArticlesAsync();
+                // 1️⃣ Charger depuis le cache local
+                var local = await App.LocalDb.GetArticlesAsync();
                 _articles.Clear();
                 foreach (var a in local)
                     _articles.Add(new ArticleCourseUi(a.ToModel()));
 
-                // 2️⃣ Si internet → rafraîchir depuis Supabase
-                if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+                // 2️⃣ Si internet → rafraîchir depuis Supabase
+                if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
                     var remote = await _supabase.GetArticlesAsync();
 
@@ -2477,8 +4222,8 @@ namespace LoGeCuiMobile.Pages
                     foreach (var a in remote)
                         _articles.Add(new ArticleCourseUi(a));
 
-                    // 🔄 Mettre à jour le cache
-                    await App.LocalDb.SaveArticlesAsync(remote);
+                    // 🔄 Mettre à jour le cache
+                    await App.LocalDb.SaveArticlesAsync(remote);
                 }
             }
             catch (Exception ex)
@@ -2527,8 +4272,8 @@ namespace LoGeCuiMobile.Pages
 
         private async void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
-            // Checkbox "Acheté"
-            if (sender is not CheckBox checkbox) return;
+            // Checkbox "Acheté"
+            if (sender is not CheckBox checkbox) return;
             if (checkbox.BindingContext is not ArticleCourseUi articleUi) return;
 
             var article = articleUi.Model;
@@ -2553,18 +4298,18 @@ namespace LoGeCuiMobile.Pages
             }
         }
 
-        // Checkbox "Tout sélectionner" (pour suppression)
-        private void ChkToutSelectionner_CheckedChanged(object sender, CheckedChangedEventArgs e)
+        // Checkbox "Tout sélectionner" (pour suppression)
+        private void ChkToutSelectionner_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
             if (_suppressSelectAllEvent) return;
 
             foreach (var a in _articles)
                 a.IsSelectedForDelete = e.Value;
 
-            // Optionnel : si tu veux désactiver le bouton supprimer quand rien n'est coché,
-            // il faudra écouter les changements de IsSelectedForDelete (INotifyPropertyChanged).
-            // Ici on se contente de garder la checkbox cohérente.
-        }
+            // Optionnel : si tu veux désactiver le bouton supprimer quand rien n'est coché,
+            // il faudra écouter les changements de IsSelectedForDelete (INotifyPropertyChanged).
+            // Ici on se contente de garder la checkbox cohérente.
+        }
 
         private void RefreshSelectAllCheckBox()
         {
@@ -2582,9 +4327,9 @@ namespace LoGeCuiMobile.Pages
 
                 ChkToutSelectionner.IsEnabled = true;
 
-                // MAUI CheckBox n'a pas de tri-state :
-                // on met "checked" seulement si TOUT est sélectionné.
-                bool allSelected = _articles.All(a => a.IsSelectedForDelete);
+                // MAUI CheckBox n'a pas de tri-state :
+                // on met "checked" seulement si TOUT est sélectionné.
+                bool allSelected = _articles.All(a => a.IsSelectedForDelete);
                 ChkToutSelectionner.IsChecked = allSelected;
             }
             finally
@@ -2599,13 +4344,8 @@ namespace LoGeCuiMobile.Pages
             if (string.IsNullOrWhiteSpace(nom))
                 return;
 
-            string quantite = await DisplayPromptAsync("Ajouter", "Quantité :");
-            if (string.IsNullOrWhiteSpace(quantite))
-                return;
-
-            string unite = await DisplayPromptAsync("Ajouter", "Unité (g, kg, L, pièces...) :");
-            if (string.IsNullOrWhiteSpace(unite))
-                return;
+            string? quantite = await DisplayPromptAsync("Ajouter", "Quantité (optionnel) :");
+            string? unite = await DisplayPromptAsync("Ajouter", "Unité (optionnel) :");
 
             try
             {
@@ -2630,8 +4370,8 @@ namespace LoGeCuiMobile.Pages
                 {
                     _articles.Add(new ArticleCourseUi(added));
 
-                    // Nouveau item => on met à jour la checkbox "Tout sélectionner"
-                    RefreshSelectAllCheckBox();
+                    // Nouveau item => on met à jour la checkbox "Tout sélectionner"
+                    RefreshSelectAllCheckBox();
 
                     await DisplayAlert("Succès", $"'{added.Nom}' ajouté !", "OK");
                 }
@@ -2881,6 +4621,41 @@ public partial class MenuAleatoirePage : ContentPage
             if (!_lastIngredientsKnown || _lastMissing.Count == 0)
                 return;
 
+            // ✅ FORCER la récupération de la liste si null
+            if (app.CurrentShoppingListId == null && app.RestClient != null)
+            {
+                try
+                {
+                    var url = $"shopping_lists?select=id&owner_user_id=eq.{app.CurrentUserId.Value}&limit=1";
+                    var result = await app.RestClient.GetAsync<List<Dictionary<string, object>>>(url);
+
+                    if (result != null && result.Count > 0 && result[0].ContainsKey("id"))
+                    {
+                        var idObj = result[0]["id"];
+                        if (idObj != null)
+                        {
+                            app.SetCurrentShoppingListId(Guid.Parse(idObj.ToString()));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Debug", $"Erreur récup liste: {ex.Message}", "OK");
+                }
+            }
+
+            // ✅ list_id obligatoire dans articles_courses
+            var listId = app.CurrentShoppingListId;
+            if (listId == null || listId.Value == Guid.Empty)
+            {
+                await DisplayAlert(
+                    LocalizationResourceManager.Instance["ErrorTitle"],
+                    "Aucune liste active. Crée ou rejoins une liste avant d'envoyer les ingrédients.",
+                    LocalizationResourceManager.Instance["Dialog_Ok"]
+                );
+                return;
+            }
+
             bool confirm = await DisplayAlert(
                 LocalizationResourceManager.Instance["RandomMenu_SendConfirmTitle"],
                 LocalizationResourceManager.Instance["RandomMenu_SendConfirmBody"] + "\n- " + string.Join("\n- ", _lastMissing),
@@ -2893,7 +4668,8 @@ public partial class MenuAleatoirePage : ContentPage
 
             await app.ListeCoursesSupabaseService.AddMissingAsync(
                 app.CurrentUserId.Value,
-                _lastMissing);
+                _lastMissing,
+                listId.Value);
 
             SendMissingButton.IsEnabled = false;
             SendMissingButton.Text = LocalizationResourceManager.Instance["RandomMenu_SentButton"];
@@ -2906,6 +4682,16 @@ public partial class MenuAleatoirePage : ContentPage
                 LocalizationResourceManager.Instance["Dialog_Ok"]
             );
         }
+    }
+
+
+    private Guid? GetActiveListIdOrNull()
+    {
+        var app = (App)Application.Current;
+        if (app.CurrentShoppingListId == null || app.CurrentShoppingListId == Guid.Empty)
+            return null;
+
+        return app.CurrentShoppingListId.Value;
     }
 
     // ------------------ LOGIQUE ------------------
@@ -2939,7 +4725,9 @@ public partial class MenuAleatoirePage : ContentPage
 
         // 1) Recettes utilisateur
         // (tu utilises GetMyRecettesAsync dans ton code : je le garde)
-        var recettes = await app.RecipesService.GetMyRecettesAsync();
+        var recettes = await app.RecipesService.GetMyRecettesAsync(app.CurrentUserId!.Value, null);
+
+
 
         if (recettes == null || recettes.Count == 0)
         {
@@ -3596,7 +5384,10 @@ FILE: Pages\MesRecettesPage.xaml
                             </DataTrigger>
                         </Frame.Triggers>
 
-                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                        <!-- ✅ Ajout d'une colonne pour la photo -->
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto"
+                              RowDefinitions="Auto,Auto"
+                              ColumnSpacing="10">
 
                             <!-- Checkbox suppression multiple -->
                             <CheckBox Grid.Column="0"
@@ -3605,8 +5396,27 @@ FILE: Pages\MesRecettesPage.xaml
                                       CheckedChanged="RecetteDeleteCheckBox_CheckedChanged"
                                       VerticalOptions="Center" />
 
+                            <!-- ✅ Photo miniature -->
+                            <Frame Grid.Column="1"
+                                       Grid.RowSpan="2"
+                                       WidthRequest="44"
+                                       HeightRequest="44"
+                                       CornerRadius="22"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       IsClippedToBounds="True"
+                                       BorderColor="#DDDDDD"
+                                       BackgroundColor="#F2F2F2"
+                                       VerticalOptions="Center"
+                                       IsVisible="{Binding HasPhoto}">
+                                                                <Image Source="{Binding PhotoSource}"
+                                           WidthRequest="44"
+                                           HeightRequest="44"
+                                           Aspect="AspectFill" />
+                            </Frame>
+
                             <!-- Zone infos recette (tap = détails) -->
-                            <Grid Grid.Column="1" Grid.RowSpan="2">
+                            <Grid Grid.Column="2" Grid.RowSpan="2">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnRecetteTapped"
                                                           CommandParameter="{Binding Model}" />
@@ -3632,11 +5442,10 @@ FILE: Pages\MesRecettesPage.xaml
                             </Grid>
 
                             <!-- Boutons actions -->
-                            <HorizontalStackLayout Grid.Column="2" Grid.RowSpan="2"
+                            <HorizontalStackLayout Grid.Column="3" Grid.RowSpan="2"
                                                    Spacing="8"
                                                    VerticalOptions="Center">
 
-                                <!-- Ajouter ingrédients manquants -->
                                 <Button Text="🛒"
                                         BackgroundColor="#3498DB"
                                         TextColor="White"
@@ -3644,7 +5453,6 @@ FILE: Pages\MesRecettesPage.xaml
                                         Clicked="BtnAjouterManquants_Clicked"
                                         CommandParameter="{Binding .}"/>
 
-                                <!-- Supprimer une recette -->
                                 <Button Text="🗑"
                                         BackgroundColor="#e74c3c"
                                         TextColor="White"
@@ -3652,7 +5460,6 @@ FILE: Pages\MesRecettesPage.xaml
                                         Clicked="BtnSupprimerRecette_Clicked"
                                         CommandParameter="{Binding .}"/>
 
-                                <!-- Modifier recette -->
                                 <Button Text="✏️"
                                         BackgroundColor="#F1C40F"
                                         TextColor="Black"
@@ -3676,8 +5483,7 @@ FILE: Pages\MesRecettesPage.xaml
 FILE: Pages\MesRecettesPage.xaml.cs
 ================================================================================
 
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using LoGeCuiMobile.Resources.Lang;
 using LoGeCuiMobile.ViewModels;
 using LoGeCuiShared.Models;
@@ -3718,10 +5524,10 @@ public partial class MesRecettesPage : ContentPage
         if (_vm == null)
             return;
 
-        await _vm.LoadAsync();
+        // ✅ UN SEUL chargement propre
+        await _vm.LoadAsync(forceRemote: true);
 
-        // Recalcule vert/rouge si ton VM le fait (et si tu l’as implémenté)
-        // Sinon tu peux commenter la ligne.
+        // ✅ Puis recalcul des ingrédients dispo → bordures vert/rouge
         await _vm.RefreshAvailabilityAsync();
 
         RefreshSelectionUi();
@@ -3732,10 +5538,9 @@ public partial class MesRecettesPage : ContentPage
         await Navigation.PushAsync(new AjouterRecettePage());
     }
 
-    // Tap recette -> détails
+    // ---------------- TAP RECETTE ----------------
     private async void OnRecetteTapped(object sender, TappedEventArgs e)
     {
-        // Ici on accepte RecetteUi OU Recette
         Recette? recette = e.Parameter switch
         {
             Recette r => r,
@@ -3779,12 +5584,11 @@ public partial class MesRecettesPage : ContentPage
         await DisplayAlert(recette.Nom, details, LocalizationResourceManager.Instance["Dialog_Ok"]);
     }
 
-    // ----------- Sélection / suppression -----------
+    // ---------------- SELECTION MULTIPLE ----------------
 
     private void ChkToutSelectionnerRecettes_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
-        if (_vm == null) return;
-        if (_suppressSelectAllEvent) return;
+        if (_vm == null || _suppressSelectAllEvent) return;
 
         foreach (var r in _vm.Recettes)
             r.IsSelectedForDelete = e.Value;
@@ -3801,7 +5605,6 @@ public partial class MesRecettesPage : ContentPage
     {
         if (_vm == null) return;
 
-        // ⚠️ si ton XAML n’a pas ces x:Name, ça crash => je protège
         var selectedCount = _vm.Recettes.Count(x => x.IsSelectedForDelete);
 
         if (SelectionInfoLabel != null)
@@ -3850,18 +5653,14 @@ public partial class MesRecettesPage : ContentPage
         if (!confirm) return;
 
         await _vm.DeleteSelectedAsync(selected);
-
         RefreshSelectionUi();
     }
 
     private async void BtnSupprimerRecette_Clicked(object sender, EventArgs e)
     {
         if (_vm == null) return;
+        if (sender is not Button btn) return;
 
-        if (sender is not Button btn)
-            return;
-
-        // Accepte RecetteUi OU Recette (pratique si tu changes le XAML)
         RecetteUi? recetteUi = btn.CommandParameter switch
         {
             RecetteUi ui => ui,
@@ -3869,8 +5668,7 @@ public partial class MesRecettesPage : ContentPage
             _ => null
         };
 
-        if (recetteUi == null)
-            return;
+        if (recetteUi == null) return;
 
         bool confirm = await DisplayAlert(
             "Confirmation",
@@ -3884,12 +5682,11 @@ public partial class MesRecettesPage : ContentPage
         RefreshSelectionUi();
     }
 
-    // ----------- Modifier -----------
+    // ---------------- MODIFIER ----------------
 
     private async void BtnModifierRecette_Clicked(object sender, EventArgs e)
     {
-        if (sender is not Button btn)
-            return;
+        if (sender is not Button btn) return;
 
         Recette? recette = btn.CommandParameter switch
         {
@@ -3898,13 +5695,12 @@ public partial class MesRecettesPage : ContentPage
             _ => null
         };
 
-        if (recette == null)
-            return;
+        if (recette == null) return;
 
         await Navigation.PushAsync(new AjouterRecettePage(recette));
     }
 
-    // ----------- Ajouter manquants à la liste de courses -----------
+    // ---------------- AJOUTER MANQUANTS ----------------
 
     private async void BtnAjouterManquants_Clicked(object sender, EventArgs e)
     {
@@ -4066,9 +5862,65 @@ FILE: Pages\SettingsPage.xaml
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
 
-            <Label Text="{tr:Translate Settings_Account}"
+            <!-- ========================= -->
+            <!-- PARTAGE LISTE DE COURSES  -->
+            <!-- ========================= -->
+            <Label Text="Liste de courses partagée"
                    FontSize="18"
                    FontAttributes="Bold" />
+
+            <Frame Padding="12"
+                   CornerRadius="12"
+                   BorderColor="#DDDDDD"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Liste active :"
+                           FontAttributes="Bold" />
+
+                    <Label x:Name="LblActiveList"
+                           Text="(aucune)"
+                           TextColor="Gray" />
+
+                    <Label Text="Code de partage :"
+                           FontAttributes="Bold"
+                           Margin="0,6,0,0"/>
+
+                    <Label x:Name="LblShareCode"
+                           Text="(aucun)"
+                           TextColor="Gray" />
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Créer/voir mon code"
+                                Clicked="OnCreateOrShowMyCodeClicked"
+                                HorizontalOptions="FillAndExpand"/>
+
+                        <Button Text="Copier"
+                                Clicked="OnCopyCodeClicked"
+                                HorizontalOptions="End"/>
+                    </HorizontalStackLayout>
+
+                    <Button Text="Rejoindre avec un code"
+                            Clicked="OnJoinWithCodeClicked" />
+
+                    <Button Text="Choisir une liste active"
+                            Clicked="OnPickActiveListClicked" />
+
+                    <Button Text="Revenir à ma liste perso"
+                            BackgroundColor="#E67E22"
+                            TextColor="White"
+                            Clicked="OnDisableSharedListClicked" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- ========================= -->
+            <!-- COMPTE                    -->
+            <!-- ========================= -->
+            <Label Text="{tr:Translate Settings_Account}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
 
             <Frame Padding="12"
                    CornerRadius="12"
@@ -4078,6 +5930,7 @@ FILE: Pages\SettingsPage.xaml
 
                     <Button Text="{tr:Translate Settings_Logout}"
                             BackgroundColor="#34495E"
+                            TextColor="White"
                             FontAttributes="Bold"
                             Clicked="OnLogoutClicked" />
 
@@ -4088,6 +5941,7 @@ FILE: Pages\SettingsPage.xaml
 
                     <Button Text="{tr:Translate Settings_Unsubscribe}"
                             BackgroundColor="IndianRed"
+                            TextColor="White"
                             FontAttributes="Bold"
                             Clicked="OnDesinscriptionClicked" />
 
@@ -4103,89 +5957,230 @@ FILE: Pages\SettingsPage.xaml.cs
 ================================================================================
 
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using LoGeCuiMobile.Resources.Lang;
-using LoGeCuiShared.Services;
 using Microsoft.Maui.Storage;
 
 namespace LoGeCuiMobile.Pages;
 
 public partial class SettingsPage : ContentPage
 {
+    private const string ListsTable = "shopping_lists";
+    private const string MembersTable = "shopping_list_members";
+    private const string JoinRpc = "join_shopping_list";
+
     public SettingsPage()
     {
         InitializeComponent();
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        try
+        {
+            await RefreshSharingUiAsync();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", ex.Message, "OK");
+        }
+    }
+
+    // =========================
+    // UI actions (partage)
+    // =========================
+
+    private async void OnCreateOrShowMyCodeClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var app = (App)Application.Current;
+
+            if (app.CurrentUserId == null || app.RestClient == null)
+            {
+                await DisplayAlert("Erreur", "Tu dois être connecté.", "OK");
+                return;
+            }
+
+            var myList = await GetOrCreateMyOwnedListAsync(app.CurrentUserId.Value);
+            app.SetCurrentShoppingListId(myList.id);
+
+            await RefreshSharingUiAsync();
+            await DisplayAlert("OK", $"Ton code de partage : {myList.share_code}", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", ex.ToString(), "OK");
+        }
+    }
+
+    private async void OnCopyCodeClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var code = LblShareCode?.Text?.Trim();
+
+            if (string.IsNullOrWhiteSpace(code) || code == "(aucun)")
+            {
+                await DisplayAlert("Info", "Aucun code à copier.", "OK");
+                return;
+            }
+
+            await Clipboard.SetTextAsync(code);
+            await DisplayAlert("OK", "Code copié ✅", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", ex.ToString(), "OK");
+        }
+    }
+
+    private async void OnJoinWithCodeClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var app = (App)Application.Current;
+
+            if (app.CurrentUserId == null || app.RestClient == null || !app.IsConnected)
+            {
+                await DisplayAlert("Erreur", "Tu dois être connecté pour rejoindre une liste.", "OK");
+                return;
+            }
+
+            var code = await DisplayPromptAsync("Rejoindre une liste", "Entre le code de partage :");
+            if (string.IsNullOrWhiteSpace(code))
+                return;
+
+            code = code.Trim();
+
+            var joined = await JoinByCodeViaRpcAsync(code);
+
+            if (joined == null)
+            {
+                await DisplayAlert("Erreur", "Code invalide (liste introuvable).", "OK");
+                return;
+            }
+
+            app.SetCurrentShoppingListId(joined.Value.listId);
+
+            await RefreshSharingUiAsync();
+            await DisplayAlert("Succès", $"Tu as rejoint la liste : {joined.Value.name}", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", ex.ToString(), "OK");
+        }
+    }
+
+    private async void OnPickActiveListClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var app = (App)Application.Current;
+
+            if (app.CurrentUserId == null || app.RestClient == null)
+            {
+                await DisplayAlert("Erreur", "Tu dois être connecté.", "OK");
+                return;
+            }
+
+            var lists = await GetMyAccessibleListsAsync(app.CurrentUserId.Value);
+
+            if (lists.Count == 0)
+            {
+                await DisplayAlert("Info", "Tu n'as aucune liste partagée.", "OK");
+                return;
+            }
+
+            var labels = lists
+                .Select(l => $"{(string.IsNullOrWhiteSpace(l.name) ? "Liste partagée" : l.name)}  ({l.share_code})")
+                .ToArray();
+
+            var chosen = await DisplayActionSheet("Choisir la liste active", "Annuler", null, labels);
+            if (string.IsNullOrWhiteSpace(chosen) || chosen == "Annuler")
+                return;
+
+            var idx = Array.IndexOf(labels, chosen);
+            if (idx < 0) return;
+
+            app.SetCurrentShoppingListId(lists[idx].id);
+
+            await RefreshSharingUiAsync();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", ex.ToString(), "OK");
+        }
+    }
+
+    private async void OnDisableSharedListClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var app = (App)Application.Current;
+            app.SetCurrentShoppingListId(Guid.Empty);
+
+            await RefreshSharingUiAsync();
+            await DisplayAlert("OK", "Retour à ta liste perso ✅", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", ex.ToString(), "OK");
+        }
+    }
+
+    // =========================
+    // UI actions (compte)
+    // =========================
+
     private async void OnDesinscriptionClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            LocalizationResourceManager.Instance["Settings_DeleteConfirmTitle"],
-            LocalizationResourceManager.Instance["Settings_DeleteConfirmBody"],
-            LocalizationResourceManager.Instance["Settings_DeleteConfirmYes"],
-            LocalizationResourceManager.Instance["Dialog_Cancel"]);
+            "Confirmation",
+            "Supprimer définitivement ton compte ? Cette action est irréversible.",
+            "Oui, supprimer",
+            "Annuler");
 
         if (!confirm) return;
 
         var app = (App)Application.Current;
 
-        if (app.Supabase == null)
+        if (app.Supabase == null || app.CurrentAccessToken == null)
         {
-            await DisplayAlert(
-                LocalizationResourceManager.Instance["ErrorTitle"],
-                LocalizationResourceManager.Instance["Settings_SupabaseNull"],
-                LocalizationResourceManager.Instance["Dialog_Ok"]);
-
+            await DisplayAlert("Erreur", "Session invalide. Reconnecte-toi d'abord.", "OK");
             app.ShowLogin();
             return;
         }
 
-        // 1) Lire la session stockée
-        var token = await SecureStorage.GetAsync("sb_access_token");
-        var userId = await SecureStorage.GetAsync("sb_user_id");
-
-        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(userId))
+        var userId = app.CurrentUserId?.ToString();
+        if (string.IsNullOrWhiteSpace(userId))
         {
-            await DisplayAlert(
-                LocalizationResourceManager.Instance["SessionTitle"],
-                LocalizationResourceManager.Instance["SessionExpired"],
-                LocalizationResourceManager.Instance["Dialog_Ok"]);
-
+            await DisplayAlert("Erreur", "Session invalide.", "OK");
             app.ShowLogin();
             return;
         }
 
-        // 2) Réinjecter la session AVANT delete
-        app.Supabase.SetSession(token, userId);
+        app.Supabase.SetSession(app.CurrentAccessToken, userId);
 
-        // 3) Appel Edge Function
         var (ok, err) = await app.Supabase.DeleteAccountAsync();
 
         if (!ok)
         {
-            await DisplayAlert(
-                LocalizationResourceManager.Instance["ErrorTitle"],
-                string.Format(LocalizationResourceManager.Instance["Settings_DeleteFailed"], err),
-                LocalizationResourceManager.Instance["Dialog_Ok"]);
+            await DisplayAlert("Erreur", $"Suppression impossible : {err}", "OK");
 
-            if (!string.IsNullOrWhiteSpace(err) &&
-                err.Contains("Invalid JWT", StringComparison.OrdinalIgnoreCase))
+            if (err?.Contains("JWT", StringComparison.OrdinalIgnoreCase) == true)
             {
                 app.ShowLogin();
             }
-
             return;
         }
 
-        // Nettoyage local
-        SecureStorage.Remove("sb_access_token");
-        SecureStorage.Remove("sb_user_id");
-
-        await DisplayAlert(
-            LocalizationResourceManager.Instance["Dialog_Ok"],
-            LocalizationResourceManager.Instance["Settings_DeleteSuccess"],
-            LocalizationResourceManager.Instance["Dialog_Ok"]);
-
-        app.ShowLogin();
+        await DisplayAlert("Succès", "Ton compte a été supprimé.", "OK");
+        app.Logout(silent: true);
     }
 
     private void OnLogoutClicked(object sender, EventArgs e)
@@ -4193,11 +6188,209 @@ public partial class SettingsPage : ContentPage
         var app = (App)Application.Current;
 
         app.Supabase?.ClearSession();
-
         SecureStorage.Remove("sb_access_token");
         SecureStorage.Remove("sb_user_id");
 
         app.ShowLogin();
+    }
+
+    // =========================
+    // Helpers: refresh UI
+    // =========================
+
+    private async Task RefreshSharingUiAsync()
+    {
+        try
+        {
+            var app = (App)Application.Current;
+
+            if (app.CurrentUserId == null)
+            {
+                LblActiveList.Text = "Liste perso (non partagée)";
+                LblShareCode.Text = "(aucun)";
+                return;
+            }
+
+            if (app.CurrentShoppingListId == null || app.CurrentShoppingListId == Guid.Empty)
+            {
+                LblActiveList.Text = "Liste perso (non partagée)";
+                LblShareCode.Text = "(aucun)";
+                return;
+            }
+
+            if (!app.IsConnected || app.RestClient == null)
+            {
+                LblActiveList.Text = "Ma liste";
+                LblShareCode.Text = "(mode hors ligne)";
+                return;
+            }
+
+            var list = await GetListByIdAsync(app.CurrentShoppingListId.Value);
+            if (list == null)
+            {
+                LblActiveList.Text = "Ma liste";
+                LblShareCode.Text = "(aucun)";
+                return;
+            }
+
+            LblActiveList.Text = string.IsNullOrWhiteSpace(list.name) ? "Ma liste" : list.name;
+            LblShareCode.Text = list.share_code ?? "(aucun)";
+        }
+        catch
+        {
+            LblActiveList.Text = "Ma liste";
+            LblShareCode.Text = "(aucun)";
+        }
+    }
+
+    // =========================
+    // JOIN via RPC
+    // =========================
+
+    private async Task<(Guid listId, string name)?> JoinByCodeViaRpcAsync(string code)
+    {
+        var app = (App)Application.Current;
+
+        var payload = new { p_share_code = code };
+
+        try
+        {
+            var rows = await app.RestClient!.PostAsync<List<JoinResultRow>>(
+                $"rpc/{JoinRpc}",
+                payload,
+                returnRepresentation: true);
+
+            var row = rows?.FirstOrDefault();
+            if (row == null || row.list_id == Guid.Empty)
+                return null;
+
+            return (row.list_id, row.name ?? "Liste partagée");
+        }
+        catch (Exception ex)
+        {
+            var msg = ex.ToString();
+
+            if (msg.Contains("404", StringComparison.OrdinalIgnoreCase) ||
+                msg.Contains("Not Found", StringComparison.OrdinalIgnoreCase) ||
+                msg.Contains("could not find the function", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception(
+                    "La fonction RPC 'join_shopping_list' n'existe pas côté Supabase.\n" +
+                    "Il faut la créer (SECURITY DEFINER) pour rejoindre une liste par share_code avec RLS.",
+                    ex);
+            }
+
+            throw;
+        }
+    }
+
+    // =========================
+    // Supabase queries
+    // =========================
+
+    private async Task<ShoppingListRow?> GetListByIdAsync(Guid id)
+    {
+        var app = (App)Application.Current;
+        var q = $"{ListsTable}?select=id,owner_user_id,name,share_code,created_at&id=eq.{id}&limit=1";
+
+        var rows = await app.RestClient!.GetAsync<List<ShoppingListRow>>(q);
+        return rows?.FirstOrDefault();
+    }
+
+    private async Task<ShoppingListRow> GetOrCreateMyOwnedListAsync(Guid userId)
+    {
+        var app = (App)Application.Current;
+
+        var q = $"{ListsTable}?select=id,owner_user_id,name,share_code,created_at&owner_user_id=eq.{userId}&order=created_at.asc&limit=1";
+        var existing = await app.RestClient!.GetAsync<List<ShoppingListRow>>(q);
+        var row = existing?.FirstOrDefault();
+        if (row != null)
+            return row;
+
+        var payload = new
+        {
+            owner_user_id = userId,
+            name = "Ma liste"
+        };
+
+        var created = await app.RestClient!.PostAsync<List<ShoppingListRow>>(
+            $"{ListsTable}?select=id,owner_user_id,name,share_code,created_at",
+            payload,
+            returnRepresentation: true);
+
+        var createdRow = created?.FirstOrDefault()
+            ?? throw new Exception("Création de liste impossible.");
+
+        await UpsertMemberAsync(createdRow.id, userId, role: "owner");
+
+        return createdRow;
+    }
+
+    private async Task<List<ShoppingListRow>> GetMyAccessibleListsAsync(Guid userId)
+    {
+        var app = (App)Application.Current;
+
+        var mq = $"{MembersTable}?select=list_id,role&user_id=eq.{userId}";
+        var memberships = await app.RestClient!.GetAsync<List<MemberRow>>(mq) ?? new List<MemberRow>();
+
+        var ids = memberships.Select(m => m.list_id).Distinct().ToList();
+
+        var oq = $"{ListsTable}?select=id,owner_user_id,name,share_code,created_at&owner_user_id=eq.{userId}";
+        var owned = await app.RestClient!.GetAsync<List<ShoppingListRow>>(oq) ?? new List<ShoppingListRow>();
+
+        foreach (var o in owned)
+            if (!ids.Contains(o.id))
+                ids.Add(o.id);
+
+        if (ids.Count == 0)
+            return owned;
+
+        var inList = string.Join(",", ids.Select(x => x.ToString()));
+        var q = $"{ListsTable}?select=id,owner_user_id,name,share_code,created_at&id=in.({inList})&order=created_at.desc";
+
+        var rows = await app.RestClient!.GetAsync<List<ShoppingListRow>>(q);
+        return rows ?? new List<ShoppingListRow>();
+    }
+
+    private async Task UpsertMemberAsync(Guid listId, Guid userId, string role = "member")
+    {
+        var app = (App)Application.Current;
+
+        var payload = new[]
+        {
+            new { list_id = listId, user_id = userId, role = role }
+        };
+
+        await app.RestClient!.PostAsync<object>(
+            $"{MembersTable}?on_conflict=list_id,user_id",
+            payload,
+            returnRepresentation: false,
+            mergeDuplicates: true);
+    }
+
+    // =========================
+    // DTOs
+    // =========================
+
+    private sealed class ShoppingListRow
+    {
+        public Guid id { get; set; }
+        public Guid owner_user_id { get; set; }
+        public string? name { get; set; }
+        public string? share_code { get; set; }
+        public DateTimeOffset created_at { get; set; }
+    }
+
+    private sealed class MemberRow
+    {
+        public Guid list_id { get; set; }
+        public string? role { get; set; }
+    }
+
+    private sealed class JoinResultRow
+    {
+        public Guid list_id { get; set; }
+        public string? name { get; set; }
     }
 }
 
@@ -6040,14 +8233,20 @@ namespace LoGeCuiMobile.Services.Local
         public string CategorieDb { get; set; } = "";
         public int Type { get; set; } // enum -> int
 
+        // ✅ Pour éviter les doublons à l’édition (upsert stable)
+        public string? ExternalId { get; set; }
+
+        // ✅ utile pour cohérence (optionnel)
+        public string? OwnerUserId { get; set; }
+
+        // ✅ Photos (sync + cache)
+        public string? PhotoUrl { get; set; }
+        public string? PhotoLocalPath { get; set; }
+
         public RecetteLocal() { }
 
         public RecetteLocal(Recette r)
         {
-            // adapte selon ton type réel :
-            // si r.Id est Guid => r.Id.ToString()
-            // si r.Id est string => r.Id
-            // si r.Id est int => r.Id.ToString()
             Id = r.Id.ToString();
 
             Nom = r.Nom ?? "";
@@ -6055,13 +8254,21 @@ namespace LoGeCuiMobile.Services.Local
             Instructions = r.Instructions ?? "";
             CategorieDb = r.CategorieDb ?? "";
             Type = (int)r.Type;
+
+            ExternalId = r.ExternalId;
+            OwnerUserId = r.OwnerUserId?.ToString();
+
+            PhotoUrl = r.PhotoUrl;
+            PhotoLocalPath = r.PhotoLocalPath;
         }
 
         public Recette ToModel()
         {
-            // si Recette.Id est Guid, remets Guid.Parse
-            // sinon adapte.
             Guid.TryParse(Id, out var guid);
+
+            Guid? owner = null;
+            if (!string.IsNullOrWhiteSpace(OwnerUserId) && Guid.TryParse(OwnerUserId, out var ouid))
+                owner = ouid;
 
             return new Recette
             {
@@ -6070,7 +8277,13 @@ namespace LoGeCuiMobile.Services.Local
                 TempsPreparation = TempsPreparation,
                 Instructions = Instructions,
                 CategorieDb = CategorieDb,
-                Type = (TypePlat)Type
+                Type = (TypePlat)Type,
+
+                ExternalId = ExternalId,
+                OwnerUserId = owner,
+
+                PhotoUrl = PhotoUrl,
+                PhotoLocalPath = PhotoLocalPath
             };
         }
     }
@@ -6243,6 +8456,96 @@ namespace LoGeCuiMobile.Services
 }
 
 ================================================================================
+FILE: Services\SupabaseStorageService.cs
+================================================================================
+
+﻿using System;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using LoGeCuiShared.Services;
+
+namespace LoGeCuiMobile.Services
+{
+    public class SupabaseStorageService
+    {
+        private readonly string _supabaseUrl;
+        private readonly string _supabaseKey;
+        private const string Bucket = "recipe-photos";
+
+        // ✅ réutiliser HttpClient (évite sockets leak)
+        private static readonly HttpClient _http = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(60)
+        };
+
+        public SupabaseStorageService()
+        {
+            _supabaseUrl = ConfigurationHelper.GetSupabaseUrl().TrimEnd('/');
+            _supabaseKey = ConfigurationHelper.GetSupabaseKey();
+        }
+
+        /// <summary>
+        /// Upload une photo dans Supabase Storage et retourne l'URL publique.
+        /// Bucket = recipe-photos (public).
+        /// </summary>
+        public async Task<string> UploadRecipePhotoAndGetPublicUrlAsync(
+            string accessToken,
+            Guid userId,
+            Guid recetteId,
+            string localPath)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
+                throw new InvalidOperationException("Token manquant. Reconnecte-toi.");
+
+            if (!File.Exists(localPath))
+                throw new FileNotFoundException("Photo introuvable", localPath);
+
+            var ext = Path.GetExtension(localPath);
+            if (string.IsNullOrWhiteSpace(ext)) ext = ".jpg";
+
+            // Range tes fichiers par user -> plus simple pour les policies
+            var objectPath = $"{userId}/recipes/{recetteId}/{DateTime.UtcNow:yyyyMMdd_HHmmss}{ext}";
+
+            var uploadUrl = $"{_supabaseUrl}/storage/v1/object/{Bucket}/{objectPath}";
+            var publicUrl = $"{_supabaseUrl}/storage/v1/object/public/{Bucket}/{objectPath}";
+
+            await using var stream = File.OpenRead(localPath);
+
+            using var req = new HttpRequestMessage(HttpMethod.Put, uploadUrl);
+            req.Headers.Add("apikey", _supabaseKey);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            // Permet d'écraser si le fichier existe déjà (selon comportement Storage)
+            req.Headers.Add("x-upsert", "true");
+
+            req.Content = new StreamContent(stream);
+            req.Content.Headers.ContentType = new MediaTypeHeaderValue(GetMimeType(ext));
+
+            using var res = await _http.SendAsync(req);
+            var body = await res.Content.ReadAsStringAsync();
+
+            if (!res.IsSuccessStatusCode)
+                throw new Exception($"Upload Storage failed ({(int)res.StatusCode}): {body}");
+
+            return publicUrl;
+        }
+
+        private static string GetMimeType(string ext)
+        {
+            ext = (ext ?? "").ToLowerInvariant();
+            return ext switch
+            {
+                ".png" => "image/png",
+                ".webp" => "image/webp",
+                _ => "image/jpeg"
+            };
+        }
+    }
+}
+
+================================================================================
 FILE: ViewModels\ArticleCourseUi.cs
 ================================================================================
 
@@ -6307,11 +8610,14 @@ FILE: ViewModels\MesRecettesViewModel.cs
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using LoGeCuiShared.Models;
 using LoGeCuiShared.Services;
+using LoGeCuiShared.Utils;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Networking;
 
 namespace LoGeCuiMobile.ViewModels
@@ -6323,7 +8629,7 @@ namespace LoGeCuiMobile.ViewModels
         Missing
     }
 
-    // ✅ UI wrapper (selection, couleurs, etc.)
+    // ✅ UI wrapper
     public class RecetteUi : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -6379,6 +8685,31 @@ namespace LoGeCuiMobile.ViewModels
         public int TempsPreparation => Model.TempsPreparation;
         public string DifficulteTexte => Model.DifficulteTexte;
 
+        // ✅ Image pour la liste (local > url + cache busting optionnel)
+        public ImageSource? PhotoSource
+        {
+            get
+            {
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(Model.PhotoLocalPath) && File.Exists(Model.PhotoLocalPath))
+                        return ImageSource.FromFile(Model.PhotoLocalPath);
+
+                    if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+                        return ImageSource.FromUri(new Uri(Model.PhotoUrl));
+
+                    return null;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public void NotifyPhotoChanged()
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PhotoSource)));
+
         public RecetteUi(Recette r) => Model = r;
     }
 
@@ -6403,7 +8734,7 @@ namespace LoGeCuiMobile.ViewModels
                 if (_selectedCategorie == value) return;
                 _selectedCategorie = value;
                 OnPropertyChanged(nameof(SelectedCategorie));
-                ApplyFilter(); // ✅ synchro
+                ApplyFilter();
             }
         }
 
@@ -6429,20 +8760,11 @@ namespace LoGeCuiMobile.ViewModels
             RefreshCommand = new Command(async () => await LoadAsync(forceRemote: true));
         }
 
-        // ------------------ HELPERS erreurs Supabase ------------------
-
         private static bool IsJwtExpired(Exception ex)
-        {
-            // On détecte "JWT expired" même si c'est encapsulé dans une exception
-            var msg = ex.ToString();
-            return msg.Contains("JWT expired", StringComparison.OrdinalIgnoreCase);
-        }
+            => ex.ToString().Contains("JWT expired", StringComparison.OrdinalIgnoreCase);
 
         private static bool IsNetworkRelated(Exception ex)
         {
-            // Large: HttpRequestException, timeout, etc.
-            // On fait simple: si on est online mais l'appel rate, on fallback cache.
-            // (Si tu veux, on peut raffiner après.)
             var msg = ex.ToString();
             return msg.Contains("HttpRequestException", StringComparison.OrdinalIgnoreCase)
                 || msg.Contains("timed out", StringComparison.OrdinalIgnoreCase)
@@ -6450,7 +8772,12 @@ namespace LoGeCuiMobile.ViewModels
                 || msg.Contains("network", StringComparison.OrdinalIgnoreCase);
         }
 
-        // ------------------ LOAD ------------------
+        // ✅ Normalisation unique partout (safe)
+        private static string Norm(string? s)
+        {
+            var n = IngredientNormalizer.Normalize(s);
+            return string.IsNullOrWhiteSpace(n) ? "" : n;
+        }
 
         public async Task LoadAsync(bool forceRemote = false)
         {
@@ -6460,14 +8787,14 @@ namespace LoGeCuiMobile.ViewModels
             {
                 IsBusy = true;
 
-                // 0) Cache local d’abord (offline friendly)
+                // 0) Cache local d'abord
                 var local = await App.LocalDb.GetRecettesAsync();
                 _all = local.Select(x => x.ToModel()).ToList();
 
-                // 1) Si internet + connecté : refresh
+                // 1) Remote si internet + connecté
                 if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
                 {
-                    var app = (App)Microsoft.Maui.Controls.Application.Current;
+                    var app = (App)Application.Current;
 
                     if (app.IsConnected && app.CurrentUserId != null)
                     {
@@ -6476,8 +8803,7 @@ namespace LoGeCuiMobile.ViewModels
                             var remote = await _recipesService.GetRecettesAsync(app.CurrentUserId.Value)
                                          ?? new List<Recette>();
 
-                            // Si forceRemote on remplace toujours
-                            // Sinon: on remplace si remote non vide (évite d’écraser cache avec vide)
+                            // Ne pas écraser le cache par vide si pas force
                             if (forceRemote || remote.Count > 0)
                             {
                                 _all = remote;
@@ -6486,17 +8812,8 @@ namespace LoGeCuiMobile.ViewModels
                         }
                         catch (Exception ex)
                         {
-                            // ✅ IMPORTANT : si JWT expiré, on reste sur cache (ne pas crasher l'app)
-                            if (IsJwtExpired(ex) || IsNetworkRelated(ex))
-                            {
-                                // Optionnel: tu peux déclencher une UI "Reconnecte-toi"
-                                // mais ici on reste silencieux pour que l'app démarre.
-                            }
-                            else
-                            {
-                                // Autres erreurs: on laisse remonter (ou tu peux aussi fallback)
+                            if (!(IsJwtExpired(ex) || IsNetworkRelated(ex)))
                                 throw;
-                            }
                         }
                     }
                 }
@@ -6525,10 +8842,9 @@ namespace LoGeCuiMobile.ViewModels
                 Recettes.Add(new RecetteUi(r));
         }
 
-        // -------- Availability (vert/rouge) --------
         public async Task RefreshAvailabilityAsync()
         {
-            var app = (App)Microsoft.Maui.Controls.Application.Current;
+            var app = (App)Application.Current;
 
             // Offline => Unknown
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
@@ -6555,7 +8871,7 @@ namespace LoGeCuiMobile.ViewModels
             {
                 var userId = app.CurrentUserId.Value;
 
-                // 1) ingrédients dispo user
+                // ✅ ingrédients utilisateur disponibles
                 var userIngredients = await app.IngredientsService.GetIngredientsAsync(userId) ?? new List<Ingredient>();
                 var userSet = userIngredients
                     .Where(i => i.EstDisponible)
@@ -6563,7 +8879,6 @@ namespace LoGeCuiMobile.ViewModels
                     .Where(s => !string.IsNullOrWhiteSpace(s))
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-                // 2) pour chaque recette, calcule missing (⚠️ N requêtes - ok pour démarrer)
                 foreach (var r in Recettes)
                 {
                     var rows = await app.RecetteIngredientsService.GetForRecetteAsync(r.Model.Id);
@@ -6587,12 +8902,13 @@ namespace LoGeCuiMobile.ViewModels
                         .ToList();
 
                     r.MissingCount = missing.Count;
-                    r.AvailabilityState = (missing.Count == 0) ? AvailabilityState.AllAvailable : AvailabilityState.Missing;
+                    r.AvailabilityState = (missing.Count == 0)
+                        ? AvailabilityState.AllAvailable
+                        : AvailabilityState.Missing;
                 }
             }
             catch (Exception ex)
             {
-                // ✅ si JWT expiré => on met tout en Unknown et on sort
                 if (IsJwtExpired(ex) || IsNetworkRelated(ex))
                 {
                     foreach (var r in Recettes)
@@ -6607,10 +8923,9 @@ namespace LoGeCuiMobile.ViewModels
             }
         }
 
-        // -------- Actions recette -> liste de courses --------
         public async Task<List<string>?> GetMissingIngredientsForRecipeAsync(Recette recette)
         {
-            var app = (App)Microsoft.Maui.Controls.Application.Current;
+            var app = (App)Application.Current;
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
                 return null;
@@ -6630,17 +8945,18 @@ namespace LoGeCuiMobile.ViewModels
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                 var rows = await app.RecetteIngredientsService.GetForRecetteAsync(recette.Id);
+
                 var recipeNames = rows
-                    .Select(x => (x.nom ?? "").Trim())
+                    .Select(x => Norm(x.nom))
                     .Where(s => !string.IsNullOrWhiteSpace(s))
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
                 if (recipeNames.Count == 0)
-                    return null;
+                    return new List<string>(); // pas null => "aucun ingrédient renseigné"
 
                 var missing = recipeNames
-                    .Where(n => !userSet.Contains(Norm(n)))
+                    .Where(n => !userSet.Contains(n))
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
@@ -6657,7 +8973,7 @@ namespace LoGeCuiMobile.ViewModels
 
         public async Task<bool> SendMissingToShoppingAsync(List<string> missing)
         {
-            var app = (App)Microsoft.Maui.Controls.Application.Current;
+            var app = (App)Application.Current;
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
                 return false;
@@ -6665,9 +8981,33 @@ namespace LoGeCuiMobile.ViewModels
             if (!app.IsConnected || app.CurrentUserId == null || app.ListeCoursesSupabaseService == null)
                 return false;
 
+            // ✅ FORCER la récupération de la liste si null
+            if (app.CurrentShoppingListId == null && app.RestClient != null)
+            {
+                try
+                {
+                    var url = $"shopping_lists?select=id&owner_user_id=eq.{app.CurrentUserId.Value}&limit=1";
+                    var result = await app.RestClient.GetAsync<List<Dictionary<string, object>>>(url);
+
+                    if (result != null && result.Count > 0 && result[0].ContainsKey("id"))
+                    {
+                        var idObj = result[0]["id"];
+                        if (idObj != null)
+                        {
+                            app.SetCurrentShoppingListId(Guid.Parse(idObj.ToString()));
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            var listId = app.CurrentShoppingListId;
+            if (listId == null || listId.Value == Guid.Empty)
+                return false;
+
             try
             {
-                await app.ListeCoursesSupabaseService.AddMissingAsync(app.CurrentUserId.Value, missing);
+                await app.ListeCoursesSupabaseService.AddMissingAsync(app.CurrentUserId.Value, missing, listId.Value);
                 return true;
             }
             catch (Exception ex)
@@ -6679,16 +9019,14 @@ namespace LoGeCuiMobile.ViewModels
             }
         }
 
-        // -------- Suppression --------
         public async Task DeleteSelectedAsync(List<RecetteUi> selected)
         {
-            var app = (App)Microsoft.Maui.Controls.Application.Current;
+            var app = (App)Application.Current;
 
             // Optimistic UI
             foreach (var r in selected.ToList())
                 Recettes.Remove(r);
 
-            // Supabase si possible
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet && app.IsConnected && app.RecipesService != null)
             {
                 try
@@ -6698,17 +9036,13 @@ namespace LoGeCuiMobile.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    // si JWT expiré => on ne peut pas supprimer côté serveur.
-                    // on reload depuis cache pour être cohérent
                     if (!IsJwtExpired(ex) && !IsNetworkRelated(ex))
                         throw;
                 }
             }
 
-            // Recharge (cache + remote si possible)
             await LoadAsync(forceRemote: true);
 
-            // Refresh disponibilité (si possible)
             try
             {
                 await RefreshAvailabilityAsync();
@@ -6722,9 +9056,5 @@ namespace LoGeCuiMobile.ViewModels
 
         public Task DeleteOneAsync(RecetteUi one)
             => DeleteSelectedAsync(new List<RecetteUi> { one });
-
-        // -------- Helpers --------
-        private static string Norm(string? s)
-            => (s ?? "").Trim().ToLowerInvariant();
     }
 }

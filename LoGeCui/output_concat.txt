@@ -1,0 +1,3879 @@
+# CONCAT OUTPUT
+# Root: C:\Users\Francois\source\repos\LoGeCui\LoGeCui
+# Files: 34
+
+
+================================================================================
+FILE: App.xaml
+================================================================================
+
+﻿<Application x:Class="LoGeCui.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
+
+================================================================================
+FILE: App.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Windows;
+using LoGeCuiShared.Services;
+
+namespace LoGeCui
+{
+    public partial class App : Application
+    {
+        // AJOUTÉ : Instance unique de SupabaseService
+        public static SupabaseService SupabaseService { get; private set; }
+        public static SupabaseRestClient? RestClient { get; private set; }
+        public static RecipesService? RecipesService { get; private set; }
+        public static Guid? CurrentUserId { get; private set; }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // AJOUTÉ : Initialiser le service Supabase UNE SEULE FOIS
+            string url = ConfigurationHelper.GetSupabaseUrl();
+            string key = ConfigurationHelper.GetSupabaseKey(); // Remplace par ta clé anon
+
+            // Créer l'instance UNE SEULE FOIS
+            SupabaseService = new SupabaseService(url, key);
+
+            // Ouvrir la fenêtre de connexion en premier
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+        }
+
+        public static void InitRestServices(string accessToken, Guid userId)
+        {
+            string url = ConfigurationHelper.GetSupabaseUrl();
+            string key = ConfigurationHelper.GetSupabaseKey();
+
+            var client = new SupabaseRestClient(url, key);
+            client.SetBearerToken(accessToken);
+
+            RestClient = client;
+            RecipesService = new RecipesService(client);
+            CurrentUserId = userId;
+        }
+    }
+}
+
+================================================================================
+FILE: appsettings.example.json
+================================================================================
+
+﻿{
+  "Supabase": {
+    "Url": "https://VOTRE_PROJECT_ID.supabase.co",
+    "Key": "VOTRE_PUBLISHABLE_KEY"
+  }
+}
+
+================================================================================
+FILE: appsettings.json
+================================================================================
+
+{
+  "Supabase": {
+    "Url": "https://wzctiypsadqktzcnswri.supabase.co",
+    "Key": "sb_publishable_ZFk8ONON5qMA0vZ3V0nVAg_TZZrO1F1"
+  }
+
+}
+
+================================================================================
+FILE: AssemblyInfo.cs
+================================================================================
+
+using System.Windows;
+
+[assembly: ThemeInfo(
+    ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located
+                                                //(used if a resource is not found in the page,
+                                                // or application resource dictionaries)
+    ResourceDictionaryLocation.SourceAssembly   //where the generic resource dictionary is located
+                                                //(used if a resource is not found in the page,
+                                                // app, or any theme specific resource dictionaries)
+)]
+
+================================================================================
+FILE: ConfigurationHelper.cs
+================================================================================
+
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+
+namespace LoGeCui
+{
+    public static class ConfigurationHelper
+    {
+        private static IConfiguration? _configuration;
+
+        public static IConfiguration Configuration
+        {
+            get
+            {
+                if (_configuration == null)
+                {
+                    var builder = new ConfigurationBuilder()
+                        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                    _configuration = builder.Build();
+                }
+                return _configuration;
+            }
+        }
+
+        public static string GetSupabaseUrl()
+        {
+            return Configuration["Supabase:Url"] ?? throw new Exception("Supabase URL non configurée");
+        }
+
+        public static string GetSupabaseKey()
+        {
+            return Configuration["Supabase:Key"] ?? throw new Exception("Supabase Key non configurée");
+        }
+    }
+}
+
+================================================================================
+FILE: Dialogs\AjouterArticleCourseDialog.xaml
+================================================================================
+
+﻿<Window x:Class="LoGeCui.Dialogs.AjouterArticleCourseDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ajouter un article" 
+        Height="400" 
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#ECF0F1">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="🛒 Ajouter à la liste de courses"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   Margin="0,0,0,15"/>
+
+        <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Nom *"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtNom"
+                     Height="30"
+                     FontSize="13"
+                     Padding="5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
+            <TextBlock Text="Quantité *"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtQuantite"
+                     Height="30"
+                     FontSize="13"
+                     Padding="5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Margin="0,0,0,10">
+            <TextBlock Text="Unité *"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+            <ComboBox x:Name="CmbUnite"
+                      Height="30"
+                      FontSize="13"
+                      Padding="5">
+                <ComboBoxItem Content="g"/>
+                <ComboBoxItem Content="kg"/>
+                <ComboBoxItem Content="ml"/>
+                <ComboBoxItem Content="L"/>
+                <ComboBoxItem Content="pièces" IsSelected="True"/>
+                <ComboBoxItem Content="boîtes"/>
+                <ComboBoxItem Content="sachets"/>
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,0,0">
+
+            <Button Content="Annuler"
+                    Width="100"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    FontSize="13"
+                    BorderThickness="0"
+                    Click="BtnAnnuler_Click"/>
+
+            <Button Content="Ajouter"
+                    Width="100"
+                    Height="35"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="13"
+                    BorderThickness="0"
+                    Click="BtnAjouter_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>
+
+================================================================================
+FILE: Dialogs\AjouterArticleCourseDialog.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Dialogs
+{
+    public partial class AjouterArticleCourseDialog : Window
+    {
+        public ArticleCourse? NouvelArticle { get; private set; }
+
+        public AjouterArticleCourseDialog()
+        {
+            InitializeComponent();
+            TxtNom.Focus();
+        }
+
+        private void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(TxtNom.Text))
+            {
+                MessageBox.Show("Veuillez entrer un nom.", "Champ requis", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TxtQuantite.Text))
+            {
+                MessageBox.Show("Veuillez entrer une quantité.", "Champ requis", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            NouvelArticle = new ArticleCourse
+            {
+                Nom = TxtNom.Text.Trim(),
+                Quantite = TxtQuantite.Text.Trim(),
+                Unite = (CmbUnite.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString() ?? "pièces",
+                EstAchete = false
+            };
+
+            DialogResult = true;
+            Close();
+        }
+
+        private void BtnAnnuler_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+    }
+}
+
+================================================================================
+FILE: Dialogs\AjouterIngredientDialog.xaml
+================================================================================
+
+﻿<Window x:Class="LoGeCui.Dialogs.AjouterIngredientDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ajouter un ingrédient" 
+        Height="700" 
+        Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#ECF0F1">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Titre -->
+        <TextBlock Grid.Row="0"
+                   Text="➕ Nouvel ingrédient"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   Margin="0,0,0,20"/>
+        
+        <!-- Nom -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <TextBlock Text="Nom de l'ingrédient *"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#34495E"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtNom"
+                     Height="35"
+                     FontSize="14"
+                     Padding="8"
+                     BorderBrush="#BDC3C7"
+                     BorderThickness="1"/>
+        </StackPanel>
+        
+        <!-- Quantité -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <TextBlock Text="Quantité *"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#34495E"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtQuantite"
+                     Height="35"
+                     FontSize="14"
+                     Padding="8"
+                     BorderBrush="#BDC3C7"
+                     BorderThickness="1"/>
+        </StackPanel>
+        
+        <!-- Unité -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,15">
+            <TextBlock Text="Unité *"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#34495E"
+                       Margin="0,0,0,5"/>
+            <ComboBox x:Name="CmbUnite"
+                      Height="35"
+                      FontSize="14"
+                      Padding="8,5"
+                      BorderBrush="#BDC3C7"
+                      BorderThickness="1">
+                <ComboBoxItem Content="kg" IsSelected="True"/>
+                <ComboBoxItem Content="g"/>
+                <ComboBoxItem Content="L"/>
+                <ComboBoxItem Content="ml"/>
+                <ComboBoxItem Content="pièces"/>
+                <ComboBoxItem Content="sachets"/>
+                <ComboBoxItem Content="boîtes"/>
+            </ComboBox>
+        </StackPanel>
+        
+        <!-- Boutons -->
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            
+            <Button Content="❌ Annuler"
+                    Width="120"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnAnnuler_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#95A5A6"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#7F8C8D"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            
+            <Button Content="✅ Ajouter"
+                    Width="120"
+                    Height="40"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnAjouter_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#27AE60"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#229954"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            
+        </StackPanel>
+        
+    </Grid>
+    
+</Window>
+
+================================================================================
+FILE: Dialogs\AjouterIngredientDialog.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Dialogs
+{
+    public partial class AjouterIngredientDialog : Window
+    {
+        // Propriété pour récupérer l'ingrédient créé
+        public Ingredient? NouvelIngredient { get; private set; }
+
+        public AjouterIngredientDialog()
+        {
+            InitializeComponent();
+
+            // Focus sur le premier champ
+            TxtNom.Focus();
+        }
+
+        private void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        {
+            // Validation : vérifier que tous les champs sont remplis
+            if (string.IsNullOrWhiteSpace(TxtNom.Text))
+            {
+                MessageBox.Show("Veuillez entrer un nom d'ingrédient.",
+                    "Champ requis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                TxtNom.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TxtQuantite.Text))
+            {
+                MessageBox.Show("Veuillez entrer une quantité.",
+                    "Champ requis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                TxtQuantite.Focus();
+                return;
+            }
+
+            // Créer l'ingrédient
+            NouvelIngredient = new Ingredient
+            {
+                Nom = TxtNom.Text.Trim(),
+                Quantite = TxtQuantite.Text.Trim(),
+                Unite = (CmbUnite.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "pièces",
+                EstDisponible = true
+            };
+
+            // Fermer la fenêtre avec succès
+            DialogResult = true;
+            Close();
+        }
+
+        private void BtnAnnuler_Click(object sender, RoutedEventArgs e)
+        {
+            // Fermer sans rien faire
+            DialogResult = false;
+            Close();
+        }
+    }
+}
+
+================================================================================
+FILE: Dialogs\AjouterIngredientRecetteDialog.xaml
+================================================================================
+
+﻿<Window x:Class="LoGeCui.Dialogs.AjouterIngredientRecetteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ajouter un ingrédient" 
+        Height="400" 
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#ECF0F1">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titre -->
+        <TextBlock Grid.Row="0"
+                   Text="🥘 Ajouter un ingrédient"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   Margin="0,0,0,15"/>
+
+        <!-- Nom -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Nom *"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtNom"
+                     Height="30"
+                     FontSize="13"
+                     Padding="5"/>
+        </StackPanel>
+
+        <!-- Quantité -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
+            <TextBlock Text="Quantité *"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+            <TextBox x:Name="TxtQuantite"
+                     Height="30"
+                     FontSize="13"
+                     Padding="5"/>
+        </StackPanel>
+
+        <!-- Unité -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,10">
+            <TextBlock Text="Unité *"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+            <ComboBox x:Name="CmbUnite"
+                      Height="30"
+                      FontSize="13"
+                      Padding="5">
+                <ComboBoxItem Content="g"/>
+                <ComboBoxItem Content="kg"/>
+                <ComboBoxItem Content="ml"/>
+                <ComboBoxItem Content="L"/>
+                <ComboBoxItem Content="pièces" IsSelected="True"/>
+                <ComboBoxItem Content="cuillères à soupe"/>
+                <ComboBoxItem Content="cuillères à café"/>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Boutons -->
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,0,0">
+
+            <Button Content="Annuler"
+                    Width="100"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    FontSize="13"
+                    BorderThickness="0"
+                    Click="BtnAnnuler_Click"/>
+
+            <Button Content="Ajouter"
+                    Width="100"
+                    Height="35"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="13"
+                    BorderThickness="0"
+                    Click="BtnAjouter_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>
+
+================================================================================
+FILE: Dialogs\AjouterIngredientRecetteDialog.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Dialogs
+{
+    /// <summary>
+    /// Logique d'interaction pour AjouterIngredientRecetteDialog.xaml
+    /// </summary>
+    public partial class AjouterIngredientRecetteDialog : Window
+    {
+        public IngredientRecette? NouvelIngredient { get; private set; }  // ← LIGNE AJOUTÉE !
+
+        public AjouterIngredientRecetteDialog()
+        {
+            InitializeComponent();
+            TxtNom.Focus();
+        }
+
+        private void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(TxtNom.Text))
+            {
+                MessageBox.Show("Veuillez entrer un nom.", "Champ requis", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TxtQuantite.Text))
+            {
+                MessageBox.Show("Veuillez entrer une quantité.", "Champ requis", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            NouvelIngredient = new IngredientRecette  // ← CHANGÉ aussi ici !
+            {
+                Nom = TxtNom.Text.Trim(),
+                Quantite = TxtQuantite.Text.Trim(),
+                Unite = (CmbUnite.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString() ?? "pièces"
+            };
+
+            DialogResult = true;
+            Close();
+        }
+
+        private void BtnAnnuler_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+    }
+}
+
+================================================================================
+FILE: Dialogs\AjouterRecetteDialog.xaml
+================================================================================
+
+﻿<Window x:Class="LoGeCui.Dialogs.AjouterRecetteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ajouter une recette" 
+        Height="700" 
+        Width="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#ECF0F1">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Titre -->
+            <TextBlock Grid.Row="0"
+                       Text="➕ Nouvelle recette"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="#2C3E50"
+                       Margin="0,0,0,20"/>
+
+            <!-- Nom -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,15">
+                <TextBlock Text="Nom de la recette *"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Foreground="#34495E"
+                           Margin="0,0,0,5"/>
+                <TextBox x:Name="TxtNom"
+                         Height="35"
+                         FontSize="14"
+                         Padding="8"
+                         BorderBrush="#BDC3C7"
+                         BorderThickness="1"/>
+            </StackPanel>
+
+            <!-- Type et Temps sur la même ligne -->
+            <Grid Grid.Row="2" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Type -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Type *"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#34495E"
+                               Margin="0,0,0,5"/>
+                    <ComboBox x:Name="CmbType"
+                              Height="35"
+                              FontSize="14"
+                              Padding="8,5"
+                              BorderBrush="#BDC3C7"
+                              BorderThickness="1">
+                        <ComboBoxItem Content="Entrée" Tag="Entree"/>
+                        <ComboBoxItem Content="Plat" Tag="Plat" IsSelected="True"/>
+                        <ComboBoxItem Content="Dessert" Tag="Dessert"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Temps -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Temps (minutes) *"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#34495E"
+                               Margin="0,0,0,5"/>
+                    <TextBox x:Name="TxtTemps"
+                             Height="35"
+                             FontSize="14"
+                             Padding="8"
+                             BorderBrush="#BDC3C7"
+                             BorderThickness="1"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Difficulté -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,15">
+                <TextBlock Text="Difficulté *"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Foreground="#34495E"
+                           Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal">
+                    <Slider x:Name="SliderDifficulte"
+                            Width="400"
+                            Minimum="1"
+                            Maximum="5"
+                            Value="3"
+                            TickFrequency="1"
+                            IsSnapToTickEnabled="True"
+                            VerticalAlignment="Center"
+                            ValueChanged="SliderDifficulte_ValueChanged"/>
+                    <TextBlock x:Name="TxtDifficulte"
+                               Text="⭐⭐⭐"
+                               FontSize="18"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Ingrédients -->
+            <StackPanel Grid.Row="4" Margin="0,0,0,15">
+                <TextBlock Text="Ingrédients *"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Foreground="#34495E"
+                           Margin="0,0,0,5"/>
+
+                <!-- Liste des ingrédients ajoutés -->
+                <Border BorderBrush="#BDC3C7"
+                        BorderThickness="1"
+                        CornerRadius="3"
+                        Background="White"
+                        MinHeight="100"
+                        MaxHeight="150"
+                        Margin="0,0,0,10">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ListBox x:Name="ListeIngredients"
+                                 BorderThickness="0"
+                                 Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding}"
+                                                   VerticalAlignment="Center"/>
+
+                                        <Button Grid.Column="1"
+                                                Content="❌"
+                                                Width="25"
+                                                Height="25"
+                                                FontSize="10"
+                                                Background="#E74C3C"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                Cursor="Hand"
+                                                Click="BtnSupprimerIngredient_Click"
+                                                Tag="{Binding}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                </Border>
+
+                <Button Content="➕ Ajouter un ingrédient"
+                        Height="35"
+                        Background="#27AE60"
+                        Foreground="White"
+                        FontSize="13"
+                        FontWeight="Bold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnAjouterIngredient_Click"/>
+            </StackPanel>
+
+            <!-- Instructions -->
+            <StackPanel Grid.Row="5" Margin="0,0,0,15">
+                <TextBlock Text="Instructions *"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Foreground="#34495E"
+                           Margin="0,0,0,5"/>
+                <TextBox x:Name="TxtInstructions"
+                         Height="100"
+                         FontSize="14"
+                         Padding="8"
+                         BorderBrush="#BDC3C7"
+                         BorderThickness="1"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"/>
+            </StackPanel>
+
+            <!-- Boutons -->
+            <StackPanel Grid.Row="8"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,20,0,0">
+
+                <Button Content="❌ Annuler"
+                        Width="120"
+                        Height="40"
+                        Margin="0,0,10,0"
+                        Background="#95A5A6"
+                        Foreground="White"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnAnnuler_Click"/>
+
+                <Button Content="✅ Ajouter"
+                        Width="120"
+                        Height="40"
+                        Background="#27AE60"
+                        Foreground="White"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnAjouter_Click"/>
+
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+
+</Window>
+
+================================================================================
+FILE: Dialogs\AjouterRecetteDialog.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+using LoGeCuiShared.Models;
+
+
+namespace LoGeCui.Dialogs
+{
+    /// <summary>
+    /// Logique d'interaction pour AjouterRecetteDialog.xaml
+    /// </summary>
+    public partial class AjouterRecetteDialog : Window
+    {
+
+        public Recette? NouvelleRecette { get; private set; }
+        private ObservableCollection<IngredientRecette> _ingredients;
+
+        public AjouterRecetteDialog()
+        {
+            InitializeComponent();
+
+            _ingredients = new ObservableCollection<IngredientRecette>();
+            ListeIngredients.ItemsSource = _ingredients;
+
+            TxtNom.Focus();
+        }
+
+        private void SliderDifficulte_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (TxtDifficulte != null)
+            {
+                int valeur = (int)SliderDifficulte.Value;
+                TxtDifficulte.Text = new string('⭐', valeur);
+            }
+        }
+
+        private void BtnAjouterIngredient_Click(object sender, RoutedEventArgs e)
+        {
+            // Créer une petite fenêtre pour ajouter un ingrédient
+            var dialogIngredient = new AjouterIngredientRecetteDialog();
+            dialogIngredient.Owner = this;
+
+            bool? resultat = dialogIngredient.ShowDialog();
+
+            if (resultat == true && dialogIngredient.NouvelIngredient != null)
+            {
+                _ingredients.Add(dialogIngredient.NouvelIngredient);
+            }
+        }
+
+        private void BtnSupprimerIngredient_Click(object sender, RoutedEventArgs e)
+        {
+            var bouton = sender as System.Windows.Controls.Button;
+            var ingredient = bouton?.Tag as IngredientRecette;
+
+            if (ingredient != null)
+            {
+                _ingredients.Remove(ingredient);
+            }
+        }
+
+        private void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        {
+            // Validation
+            if (string.IsNullOrWhiteSpace(TxtNom.Text))
+            {
+                MessageBox.Show("Veuillez entrer un nom de recette.",
+                    "Champ requis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                TxtNom.Focus();
+                return;
+            }
+
+            if (!int.TryParse(TxtTemps.Text, out int temps) || temps <= 0)
+            {
+                MessageBox.Show("Veuillez entrer un temps de préparation valide.",
+                    "Champ requis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                TxtTemps.Focus();
+                return;
+            }
+
+            if (_ingredients.Count == 0)
+            {
+                MessageBox.Show("Veuillez ajouter au moins un ingrédient.",
+                    "Ingrédients requis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TxtInstructions.Text))
+            {
+                MessageBox.Show("Veuillez entrer les instructions.",
+                    "Champ requis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                TxtInstructions.Focus();
+                return;
+            }
+
+            // Récupérer le type
+            var selectedItem = CmbType.SelectedItem as System.Windows.Controls.ComboBoxItem;
+            var typeTag = selectedItem?.Tag?.ToString() ?? "Plat";
+
+            TypePlat type = typeTag switch
+            {
+                "Entree" => TypePlat.Entree,
+                "Dessert" => TypePlat.Dessert,
+                _ => TypePlat.Plat
+            };
+
+            // Créer la recette
+            NouvelleRecette = new Recette
+            {
+                Nom = TxtNom.Text.Trim(),
+                Type = type,
+                TempsPreparation = temps,
+                Difficulte = (int)SliderDifficulte.Value,
+                Ingredients = new System.Collections.Generic.List<IngredientRecette>(_ingredients),
+                Instructions = TxtInstructions.Text.Trim()
+            };
+
+            DialogResult = true;
+            Close();
+        }
+
+        private void BtnAnnuler_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+    }
+}
+
+================================================================================
+FILE: LoGeCui.csproj
+================================================================================
+
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+	  <SelfContained>true</SelfContained>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	  <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Version>1.1.5</Version>
+	  <ApplicationIcon>postriticone.ico</ApplicationIcon>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="appsettings.json" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+    <None Remove="postriticone.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
+    <PackageReference Include="Supabase.Postgrest" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LoGeCuiShared\LoGeCuiShared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="postriticone.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>
+
+================================================================================
+FILE: LoginWindow.xaml
+================================================================================
+
+﻿<Window x:Class="LoGeCui.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LoGeCui - Connexion"
+        Height="600" Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Background="#F5F5F5">
+        <Border Background="White"
+                CornerRadius="10"
+                Padding="40"
+                Margin="40">
+            <StackPanel>
+                <!-- Logo / Titre -->
+                <TextBlock Text="🛒 LoGeCui"
+                          FontSize="48"
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"
+                          Foreground="#27AE60"
+                          Margin="0,0,0,40"/>
+
+                <!-- Email -->
+                <TextBlock Text="Email :" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="TxtEmail"
+                        Padding="10"
+                        FontSize="14"
+                        Margin="0,0,0,15"/>
+
+                <!-- Mot de passe -->
+                <TextBlock Text="Mot de passe :" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <PasswordBox x:Name="TxtPassword"
+                            Padding="10"
+                            FontSize="14"
+                            Margin="0,0,0,20"/>
+
+                <!-- Boutons -->
+                <Button x:Name="BtnConnexion"
+                       Content="Se connecter"
+                       Background="#27AE60"
+                       Foreground="White"
+                       Padding="15"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       Margin="0,0,0,10"
+                       Click="BtnConnexion_Click"/>
+
+                <Button x:Name="BtnInscription"
+                       Content="Créer un compte"
+                       Background="#3498DB"
+                       Foreground="White"
+                       Padding="15"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       Click="BtnInscription_Click"/>
+
+                <!-- Message -->
+                <TextBlock x:Name="TxtMessage"
+                          Foreground="Red"
+                          TextWrapping="Wrap"
+                          HorizontalAlignment="Center"
+                          Margin="0,15,0,0"
+                          FontSize="12"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
+
+================================================================================
+FILE: LoginWindow.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
+using LoGeCuiShared.Services;
+
+namespace LoGeCui
+{
+    public partial class LoginWindow : Window
+    {
+        public LoginWindow()
+        {
+            InitializeComponent();
+        }
+
+        private async void BtnConnexion_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SetStatus("Connexion en cours...", isError: false);
+
+                string email = TxtEmail.Text.Trim();
+                string password = TxtPassword.Password;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    SetStatus("Veuillez remplir tous les champs.", isError: true);
+                    return;
+                }
+
+                var (success, accessToken, userIdString, error) = await App.SupabaseService.SignInAsync(email, password);
+
+
+                if (!success)
+                {
+                    SetStatus(error ?? "Erreur de connexion", isError: true);
+                    return;
+                }
+                if (!Guid.TryParse(userIdString, out var userId))
+                {
+                    SetStatus("ID utilisateur invalide.", isError: true);
+                    return;
+                }
+
+                App.InitRestServices(accessToken, userId);
+
+
+                // ⬇️ ICI : import des recettes locales vers Supabase (une seule fois)
+                await ImporterRecettesLocalVersSupabaseSiBesoinAsync(userId);
+
+                // Vérifier les mises à jour (optionnel)
+                await CheckForUpdatesAsync();
+
+                // Ouvrir l'app
+                var mainWindow = new MainWindow();
+                mainWindow.Show();
+                Close();
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"Erreur : {ex.Message}", isError: true);
+            }
+        }
+
+        private async void BtnInscription_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SetStatus("Inscription en cours...", isError: false);
+
+                string email = TxtEmail.Text.Trim();
+                string password = TxtPassword.Password;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    SetStatus("Veuillez remplir tous les champs.", isError: true);
+                    return;
+                }
+
+                if (password.Length < 6)
+                {
+                    SetStatus("Le mot de passe doit contenir au moins 6 caractères.", isError: true);
+                    return;
+                }
+
+                var (success, userId, error) = await App.SupabaseService.SignUpAsync(email, password);
+
+                if (success)
+                {
+                    MessageBox.Show(
+                        "Compte créé avec succès !\n\nVous pouvez maintenant vous connecter.",
+                        "Inscription réussie",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    TxtPassword.Password = "";
+                    SetStatus("Compte créé ! Connectez-vous.", isError: false);
+                }
+                else
+                {
+                    SetStatus(error ?? "Erreur lors de l'inscription", isError: true);
+                }
+            }
+            catch (Exception ex)
+            {
+                SetStatus($"Erreur : {ex.Message}", isError: true);
+            }
+        }
+
+        private void SetStatus(string message, bool isError)
+        {
+            TxtMessage.Text = message;
+            TxtMessage.Foreground = isError
+                ? System.Windows.Media.Brushes.Red
+                : System.Windows.Media.Brushes.Blue;
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                string url = ConfigurationHelper.GetSupabaseUrl();
+                string key = ConfigurationHelper.GetSupabaseKey();
+
+                var updateService = new LoGeCuiShared.Services.UpdateService(url, key);
+                var updateInfo = await updateService.CheckForUpdateAsync("wpf", "1.0.0");
+
+                if (updateInfo != null)
+                {
+                    var result = MessageBox.Show(
+                        $"Une nouvelle version {updateInfo.Version} est disponible !\n\n" +
+                        $"Notes de version :\n{updateInfo.ReleaseNotes}\n\n" +
+                        $"Voulez-vous télécharger la mise à jour ?",
+                        "Mise à jour disponible",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = updateInfo.DownloadUrl,
+                            UseShellExecute = true
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                // Erreur silencieuse
+            }
+        }
+
+        private async Task ImporterRecettesLocalVersSupabaseSiBesoinAsync(Guid userId)
+        {
+            try
+            {
+                // 📁 Même chemin que ton ancien RecetteService (JSON)
+                string dossier = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "LoGeCui"
+                );
+
+                string cheminJson = System.IO.Path.Combine(dossier, "recettes.json");
+
+                // ❌ Pas de fichier → rien à importer
+                if (!System.IO.File.Exists(cheminJson))
+                    return;
+
+                // 🏷️ Fichier "flag" pour éviter de réimporter à chaque login
+                string flagPath = System.IO.Path.Combine(dossier, "recettes_import_done.txt");
+                if (System.IO.File.Exists(flagPath))
+                    return;
+
+                // 📖 Lecture du JSON
+                var json = await System.IO.File.ReadAllTextAsync(cheminJson);
+
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var recettes = System.Text.Json.JsonSerializer
+                    .Deserialize<List<LoGeCuiShared.Models.Recette>>(json, options)
+                    ?? new List<LoGeCuiShared.Models.Recette>();
+
+                if (recettes.Count == 0)
+                {
+                    // Rien à importer mais on marque comme fait
+                    await System.IO.File.WriteAllTextAsync(flagPath, "empty");
+                    return;
+                }
+
+                // 🔌 Service Supabase déjà initialisé dans App.InitRestServices
+                var recipesService = App.RecipesService;
+                if (recipesService == null)
+                    return;
+
+                // 🚀 Import / upsert
+                foreach (var r in recettes)
+                {
+                    // ExternalId obligatoire pour l'upsert
+                    if (string.IsNullOrWhiteSpace(r.ExternalId))
+                        r.ExternalId = Guid.NewGuid().ToString("N");
+
+                    // Nettoyage catégorie (important pour mobile)
+                    if (!string.IsNullOrWhiteSpace(r.CategorieDb))
+                        r.CategorieDb = r.CategorieDb.Trim();
+
+                    await recipesService.UpsertRecetteAsync(userId, r);
+                }
+
+                // ✅ Marqueur "import terminé"
+                await System.IO.File.WriteAllTextAsync(
+                    flagPath,
+                    $"done:{DateTime.UtcNow:O}"
+                );
+            }
+            catch (Exception ex)
+            {
+                // ⚠️ Import non bloquant : on log mais on n'empêche pas le login
+                System.Diagnostics.Debug.WriteLine("[ImportRecettes] " + ex);
+            }
+        }
+    }
+}
+
+
+================================================================================
+FILE: MainWindow.xaml
+================================================================================
+
+﻿<Window x:Class="LoGeCui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LoGeCui"
+        xmlns:views="clr-namespace:LoGeCui.Views"
+        mc:Ignorable="d"
+        Title="LoGeCui" Height="900" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#ECF0F1">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- En Tête (sur toute la largeur -->
+        <Border Grid.Row="0"
+                Grid.ColumnSpan="2"
+                Background="#2C3E50">
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="20 , 0">
+                <TextBlock Text="🍳"
+                           FontSize="40"
+                           Margin="0, 0,15,0"/>
+                <StackPanel>
+                    <TextBlock Text="LoGeCui"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+                    <TextBlock Text=" Logiciel de Gestion de Cuisine"
+                           FontSize="12"
+                           Foreground="#BDC3C7"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- MENU GAUCHE -->
+        <Border Grid.Row="1" 
+                Grid.Column="0"
+                Background="#34495E"
+                BorderBrush="#2C3E50"
+                BorderThickness="0,0,1,0">
+
+            <StackPanel Margin="0,20,0,0">
+
+                <!-- Bouton Ingrédients -->
+                <Button Content="📦 Mes Ingrédients"
+                        Height="60"
+                        Background="#3498DB"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnIngredients_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#3498DB"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#2980B9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Bouton Recettes -->
+                <Button Content="📖 Mes Recettes"
+                        Height="60"
+                        Background="#2ECC71"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnRecettes_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#2ECC71"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#27AE60"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Bouton Ajouter Recette -->
+                <Button Content="➕ Ajouter Recette"
+                        Height="60"
+                        Background="#F39C12"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnAjouterRecette_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#F39C12"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E67E22"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <!-- Bouton Menu Aléatoire -->
+                <Button Content="🎲 Menu Aléatoire"
+                        Height="60"
+                        Background="#9B59B6"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnMenuAleatoire_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#9B59B6"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#8E44AD"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Bouton Liste de Courses -->
+                <Button Content="🛒 Liste de Courses"
+                        Height="60"
+                        Background="#E74C3C"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="10,5"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnListeCourses_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#E74C3C"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#C0392B"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button
+                    Content="Synchroniser recettes"
+                    Click="BtnSyncRecettes_Click"
+                    Margin="10"/>
+
+            </StackPanel>
+        </Border>
+
+        <!-- ZONE DE CONTENU PRINCIPAL -->
+        <Border Grid.Row="1" 
+        Grid.Column="1"
+        Background="White"
+        Margin="10">
+
+            <ContentControl x:Name="MainContent">
+                <TextBlock Text="Bienvenue dans LoGeCui ! 🍳&#x0a;&#x0a;Sélectionnez une option dans le menu."
+                   FontSize="24"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Foreground="#7F8C8D"/>
+            </ContentControl>
+
+        </Border>
+
+
+
+    </Grid>
+</Window>
+
+================================================================================
+FILE: MainWindow.xaml.cs
+================================================================================
+
+﻿using LoGeCuiShared.Services;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using LoGeCui.Services;
+using LoGeCui.Views;
+
+namespace LoGeCui
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        // SUPPRIMÉ : private SupabaseService _supabase;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            // SUPPRIMÉ : Ne plus créer une nouvelle instance !
+            // _supabase = new SupabaseService(url, key);
+
+            // Maintenant on utilisera App.SupabaseService partout
+        }
+
+        private void BtnIngredients_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new Views.IngredientsView();
+        }
+
+        private void BtnRecettes_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new Views.RecettesView();
+        }
+
+        private async void BtnAjouterRecette_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Dialogs.AjouterRecetteDialog();
+            dialog.Owner = this;
+
+            bool? resultat = dialog.ShowDialog();
+
+            if (resultat == true && dialog.NouvelleRecette != null)
+            {
+                try
+                {
+                    if (App.RecipesService == null || App.CurrentUserId == null)
+                    {
+                        MessageBox.Show("Utilisateur non connecté ou services non initialisés.");
+                        return;
+                    }
+
+                    var r = dialog.NouvelleRecette;
+
+                    // ExternalId obligatoire pour l'upsert (évite les doublons)
+                    if (string.IsNullOrWhiteSpace(r.ExternalId))
+                        r.ExternalId = Guid.NewGuid().ToString("N");
+
+                    // Sauvegarde vers Supabase
+                    await App.RecipesService.UpsertRecetteAsync(App.CurrentUserId.Value, r);
+
+                    // Recharge la vue Recettes (qui doit lire Supabase)
+                    var view = new RecettesView();
+                    MainContent.Content = view;
+
+                    MessageBox.Show(
+                        $"La recette '{r.Nom}' a été ajoutée avec succès !",
+                        "Succès",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur lors de l'ajout :\n{ex}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+
+        private void BtnMenuAleatoire_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new Views.MenuAleatoireView();
+        }
+
+        private void BtnListeCourses_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new Views.ListeCoursesView();
+        }
+
+        public async Task SyncRecettesToSupabaseAsync(IEnumerable<LoGeCuiShared.Models.Recette> recettesLocales)
+        {
+            if (App.RecipesService == null || App.CurrentUserId == null)
+                throw new InvalidOperationException("Services REST non initialisés. Connecte-toi d'abord.");
+
+            foreach (var r in recettesLocales)
+            {
+                if (string.IsNullOrWhiteSpace(r.ExternalId))
+                    throw new InvalidOperationException($"Recette '{r.Nom}' sans ExternalId. Il faut un identifiant stable pour éviter les doublons.");
+
+                await App.RecipesService.UpsertRecetteAsync(App.CurrentUserId.Value, r);
+            }
+        }
+
+        private async void BtnSyncRecettes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (App.RecipesService == null || App.CurrentUserId == null)
+                {
+                    MessageBox.Show("Utilisateur non connecté ou services non initialisés.");
+                    return;
+                }
+
+                // 🔹 ICI tu dois récupérer TA liste de recettes WPF
+                // Adapte cette ligne à TON code existant
+
+                MessageBox.Show("Synchronisation terminée avec succès.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur de synchronisation :\n{ex.Message}");
+            }
+        }
+
+
+    }
+}
+
+================================================================================
+FILE: Models\ArticleCourse.cs
+================================================================================
+
+﻿namespace LoGeCui.Models
+{
+    public class ArticleCourse
+    {
+        public string Nom { get; set; }
+        public string Quantite { get; set; }
+        public string Unite { get; set; }
+        public bool EstAchete { get; set; }
+
+        public ArticleCourse()
+        {
+            Nom = "";
+            Quantite = "";
+            Unite = "";
+            EstAchete = false;
+        }
+
+        // Pour l'affichage
+        public override string ToString()
+        {
+            return $"{Nom} - {Quantite} {Unite}";
+        }
+    }
+}
+
+================================================================================
+FILE: Models\Ingredient.cs
+================================================================================
+
+﻿namespace LoGeCui.Models
+{
+    public class Ingredient
+    {
+        public Guid Id { get; set; }          // correspond à id
+        public Guid? UserId { get; set; }
+        public string Nom { get; set; }
+        public string Quantite { get; set; }
+        public string Unite { get; set; }
+        public bool EstDisponible { get; set; }
+
+        // Constructeur (optionnel mais pratique)
+        public Ingredient()
+        {
+            Nom = "";
+            Quantite = "";
+            Unite = "";
+            EstDisponible = true;
+        }
+    }
+}
+
+================================================================================
+FILE: Models\IngredientRecette.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+
+namespace LoGeCui.Models
+{
+    public class IngredientRecette
+    {
+        public string Nom { get; set; }
+        public string Quantite { get; set; }
+        public string Unite { get; set; }
+
+        public IngredientRecette()
+        {
+            Nom = "";
+            Quantite = "";
+            Unite = "";
+        }
+
+        // Pour l'affichage
+        public override string ToString()
+        {
+            return $"{Nom} - {Quantite} {Unite}";
+        }
+    }
+}
+
+================================================================================
+FILE: Models\MenuJournalier.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Models
+{
+    public class MenuJournalier
+    {
+        public DateTime Date { get; set; }
+        public Recette? Entree { get; set; }
+        public Recette? Plat { get; set; }
+        public Recette? Dessert { get; set; }
+        public List<IngredientRecette> IngredientsManquants { get; set; }
+
+        public MenuJournalier()
+        {
+            Date = DateTime.Now;
+            IngredientsManquants = new List<IngredientRecette>();
+        }
+    }
+}
+
+================================================================================
+FILE: Services\IngredientService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using LoGeCuiShared.Models;
+using System.Linq;
+
+namespace LoGeCui.Services
+{
+    public class IngredientService
+    {
+        // Chemin du fichier de sauvegarde
+        private readonly string _cheminFichier;
+        private List<Ingredient> _ingredients = new List<Ingredient>();
+
+        public IngredientService()
+        {
+            // Le fichier sera sauvegardé dans AppData de l'utilisateur
+            string dossier = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "LoGeCui"
+            );
+
+            // Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier);
+
+            _cheminFichier = Path.Combine(dossier, "ingredients.json");
+        }
+
+        /// <summary>
+        /// Charge les ingrédients depuis le fichier JSON
+        /// </summary>
+        public List<Ingredient> ChargerIngredients()
+        {
+            try
+            {
+                // Vérifier si le fichier existe
+                if (!File.Exists(_cheminFichier))
+                {
+                    // Pas de fichier = liste vide
+                    return new List<Ingredient>();
+                }
+
+                // Lire le contenu du fichier
+                string json = File.ReadAllText(_cheminFichier);
+
+                // Convertir le JSON en liste d'ingrédients
+                var ingredients = JsonSerializer.Deserialize<List<Ingredient>>(json);
+
+                return ingredients ?? new List<Ingredient>();
+            }
+            catch (Exception ex)
+            {
+                // En cas d'erreur, afficher un message et retourner une liste vide
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors du chargement des ingrédients : {ex.Message}",
+                    "Erreur",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+
+                return new List<Ingredient>();
+            }
+        }
+
+        public List<Ingredient> ObtenirTousLesIngredients()
+        {
+            return _ingredients.ToList();
+        }
+
+        public List<Ingredient> ObtenirIngredientsDisponibles()
+        {
+            return _ingredients.Where(i => i.EstDisponible).ToList();
+        }
+
+        /// <summary>
+        /// Sauvegarde les ingrédients dans le fichier JSON
+        /// </summary>
+        public void SauvegarderIngredients(List<Ingredient> ingredients)
+        {
+            try
+            {
+                // Options pour rendre le JSON lisible (avec indentation)
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true  // Pour avoir un JSON "joli"
+                };
+
+                // Convertir la liste en JSON
+                string json = JsonSerializer.Serialize(ingredients, options);
+
+                // Écrire dans le fichier
+                File.WriteAllText(_cheminFichier, json);
+            }
+            catch (Exception ex)
+            {
+                // En cas d'erreur, afficher un message
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors de la sauvegarde des ingrédients : {ex.Message}",
+                    "Erreur",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Retourne le chemin du fichier de sauvegarde
+        /// </summary>
+        public string ObtenirCheminFichier()
+        {
+            return _cheminFichier;
+        }
+    }
+}
+
+================================================================================
+FILE: Services\ListeCoursesService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Services
+{
+    public class ListeCoursesService
+    {
+        private readonly string _cheminFichier;
+
+        public ListeCoursesService()
+        {
+            string dossier = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "LoGeCui"
+            );
+                    Directory.CreateDirectory(dossier);
+                    _cheminFichier = Path.Combine(dossier, "liste_courses.json");
+        }
+
+        public List<ArticleCourse> ChargerListeCourses()
+        {
+            try
+            {
+                if (!File.Exists(_cheminFichier))
+                {
+                    return new List<ArticleCourse>();
+                }
+
+                string json = File.ReadAllText(_cheminFichier);
+                var liste = JsonSerializer.Deserialize<List<ArticleCourse>>(json);
+                return liste ?? new List<ArticleCourse>();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors du chargement de la liste de courses : {ex.Message}",
+                    "Erreur",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+                return new List<ArticleCourse>();
+            }
+        }
+
+        public void SauvegarderListeCourses(List<ArticleCourse> articles)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string json = JsonSerializer.Serialize(articles, options);
+                File.WriteAllText(_cheminFichier, json);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors de la sauvegarde de la liste de courses : {ex.Message}",
+                    "Erreur",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: Services\RecetteService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Services
+{
+    public class RecetteService
+    {
+        private readonly string _cheminFichier;
+
+        public RecetteService()
+        {
+            string dossier = Path.Combine(
+             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+             "LoGeCui"
+            );
+            Directory.CreateDirectory(dossier);
+            _cheminFichier = Path.Combine(dossier, "recettes.json");
+        }
+
+        public List<Recette> ChargerRecettes()
+        {
+            try
+            {
+                if (!File.Exists(_cheminFichier))
+                {
+                    return new List<Recette>();
+                }
+
+                string json = File.ReadAllText(_cheminFichier);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var recettes = JsonSerializer.Deserialize<List<Recette>>(json, options);
+                return recettes ?? new List<Recette>();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors du chargement des recettes : {ex.Message}",
+                    "Erreur",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+                return new List<Recette>();
+            }
+        }
+
+        public void SauvegarderRecettes(List<Recette> recettes)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                string json = JsonSerializer.Serialize(recettes, options);
+                File.WriteAllText(_cheminFichier, json);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors de la sauvegarde des recettes : {ex.Message}",
+                    "Erreur",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: Views\IngredientsView.xaml
+================================================================================
+
+﻿<UserControl x:Class="LoGeCui.Views.IngredientsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Titre -->
+            <RowDefinition Height="Auto"/>
+            <!-- Boutons -->
+            <RowDefinition Height="*"/>
+            <!-- Liste -->
+        </Grid.RowDefinitions>
+
+        <!-- TITRE -->
+        <TextBlock Grid.Row="0"
+                   Text="📦 Gestion des Ingrédients"
+                   FontSize="28"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   Margin="0,0,0,20"/>
+
+        <!-- ZONE DE BOUTONS -->
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal"
+                    Margin="0,0,0,20">
+
+            <Button Content="➕ Ajouter un ingrédient"
+                    Height="40"
+                    Width="200"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnAjouter_Click"/>
+
+        </StackPanel>
+
+        <!-- LISTE DES INGRÉDIENTS -->
+        <Border Grid.Row="2"
+                BorderBrush="#BDC3C7"
+                BorderThickness="1"
+                CornerRadius="5">
+
+            <ListBox x:Name="ListeIngredients"
+                     Background="#F8F9FA"
+                     BorderThickness="0">
+
+                <!-- Template pour afficher chaque ingrédient -->
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="White"
+            BorderBrush="#E0E0E0"
+            BorderThickness="1"
+            CornerRadius="5"
+            Margin="5"
+            Padding="15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Informations de l'ingrédient -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding Nom}"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="#2C3E50"/>
+                                    <TextBlock Foreground="#7F8C8D"
+                           FontSize="14">
+                    <Run Text="Quantité : "/>
+                    <Run Text="{Binding Quantite}"/>
+                    <Run Text=" "/>
+                    <Run Text="{Binding Unite}"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                                <!-- CheckBox Disponible -->
+                                <CheckBox Grid.Column="1"
+                     IsChecked="{Binding EstDisponible}"
+                     Content="Disponible"
+                     VerticalAlignment="Center"
+                     Margin="10,0"
+                     Checked="ChkDisponible_Changed"
+                     Unchecked="ChkDisponible_Changed"/>
+
+                                <!-- Bouton Supprimer -->
+                                <Button Grid.Column="2"
+                    Content="🗑️"
+                    Width="40"
+                    Height="40"
+                    Background="#E74C3C"
+                    Foreground="White"
+                    FontSize="18"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    ToolTip="Supprimer cet ingrédient"
+                    Click="BtnSupprimer_Click"
+                    Tag="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#E74C3C"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#C0392B"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+        </Border>
+
+    </Grid>
+
+</UserControl>
+
+================================================================================
+FILE: Views\IngredientsView.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Views
+{
+    public partial class IngredientsView : UserControl
+    {
+        private readonly ObservableCollection<Ingredient> _ingredients = new();
+
+        public IngredientsView()
+        {
+            InitializeComponent();
+
+            ListeIngredients.ItemsSource = _ingredients;
+
+            Loaded += IngredientsView_Loaded;
+        }
+
+        private async void IngredientsView_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Evite de recharger plusieurs fois si Loaded se déclenche à nouveau
+            Loaded -= IngredientsView_Loaded;
+            await ReloadIngredientsAsync();
+        }
+
+        private async Task ReloadIngredientsAsync()
+        {
+            try
+            {
+                var data = await App.SupabaseService.GetIngredientsAsync();
+
+                _ingredients.Clear();
+                foreach (var ing in data.OrderBy(i => i.Nom))
+                    _ingredients.Add(ing);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur chargement ingrédients (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void BtnAjouter_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Dialogs.AjouterIngredientDialog
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            bool? resultat = dialog.ShowDialog();
+            if (resultat != true || dialog.NouvelIngredient == null)
+                return;
+
+            try
+            {
+                var saved = await App.SupabaseService.AddIngredientAsync(dialog.NouvelIngredient);
+
+                if (saved == null)
+                {
+                    MessageBox.Show("L'ajout a échoué (aucune donnée retournée).",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                _ingredients.Add(saved);
+
+                MessageBox.Show(
+                    $"L'ingrédient '{saved.Nom}' a été ajouté avec succès !",
+                    "Succès",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'ajout (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void BtnSupprimer_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button bouton)
+                return;
+
+            // On récupère l'objet lié à la ligne (plus fiable que Tag si ton XAML est bindé correctement)
+            if (bouton.DataContext is not Ingredient ingredient)
+                return;
+
+            var confirmation = MessageBox.Show(
+                $"Voulez-vous vraiment supprimer '{ingredient.Nom}' ?",
+                "Confirmation de suppression",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (confirmation != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                if (ingredient.Id == Guid.Empty)
+                {
+                    MessageBox.Show("Impossible de supprimer : l'ingrédient n'a pas d'Id.",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                bool ok = await App.SupabaseService.DeleteIngredientAsync(ingredient.Id);
+                if (!ok)
+                {
+                    MessageBox.Show("La suppression a échoué côté serveur.",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                _ingredients.Remove(ingredient);
+
+                MessageBox.Show(
+                    $"L'ingrédient '{ingredient.Nom}' a été supprimé.",
+                    "Suppression réussie",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la suppression (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ChkDisponible_Changed(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox cb)
+                return;
+
+            // Objet lié à la ligne
+            if (cb.DataContext is not Ingredient ingredient)
+                return;
+
+            try
+            {
+                if (ingredient.Id == Guid.Empty)
+                    return; // pas persisté côté Supabase
+
+                bool ok = await App.SupabaseService.UpdateIngredientAsync(ingredient);
+                if (!ok)
+                {
+                    MessageBox.Show("La mise à jour a échoué côté serveur.",
+                        "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Connexion requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur mise à jour (Supabase) : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: Views\ListeCoursesView.xaml
+================================================================================
+
+﻿<UserControl x:Class="LoGeCui.Views.ListeCoursesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- TITRE -->
+        <TextBlock Grid.Row="0"
+                   Text="🛒 Liste de Courses"
+                   FontSize="28"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   Margin="0,0,0,20"/>
+
+        <!-- BOUTONS -->
+        <!-- BOUTONS -->
+        <StackPanel Grid.Row="1"
+            Orientation="Horizontal"
+            Margin="0,0,0,20">
+
+            <Button Content="➕ Ajouter un article"
+            Height="40"
+            Width="180"
+            Background="#27AE60"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnAjouterArticle_Click"
+            Margin="0,0,10,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#27AE60"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#229954"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="🗑️ Supprimer les articles achetés"
+            Height="40"
+            Width="230"
+            Background="#E74C3C"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnSupprimerAchetes_Click"
+            Margin="0,0,10,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#E74C3C"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#C0392B"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- NOUVEAU : Tout sélectionner -->
+            <Button Content="✅ Tout sélectionner"
+            Height="40"
+            Width="170"
+            Background="#3498DB"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnToutSelectionner_Click"
+            Margin="0,0,10,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#3498DB"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2E86C1"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- NOUVEAU : Supprimer la sélection -->
+            <Button Content="🗑️ Supprimer la sélection"
+            Height="40"
+            Width="210"
+            Background="#E67E22"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnSupprimerSelection_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#E67E22"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#D35400"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+        </StackPanel>
+
+        <!-- LISTE DES COURSES -->
+        <Border Grid.Row="2"
+                BorderBrush="#BDC3C7"
+                BorderThickness="1"
+                CornerRadius="5">
+
+            <ListBox x:Name="ListeCourses"
+                     Background="#F8F9FA"
+                     BorderThickness="0"
+                     SelectionMode="Extended">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="White"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Margin="5"
+                                Padding="15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- CheckBox Acheté -->
+                                <CheckBox Grid.Column="0"
+                                         IsChecked="{Binding EstAchete}"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,15,0"
+                                         Checked="ChkAchete_Changed"
+                                         Unchecked="ChkAchete_Changed"/>
+
+                                <!-- Informations -->
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#2C3E50">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="{Binding Nom}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding EstAchete}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                        <Setter Property="Foreground" Value="#95A5A6"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <TextBlock Foreground="#7F8C8D"
+                                               FontSize="14">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding EstAchete}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        <Run Text="Quantité : "/>
+                                        <Run Text="{Binding Quantite, Mode=OneWay}"/>
+                                        <Run Text=" "/>
+                                        <Run Text="{Binding Unite, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                                <!-- Bouton Supprimer -->
+                                <Button Grid.Column="2"
+                                        Content="🗑️"
+                                        Width="40"
+                                        Height="40"
+                                        Background="#E74C3C"
+                                        Foreground="White"
+                                        FontSize="18"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        ToolTip="Supprimer cet article"
+                                        Click="BtnSupprimerArticle_Click"
+                                        Tag="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#E74C3C"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#C0392B"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+        </Border>
+
+    </Grid>
+
+</UserControl>
+
+================================================================================
+FILE: Views\ListeCoursesView.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using LoGeCuiShared.Models;
+
+namespace LoGeCui.Views
+{
+    public partial class ListeCoursesView : UserControl
+    {
+        private readonly ObservableCollection<ArticleCourse> _articles = new ObservableCollection<ArticleCourse>();
+
+        public ListeCoursesView()
+        {
+            InitializeComponent();
+
+            // Binding une fois
+            ListeCourses.ItemsSource = _articles;
+
+            ChargerDonnees();
+        }
+
+        private async void ChargerDonnees()
+        {
+            try
+            {
+                var articles = await App.SupabaseService.GetArticlesAsync();
+
+                _articles.Clear();
+                foreach (var article in articles)
+                    _articles.Add(article);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur de chargement : {ex.Message}", "Erreur",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void BtnAjouterArticle_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Dialogs.AjouterArticleCourseDialog
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            bool? resultat = dialog.ShowDialog();
+
+            if (resultat == true && dialog.NouvelArticle != null)
+            {
+                try
+                {
+                    var added = await App.SupabaseService.AddArticleAsync(dialog.NouvelArticle);
+
+                    if (added != null)
+                    {
+                        _articles.Add(added);
+                        MessageBox.Show($"'{added.Nom}' ajouté avec succès !", "Succès",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private async void BtnSupprimerArticle_Click(object sender, RoutedEventArgs e)
+        {
+            var bouton = sender as Button;
+            var article = bouton?.Tag as ArticleCourse;
+
+            if (article == null)
+                return;
+
+            var resultat = MessageBox.Show(
+                $"Voulez-vous vraiment supprimer '{article.Nom}' ?",
+                "Confirmation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (resultat != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                await App.SupabaseService.DeleteArticleAsync(article.Id);
+                _articles.Remove(article);
+
+                MessageBox.Show("Article supprimé !", "Succès",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ChkAchete_Changed(object sender, RoutedEventArgs e)
+        {
+            var checkbox = sender as CheckBox;
+            var article = checkbox?.DataContext as ArticleCourse;
+
+            if (article == null)
+                return;
+
+            try
+            {
+                await App.SupabaseService.UpdateArticleAsync(article.Id, article);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur de synchronisation : {ex.Message}", "Erreur",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnToutSelectionner_Click(object sender, RoutedEventArgs e)
+        {
+            ListeCourses.SelectAll();
+        }
+
+        private async void BtnSupprimerSelection_Click(object sender, RoutedEventArgs e)
+        {
+            // NOTE: SelectedItems est un IList -> on copie avant toute suppression
+            var selected = ListeCourses.SelectedItems.Cast<ArticleCourse>().ToList();
+
+            if (!selected.Any())
+            {
+                MessageBox.Show("Aucun article sélectionné.", "Information",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var resultat = MessageBox.Show(
+                $"Voulez-vous supprimer {selected.Count} article(s) sélectionné(s) ?",
+                "Confirmation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (resultat != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                // Variante qui fonctionne tout de suite, sans ajouter de méthode Supabase en lot :
+                // on supprime en boucle via la méthode existante DeleteArticleAsync(id).
+                foreach (var article in selected)
+                {
+                    await App.SupabaseService.DeleteArticleAsync(article.Id);
+                    _articles.Remove(article);
+                }
+
+                MessageBox.Show($"{selected.Count} article(s) supprimé(s).", "Succès",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void BtnSupprimerAchetes_Click(object sender, RoutedEventArgs e)
+        {
+            var achetes = _articles.Where(a => a.EstAchete).ToList();
+
+            if (!achetes.Any())
+            {
+                MessageBox.Show("Aucun article acheté à supprimer.", "Information",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var resultat = MessageBox.Show(
+                $"Voulez-vous supprimer les {achetes.Count} article(s) acheté(s) ?",
+                "Confirmation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (resultat != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                await App.SupabaseService.DeleteAchetesAsync();
+
+                foreach (var article in achetes)
+                    _articles.Remove(article);
+
+                MessageBox.Show($"{achetes.Count} article(s) supprimé(s).", "Succès",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+
+
+================================================================================
+FILE: Views\MenuAleatoireView.xaml
+================================================================================
+
+﻿<UserControl x:Class="LoGeCui.Views.MenuAleatoireView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- TITRE -->
+            <TextBlock Grid.Row="0"
+                       Text="🎲 Menu Aléatoire"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#2C3E50"
+                       Margin="0,0,0,20"/>
+
+            <!-- BOUTON GENERER -->
+            <Button Grid.Row="1"
+                    Content="🎲 Générer un nouveau menu"
+                    Width="250"
+                    Height="50"
+                    Background="#9B59B6"
+                    Foreground="White"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnGenererMenu_Click"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,30">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#9B59B6"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#8E44AD"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- CONTENU DU MENU -->
+            <StackPanel Grid.Row="2" x:Name="MenuPanel" Visibility="Collapsed">
+
+                <!-- Date -->
+                <TextBlock x:Name="TxtDate"
+                           FontSize="16"
+                           Foreground="#7F8C8D"
+                           Margin="0,0,0,20"
+                           HorizontalAlignment="Center"/>
+
+                <!-- Entrée -->
+                <Border Background="#E8F5E9"
+                        CornerRadius="10"
+                        Padding="20"
+                        Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="🥗 ENTRÉE"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#27AE60"
+                                   Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="TxtEntree"
+                                   Text="Aucune entrée"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#2C3E50"
+                                   Margin="0,0,0,5"/>
+
+                        <TextBlock x:Name="TxtEntreeDetails"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Plat -->
+                <Border Background="#E3F2FD"
+                        CornerRadius="10"
+                        Padding="20"
+                        Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="🍽️ PLAT PRINCIPAL"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#2196F3"
+                                   Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="TxtPlat"
+                                   Text="Aucun plat"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#2C3E50"
+                                   Margin="0,0,0,5"/>
+
+                        <TextBlock x:Name="TxtPlatDetails"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Dessert -->
+                <Border Background="#FFF3E0"
+                        CornerRadius="10"
+                        Padding="20"
+                        Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="🍰 DESSERT"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#FF9800"
+                                   Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="TxtDessert"
+                                   Text="Aucun dessert"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#2C3E50"
+                                   Margin="0,0,0,5"/>
+
+                        <TextBlock x:Name="TxtDessertDetails"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Ingrédients manquants -->
+                <Border x:Name="IngredientsManquantsPanel"
+                        Background="#FFEBEE"
+                        CornerRadius="10"
+                        Padding="20"
+                        Margin="0,0,0,20"
+                        Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock Text="⚠️ INGRÉDIENTS MANQUANTS"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#E74C3C"
+                                   Margin="0,0,0,10"/>
+
+                        <ListBox x:Name="ListeIngredientsManquants"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 MaxHeight="200">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"
+                                               FontSize="14"
+                                               Foreground="#E74C3C"
+                                               Margin="5"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Button Content="➕ Ajouter à la liste de courses"
+                                Height="40"
+                                Background="#E74C3C"
+                                Foreground="White"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Click="BtnAjouterListeCourses_Click"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tout est disponible -->
+                <Border x:Name="ToutDisponiblePanel"
+                        Background="#E8F5E9"
+                        CornerRadius="10"
+                        Padding="20"
+                        Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal"
+                               HorizontalAlignment="Center">
+                        <TextBlock Text="✅"
+                                   FontSize="24"
+                                   Margin="0,0,10,0"/>
+                        <TextBlock Text="Tous les ingrédients sont disponibles !"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#27AE60"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+
+</UserControl>
+
+================================================================================
+FILE: Views\MenuAleatoireView.xaml.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using LoGeCuiShared.Models;
+using LoGeCui.Services;
+
+namespace LoGeCui.Views
+{
+    public partial class MenuAleatoireView : UserControl
+    {
+        private MenuJournalier? _menuCourant;
+        private static readonly Random _random = new Random();
+
+        public MenuAleatoireView()
+        {
+            InitializeComponent();
+        }
+
+        private async void BtnGenererMenu_Click(object sender, RoutedEventArgs e)
+        {
+            // Charger les recettes depuis Supabase
+            if (App.RecipesService == null || App.CurrentUserId == null)
+            {
+                MessageBox.Show("Connecte-toi d'abord (services non initialisés).");
+                return;
+            }
+
+            var recettes = await App.RecipesService.GetRecettesAsync(App.CurrentUserId.Value)
+                          ?? new List<Recette>();
+
+            if (recettes.Count == 0)
+            {
+                MessageBox.Show(
+                    "Vous n'avez aucune recette !\n\nAjoutez des recettes d'abord.",
+                    "Aucune recette",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            // Filtrer par type
+            var entrees = recettes.Where(r => r.Type == TypePlat.Entree).ToList();
+            var plats = recettes.Where(r => r.Type == TypePlat.Plat).ToList();
+            var desserts = recettes.Where(r => r.Type == TypePlat.Dessert).ToList();
+
+            // Créer le menu
+            _menuCourant = new MenuJournalier
+            {
+                Date = DateTime.Now,
+                Entree = ChoisirRecetteAleatoire(entrees),
+                Plat = ChoisirRecetteAleatoire(plats),
+                Dessert = ChoisirRecetteAleatoire(desserts)
+            };
+
+            // Charger les ingrédients depuis Supabase
+            if (App.RestClient == null)
+            {
+                MessageBox.Show("RestClient non initialisé.");
+                return;
+            }
+
+            try
+            {
+                var ingSvc = new LoGeCuiShared.Services.RecetteIngredientsService(App.RestClient);
+
+                if (_menuCourant.Entree != null)
+                {
+                    var tuples = await ingSvc.GetForRecetteAsync(_menuCourant.Entree.Id);
+                    _menuCourant.Entree.Ingredients = tuples
+                        .Select(t => new IngredientRecette
+                        {
+                            Nom = t.nom,
+                            Quantite = t.quantite,
+                            Unite = t.unite
+                        })
+                        .ToList();
+                }
+
+                if (_menuCourant.Plat != null)
+                {
+                    var tuples = await ingSvc.GetForRecetteAsync(_menuCourant.Plat.Id);
+                    _menuCourant.Plat.Ingredients = tuples
+                        .Select(t => new IngredientRecette
+                        {
+                            Nom = t.nom,
+                            Quantite = t.quantite,
+                            Unite = t.unite
+                        })
+                        .ToList();
+                }
+
+                if (_menuCourant.Dessert != null)
+                {
+                    var tuples = await ingSvc.GetForRecetteAsync(_menuCourant.Dessert.Id);
+                    _menuCourant.Dessert.Ingredients = tuples
+                        .Select(t => new IngredientRecette
+                        {
+                            Nom = t.nom,
+                            Quantite = t.quantite,
+                            Unite = t.unite
+                        })
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Erreur chargement ingrédients des recettes : {ex.Message}",
+                    "Erreur",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            // Afficher menu
+            AfficherMenu();
+
+            IngredientsManquantsPanel.Visibility = Visibility.Collapsed;
+            ToutDisponiblePanel.Visibility = Visibility.Collapsed;
+            ListeIngredientsManquants.ItemsSource = null;
+
+            await VerifierIngredientsAsync();
+        }
+
+        private Recette? ChoisirRecetteAleatoire(List<Recette> recettes)
+        {
+            if (recettes == null || recettes.Count == 0)
+                return null;
+
+            return recettes[_random.Next(recettes.Count)];
+        }
+
+        private void AfficherMenu()
+        {
+            if (_menuCourant == null)
+                return;
+
+            MenuPanel.Visibility = Visibility.Visible;
+            TxtDate.Text = $"Menu généré le {_menuCourant.Date:dd/MM/yyyy à HH:mm}";
+
+            AfficherBlocRecette(_menuCourant.Entree, TxtEntree, TxtEntreeDetails, "entrée");
+            AfficherBlocRecette(_menuCourant.Plat, TxtPlat, TxtPlatDetails, "plat");
+            AfficherBlocRecette(_menuCourant.Dessert, TxtDessert, TxtDessertDetails, "dessert");
+        }
+
+        private void AfficherBlocRecette(Recette? recette, TextBlock titre, TextBlock details, string type)
+        {
+            if (recette != null)
+            {
+                titre.Text = recette.Nom;
+                details.Text = $"{recette.DifficulteTexte} • {recette.TempsPreparation} min";
+            }
+            else
+            {
+                titre.Text = $"Aucun {type} disponible";
+                details.Text = $"Ajoutez des recettes de type '{type}'";
+            }
+        }
+
+        private async System.Threading.Tasks.Task VerifierIngredientsAsync()
+        {
+            if (_menuCourant == null)
+                return;
+
+            try
+            {
+                var ingredientsDisponibles = await App.SupabaseService.GetIngredientsAsync();
+
+                var disponibles = (ingredientsDisponibles ?? new List<Ingredient>())
+                    .Where(i => i.EstDisponible)
+                    .Select(i => (i.Nom ?? "").Trim().ToLowerInvariant())
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .ToHashSet();
+
+                var necessaires = new List<IngredientRecette>();
+
+                if (_menuCourant.Entree != null)
+                    necessaires.AddRange(_menuCourant.Entree.Ingredients ?? new List<IngredientRecette>());
+                if (_menuCourant.Plat != null)
+                    necessaires.AddRange(_menuCourant.Plat.Ingredients ?? new List<IngredientRecette>());
+                if (_menuCourant.Dessert != null)
+                    necessaires.AddRange(_menuCourant.Dessert.Ingredients ?? new List<IngredientRecette>());
+
+                if (necessaires.Count == 0)
+                {
+                    IngredientsManquantsPanel.Visibility = Visibility.Collapsed;
+                    ToutDisponiblePanel.Visibility = Visibility.Collapsed;
+                    ListeIngredientsManquants.ItemsSource = null;
+                    return;
+                }
+
+                _menuCourant.IngredientsManquants.Clear();
+
+                foreach (var ingredient in necessaires)
+                {
+                    var nom = (ingredient.Nom ?? "").Trim();
+                    if (!disponibles.Contains(nom.ToLowerInvariant()))
+                    {
+                        if (!_menuCourant.IngredientsManquants.Any(i =>
+                                (i.Nom ?? "").Equals(nom, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            _menuCourant.IngredientsManquants.Add(ingredient);
+                        }
+                    }
+                }
+
+                if (_menuCourant.IngredientsManquants.Any())
+                {
+                    IngredientsManquantsPanel.Visibility = Visibility.Visible;
+                    ToutDisponiblePanel.Visibility = Visibility.Collapsed;
+
+                    ListeIngredientsManquants.ItemsSource = _menuCourant.IngredientsManquants
+                        .Select(i => $"• {i.Quantite} {i.Unite} {i.Nom}".Replace("  ", " ").Trim())
+                        .ToList();
+                }
+                else
+                {
+                    IngredientsManquantsPanel.Visibility = Visibility.Collapsed;
+                    ToutDisponiblePanel.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur vérification ingrédients : {ex.Message}");
+            }
+        }
+
+        private async void BtnAjouterListeCourses_Click(object sender, RoutedEventArgs e)
+        {
+            if (_menuCourant == null || !_menuCourant.IngredientsManquants.Any())
+                return;
+
+            var supabase = App.SupabaseService;
+            var articlesExistants = await supabase.GetArticlesAsync();
+            var nomsExistants = (articlesExistants ?? new List<ArticleCourse>())
+                .Select(a => (a.Nom ?? "").Trim().ToLowerInvariant())
+                .ToHashSet();
+
+            foreach (var ingredient in _menuCourant.IngredientsManquants)
+            {
+                var nom = (ingredient.Nom ?? "").Trim();
+                if (!nomsExistants.Contains(nom.ToLowerInvariant()))
+                {
+                    await supabase.AddArticleAsync(new ArticleCourse
+                    {
+                        Nom = nom,
+                        Quantite = ingredient.Quantite,
+                        Unite = ingredient.Unite,
+                        EstAchete = false
+                    });
+                }
+            }
+
+            MessageBox.Show("Ingrédients ajoutés à la liste de courses !");
+        }
+    }
+}
+
+================================================================================
+FILE: Views\RecetteView.xaml
+================================================================================
+
+﻿<UserControl x:Class="LoGeCui.Views.RecettesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- TITRE -->
+        <!-- TITRE ET BOUTON -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+               Text="📖 Mes Recettes"
+               FontSize="28"
+               FontWeight="Bold"
+               Foreground="#2C3E50"
+               VerticalAlignment="Center"/>
+
+            <Button Grid.Column="1"
+            Content="➕ Nouvelle recette"
+            Width="180"
+            Height="45"
+            Background="#27AE60"
+            Foreground="White"
+            FontSize="14"
+            FontWeight="Bold"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="BtnNouvelleRecette_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#27AE60"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#229954"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+
+        <!-- FILTRES -->
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal"
+                    Margin="0,0,0,20">
+
+            <Button Content="Toutes"
+                    Width="100"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnTous_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#95A5A6"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#7F8C8D"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="🥗 Entrées"
+                    Width="100"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnEntrees_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#27AE60"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#229954"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="🍽️ Plats"
+                    Width="100"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Background="#3498DB"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnPlats_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#3498DB"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2980B9"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="🍰 Desserts"
+                    Width="100"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Background="#F39C12"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BtnDesserts_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#F39C12"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E67E22"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="Synchroniser"
+        Click="BtnSyncRecettes_Click"
+        Margin="8"/>
+
+        </StackPanel>
+
+        <!-- LISTE DES RECETTES -->
+        <Border Grid.Row="2"
+                BorderBrush="#BDC3C7"
+                BorderThickness="1"
+                CornerRadius="5">
+
+            <ListBox x:Name="ListeRecettes"
+                     Background="#F8F9FA"
+                     BorderThickness="0"
+                     MouseDoubleClick="ListeRecettes_DoubleClick">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="White"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Margin="5"
+                                Padding="15"
+                                Cursor="Hand">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Informations -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding Nom}"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="#2C3E50"/>
+
+                                    <TextBlock Foreground="#7F8C8D"
+                                               FontSize="13"
+                                               Margin="0,5,0,0">
+                                        <Run Text="{Binding TypeTexte, Mode=OneWay}"/>
+                                        <Run Text=" • "/>
+                                        <Run Text="{Binding TempsPreparation, Mode=OneWay}"/>
+                                        <Run Text=" min"/>
+                                    </TextBlock>
+
+                                    <TextBlock Text="{Binding DifficulteTexte, Mode=OneWay}"
+                                               FontSize="14"
+                                               Margin="0,3,0,0"/>
+                                </StackPanel>
+
+                                <!-- Badge du type -->
+                                <Border Grid.Column="1"
+                                        Background="#E8F5E9"
+                                        CornerRadius="10"
+                                        Padding="10,5"
+                                        Margin="10,0"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Type}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#27AE60"/>
+                                </Border>
+
+                                <!-- Bouton Supprimer -->
+                                <Button Grid.Column="2"
+                                        Content="🗑️"
+                                        Width="40"
+                                        Height="40"
+                                        Background="#E74C3C"
+                                        Foreground="White"
+                                        FontSize="18"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        ToolTip="Supprimer cette recette"
+                                        Click="BtnSupprimerRecette_Click"
+                                        Tag="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#E74C3C"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#C0392B"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+        </Border>
+
+    </Grid>
+
+</UserControl>
+
+================================================================================
+FILE: Views\RecetteView.xaml.cs
+================================================================================
+
+﻿using LoGeCuiShared.Models;
+using LoGeCuiShared.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
+namespace LoGeCui.Views
+{
+    public partial class RecettesView : UserControl
+    {
+        private readonly ObservableCollection<Recette> _recettesAffichees = new();
+        private List<Recette> _toutesLesRecettes = new();
+
+        public RecettesView()
+        {
+            InitializeComponent();
+
+            ListeRecettes.ItemsSource = _recettesAffichees;
+
+            Loaded += RecettesView_Loaded;
+        }
+
+        private async void RecettesView_Loaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= RecettesView_Loaded;
+            await RefreshDepuisSupabaseAsync();
+        }
+
+        private bool EnsureConnected(out Guid userId)
+        {
+            userId = Guid.Empty;
+
+            if (App.RecipesService == null || App.CurrentUserId == null)
+            {
+                MessageBox.Show("Connecte-toi d'abord (services non initialisés).");
+                return false;
+            }
+
+            userId = App.CurrentUserId.Value;
+            return true;
+        }
+
+        private bool EnsureRestClient()
+        {
+            if (App.RestClient == null)
+            {
+                MessageBox.Show("RestClient non initialisé.");
+                return false;
+            }
+            return true;
+        }
+
+        private async System.Threading.Tasks.Task RefreshDepuisSupabaseAsync()
+        {
+            if (!EnsureConnected(out var userId))
+                return;
+
+            var recettes = await App.RecipesService!.GetRecettesAsync(userId);
+            _toutesLesRecettes = recettes ?? new List<Recette>();
+
+            _recettesAffichees.Clear();
+            foreach (var r in _toutesLesRecettes)
+                _recettesAffichees.Add(r);
+        }
+
+        private void BtnTous_Click(object sender, RoutedEventArgs e)
+        {
+            _recettesAffichees.Clear();
+            foreach (var recette in _toutesLesRecettes)
+                _recettesAffichees.Add(recette);
+        }
+
+        private void BtnEntrees_Click(object sender, RoutedEventArgs e) => FiltrerParType(TypePlat.Entree);
+        private void BtnPlats_Click(object sender, RoutedEventArgs e) => FiltrerParType(TypePlat.Plat);
+        private void BtnDesserts_Click(object sender, RoutedEventArgs e) => FiltrerParType(TypePlat.Dessert);
+
+        private void FiltrerParType(TypePlat type)
+        {
+            _recettesAffichees.Clear();
+            foreach (var recette in _toutesLesRecettes.Where(r => r.Type == type))
+                _recettesAffichees.Add(recette);
+        }
+
+        private void ListeRecettes_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var recette = ListeRecettes.SelectedItem as Recette;
+            if (recette != null)
+                AfficherDetailsRecette(recette);
+        }
+
+        private async void AfficherDetailsRecette(Recette recette)
+        {
+            try
+            {
+                if (!EnsureRestClient())
+                    return;
+
+                var ingSvc = new RecetteIngredientsService(App.RestClient!);
+                var items = await ingSvc.GetForRecetteAsync(recette.Id);
+
+                var ingredientsText = (items.Count == 0)
+                    ? "(aucun ingrédient renseigné)"
+                    : string.Join("\n", items.Select(x =>
+                        string.IsNullOrWhiteSpace(x.quantite) && string.IsNullOrWhiteSpace(x.unite)
+                            ? $"  • {x.nom}"
+                            : $"  • {x.quantite} {x.unite} {x.nom}".Replace("  ", " ").Trim()
+                    ));
+
+                MessageBox.Show(
+                    $"📖 {recette.Nom}\n\n" +
+                    $"Catégorie: {recette.CategorieDb}\n" +
+                    $"Temps: {recette.TempsPreparation} minutes\n\n" +
+                    $"Ingrédients:\n{ingredientsText}\n\n" +
+                    $"Instructions:\n{recette.Instructions}",
+                    "Détails de la recette",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur chargement ingrédients:\n{ex}");
+            }
+        }
+
+        private async void BtnNouvelleRecette_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Dialogs.AjouterRecetteDialog();
+            dialog.Owner = Window.GetWindow(this);
+
+            bool? resultat = dialog.ShowDialog();
+            if (resultat != true || dialog.NouvelleRecette == null)
+                return;
+
+            if (!EnsureConnected(out var userId))
+                return;
+
+            if (!EnsureRestClient())
+                return;
+
+            var r = dialog.NouvelleRecette;
+
+            // ExternalId obligatoire pour upsert
+            if (string.IsNullOrWhiteSpace(r.ExternalId))
+                r.ExternalId = Guid.NewGuid().ToString("N");
+
+            // owner important
+            r.OwnerUserId = userId;
+
+            // Save recette (upsert via external_id)
+            await App.RecipesService!.UpsertRecetteAsync(userId, r);
+
+            // récupérer recetteId DB à partir de ExternalId (⚠️ nouvelle signature: userId + externalId)
+            var recetteId = await App.RecipesService.GetRecetteIdByExternalIdAsync(userId, r.ExternalId);
+            if (recetteId == null)
+                throw new Exception("Recette introuvable après upsert.");
+
+            // envoyer ingrédients
+            var ingSvc = new RecetteIngredientsService(App.RestClient!);
+            var items = (r.Ingredients ?? new List<IngredientRecette>())
+                .Select(i => (i.Nom, i.Quantite, i.Unite))
+                .ToList();
+
+            await ingSvc.ReplaceForRecetteAsync(recetteId.Value, items);
+
+            await RefreshDepuisSupabaseAsync();
+
+            MessageBox.Show(
+                $"La recette '{r.Nom}' a été ajoutée avec succès !",
+                "Succès",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+
+        private async void BtnSupprimerRecette_Click(object sender, RoutedEventArgs e)
+        {
+            var bouton = sender as Button;
+            var recette = bouton?.Tag as Recette;
+
+            if (recette == null)
+                return;
+
+            var resultat = MessageBox.Show(
+                $"Voulez-vous vraiment supprimer la recette '{recette.Nom}' ?",
+                "Confirmation de suppression",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (resultat != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                if (!EnsureConnected(out _))
+                    return;
+
+                await App.RecipesService!.DeleteRecetteAsync(recette.Id);
+
+                await RefreshDepuisSupabaseAsync();
+
+                MessageBox.Show(
+                    $"La recette '{recette.Nom}' a été supprimée.",
+                    "Suppression réussie",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur suppression :\n{ex}");
+            }
+        }
+
+        private async void BtnSyncRecettes_Click(object sender, RoutedEventArgs e)
+        {
+            await RefreshDepuisSupabaseAsync();
+            MessageBox.Show("Recettes rechargées depuis Supabase.");
+        }
+    }
+}

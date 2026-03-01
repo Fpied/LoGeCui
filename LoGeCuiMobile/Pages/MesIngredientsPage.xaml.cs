@@ -189,7 +189,7 @@ public partial class MesIngredientsPage : ContentPage
         {
             await DisplayAlert(
                 LocalizationResourceManager.Instance["Ingredients_DialogTitle"],
-                "Aucun ingrédient sélectionné.",
+                LocalizationResourceManager.Instance["Auto_Aucun_Ingredient"],
                 LocalizationResourceManager.Instance["Dialog_Ok"]
             );
             return;
@@ -223,7 +223,7 @@ public partial class MesIngredientsPage : ContentPage
 
             await DisplayAlert(
                 LocalizationResourceManager.Instance["Ingredients_DialogTitle"],
-                $"{selected.Count} ingrédient(s) supprimé(s).",
+                $"{selected.Count} " + LocalizationResourceManager.Instance["Shopping_Delete"],
                 LocalizationResourceManager.Instance["Dialog_Ok"]
             );
         }

@@ -1,144 +1,651 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+                </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Mot de passe</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Rester connecté</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Se connecter</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Créer un compte</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Mot de passe oublié ?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Erreur</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Mauvais mot de passe</value>
-  </data>
-</root>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>Εντάξει</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>Ναι</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>Όχι</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Ακύρωση</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ Εντάξει</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 Άδεια</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Άγνωστο σφάλμα.</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>Η υπηρεσία δεν είναι διαθέσιμη.</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>Πρέπει να είστε συνδεδεμένοι.</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>Συνεδρία</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Η συνεδρία σας έχει λήξει ή δεν υπάρχει. Παρακαλώ συνδεθείτε ξανά.</value>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 Λίστα αγορών</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>Η λίστα με τα ψώνια μου</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ Προσθήκη άρθρου</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ Διαγραφή επιλογής</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>Δεν υπάρχουν άρθρα προς το παρόν.</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>Αγοράστηκε</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>Διαγραφή</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>Προσθήκη συστατικού</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>Όνομα συστατικού</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>Ποσότητα (π.χ.: 10)</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>Μονάδα (π.χ. κιλά, τεμάχια)</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>Διαθέσιμο</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 Εγγραφή</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>Το όνομα είναι υποχρεωτικό.</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>Διαχείριση συστατικών</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ Προσθήκη συστατικού</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>Ποσότητα:{0}  {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>Διαθέσιμο</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>Συστατικό</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>Προσθήκη συνταγής</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>Όνομα</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>Όνομα της συνταγής</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>Κατηγορία</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>Επιλέξτε μια κατηγορία</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>Χρόνος (λεπτά)</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>Π.χ.: 30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>Συστατικά (1 ανά γραμμή)</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>Π.χ.:
+2 αυγά
+100 γρ. αλεύρι
+1 πρέζα αλάτι</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>Οδηγίες</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>Π.χ.: Ανακατέψτε, μαγειρέψτε για 10 λεπτά...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>Σαρωτής (OCR)</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>Εγγραφή</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>Πρέπει να είστε συνδεδεμένοι.</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>ΣυνταγήΣυστατικάΥπηρεσία μη αρχικοποιημένη.</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>Το όνομα είναι υποχρεωτικό.</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>Δεν είναι δυνατή η εύρεση του αναγνωριστικού της συνταγής μετά την αποθήκευση.</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ Συνταγή αποθηκευμένη.</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 Σκανάρετε μια συνταγή</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>Για τη σάρωση απαιτείται πρόσβαση στην κάμερα.</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>Η λήψη φωτογραφιών δεν υποστηρίζεται σε αυτή τη συσκευή.</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>Η εικόνα είναι πολύ βαριά για το OCR. Προσπαθήστε να κάνετε πιο στενό καδράρισμα ή μειώστε την ανάλυση.</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>Δεν εντοπίστηκε κείμενο. Δοκιμάστε με περισσότερο φως και χωρίς θαμπάδα.</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ Σαρωμένο κείμενο και προπληρωμένα πεδία. Ελέγξτε και διορθώστε αν χρειάζεται.</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>Οι συνταγές μου</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>Κατηγορία</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>Ανανέωση</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>Προσθήκη συνταγής</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>Δεν υπάρχουν συνταγές προς το παρόν.</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>Χρόνος:{0}  λεπτά</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>Το RecipesService είναι NULL (το InitRestServices δεν κλήθηκε μετά τη σύνδεση).</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>ΣυνταγήΣυστατικάΥπηρεσία δεν έχει αρχικοποιηθεί.</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(δεν αναφέρονται συστατικά)</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>Κατηγορία: 
+{0}
+
+Χρόνος:  {1}
+
+λεπτά
+
+Συστατικά:
+{2}
+
+Οδηγίες:
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 Τυχαίο μενού</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 Τυχαίο μενού</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>Πατήστε το κουμπί για να εμφανιστεί ένα μενού</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 Στείλτε τα συστατικά που λείπουν στη λίστα αγορών</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 Άνοιγμα λίστας αγορών</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>Αποστολή;</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>Λείπει:</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 Συστατικά που αποστέλλονται</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ Δημιουργία μενού (Είσοδος / Πιάτο / Επιδόρπιο)…</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>Δεν υπάρχουν διαθέσιμες συνταγές.</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>Δεν είναι δυνατή η δημιουργία μενού με ορεκτικά/κύρια πιάτα/επιδόρπια.</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>Ορεκτικά: 
+{0}Κυρίως πιάτα: 
+{1}Επιδόρπια: {2}</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>Βεβαιώσου ότι οι συνταγές σου έχουν σωστή κατηγορία = Ορεκτικό / Κυρίως πιάτο / Επιδόρπιο στη βάση δεδομένων.</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ Δημιουργημένο μενού:</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>Συστατικά: (δεν υπάρχουν καταχωρημένα συστατικά για αυτή τη συνταγή)</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>Συστατικά:</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>Λείπουν: κανένα</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>Λείπουν:</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>Δεν είναι δυνατό να υπολογιστούν τα συστατικά που λείπουν: ορισμένες συνταγές δεν έχουν καταχωρημένα συστατικά.</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ Όλα είναι διαθέσιμα. Δεν λείπει κανένα συστατικό.</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>Συνολικός κατάλογος των ελλείποντων συστατικών:</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>Επαναφορά</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>Επαναφορά του κωδικού πρόσβασής σας</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>Νέο κωδικό πρόσβασης</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>Επιβεβαίωση κωδικού πρόσβασης</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>Επικύρωση</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>Ο κωδικός πρόσβασης πρέπει να περιέχει τουλάχιστον 6 χαρακτήρες.</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>Οι κωδικοί πρόσβασης δεν ταιριάζουν.</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ Ενημέρωση σε εξέλιξη...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ Ολοκληρώθηκε</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>Ο κωδικός πρόσβασής σας έχει αλλάξει. Μπορείτε να συνδεθείτε.</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>Δεν είναι δυνατή η αλλαγή του κωδικού πρόσβασης.</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Παράμετροι</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>Λογαριασμός</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>Αποσύνδεση</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>Επικίνδυνη ζώνη</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>Διαγραφή</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>Διαγραφή</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>Είστε σίγουροι ότι θέλετε να διαγράψετε τον λογαριασμό σας; Αυτή η ενέργεια είναι μη αναστρέψιμη.</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>Ναι, διαγραφή</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>Το Supabase δεν έχει αρχικοποιηθεί. Συνδεθείτε ξανά.</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>Δεν είναι δυνατή η διαγραφή: {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>✅ Ο λογαριασμός σας έχει διαγραφεί.</value>
+    </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>Να αφαιρέσετε αυτό το συστατικό;</value>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Η συνεδρία έληξε</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Η συνεδρία σας έληξε. Παρακαλώ συνδεθείτε ξανά.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR: Απουσία ApiKey στο appsettings.json</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>Δεν είναι δυνατή η φόρτωση του αρχείου appsettings.json από το πακέτο MAUI.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Λείπει η διεύθυνση URL στο appsettings.json</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Λείπει κλειδί στο appsettings.json</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>Διεύθυνση ηλεκτρονικού ταχυδρομείου</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Ξεχάσατε τον κωδικό πρόσβασης</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Αποστολή</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Επιστροφή</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Εισάγετε το email σας για να λάβετε έναν σύνδεσμο επαναφοράς.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>Email αποσταλεί ✅ Ελέγξτε το email σας (και το φάκελο spam).</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Σφάλμα:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Δεν έχει αρχικοποιηθεί η διεπαφή (XAML). Ελέγξτε τα x:Class και x:Name.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Αποστολή σε εξέλιξη...</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Παρακαλώ εισάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Σύνδεση</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Γλώσσα</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Κάντε κλικ εδώ</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>Καλώς ήρθατε στο 
+.NET Multi-platform App UI</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>Γεια σου, κόσμε!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Φωτογραφία</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Τραβήξτε μια φωτογραφία</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Επιλογή φωτογραφίας</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Διαγραφή φωτογραφίας</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Η σύνδεση δεν είναι έγκυρη, συνδεθείτε ξανά.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Επιλογή όλων</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Προσθήκη</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Ποσότητα (προαιρετικό):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>Δεν έχει επιλεγεί κανένα άρθρο.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Μονάδα (προαιρετικό):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Πληροφορίες</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Όνομα προϊόντος:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>Επιλέξτε τουλάχιστον μία κατηγορία.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Πληροφορίες</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Επιλέξτε τις κατηγορίες</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Χωρίς συστατικά.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Διαγραφή επιλογής</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>Δεν έχει επιλεγεί καμία συνταγή.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>Δεν είναι δυνατή η προσθήκη στη λίστα αγορών.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>Δεν είναι δυνατός ο υπολογισμός των συστατικών (εκτός σύνδεσης ή ελλείπουσες πληροφορίες).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>Έχεις ήδη όλα τα συστατικά για αυτή τη συνταγή ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Προσθήκη στη λίστα</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Επιλογή ενεργού λίστας</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(κανένα)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Σύνδεση με κωδικό</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Κοινή λίστα αγορών</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Κωδικός κοινής χρήσης:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(καμία)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Επιστροφή στη λίστα μου</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Ενεργός λίστα:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Αντιγραφή</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Επιλογή της ενεργής λίστας</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>Δεν έχεις κοινόχρηστες λίστες.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Η λίστα μου</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Μη έγκυρη συνεδρία.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Ο λογαριασμός σου έχει διαγραφεί.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Μη έγκυρος κωδικός (δεν βρέθηκε λίστα).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Επιτυχία</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Πρέπει να είσαι συνδεδεμένος.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>Θέλεις να διαγράψεις οριστικά τον λογαριασμό σου; Αυτή η ενέργεια είναι μη αναστρέψιμη.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Πρέπει να είσαι συνδεδεμένος για να προστεθείς σε μια λίστα.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(λειτουργία εκτός σύνδεσης)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>Δεν χρειάζεται να αντιγράψετε κανέναν κωδικό.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Επιστροφή στη λίστα σου ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>Δεν είναι δυνατή η δημιουργία λίστας.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Κωδικός αντιγραμμένος ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Επιβεβαίωση</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Εγγραφή σε λίστα</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Εισάγετε τον κωδικό κοινής χρήσης:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Προσωπική λίστα (μη κοινόχρηστη)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Η συνεδρία δεν είναι έγκυρη. Συνδέσου ξανά πρώτα.</value>
+    </data>
+  </root>

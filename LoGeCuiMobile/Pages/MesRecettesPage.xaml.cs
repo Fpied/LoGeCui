@@ -155,15 +155,11 @@ public partial class MesRecettesPage : ContentPage
         var selected = _vm.Recettes.Where(r => r.IsSelectedForDelete).ToList();
         if (selected.Count == 0)
         {
-            await DisplayAlert("Info", "Aucune recette sélectionnée.", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["Auto_Info"], LocalizationResourceManager.Instance["Auto_Aucune_Recette_Selectionnee"], LocalizationResourceManager.Instance["Dialog_Ok"]);
             return;
         }
 
-        bool confirm = await DisplayAlert(
-            "Confirmation",
-            $"Supprimer {selected.Count} recette(s) sélectionnée(s) ?",
-            "Oui",
-            "Non");
+        bool confirm = await DisplayAlert(LocalizationResourceManager.Instance["Auto_Confirmation"], $"Supprimer {selected.Count} recette(s) sélectionnée(s) ?", LocalizationResourceManager.Instance["Dialog_Yes"], LocalizationResourceManager.Instance["Dialog_No"]);
 
         if (!confirm) return;
 
@@ -185,11 +181,7 @@ public partial class MesRecettesPage : ContentPage
 
         if (recetteUi == null) return;
 
-        bool confirm = await DisplayAlert(
-            "Confirmation",
-            $"Supprimer '{recetteUi.Nom}' ?",
-            "Oui",
-            "Non");
+        bool confirm = await DisplayAlert(LocalizationResourceManager.Instance["Auto_Confirmation"], $"Supprimer '{recetteUi.Nom}' ?", LocalizationResourceManager.Instance["Dialog_Yes"], LocalizationResourceManager.Instance["Dialog_No"]);
 
         if (!confirm) return;
 
@@ -234,29 +226,25 @@ public partial class MesRecettesPage : ContentPage
         var missing = await _vm.GetMissingIngredientsForRecipeAsync(recetteUi.Model);
         if (missing == null)
         {
-            await DisplayAlert("Info", "Impossible de calculer les ingrédients (offline ou données manquantes).", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["Auto_Info"], LocalizationResourceManager.Instance["Auto_Impossible_De_Calculer_Les_Ingredients_Offline"], LocalizationResourceManager.Instance["Dialog_Ok"]);
             return;
         }
 
         if (missing.Count == 0)
         {
-            await DisplayAlert("Info", "Tu as déjà tous les ingrédients pour cette recette ✅", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["Auto_Info"], LocalizationResourceManager.Instance["Auto_Tu_As_Deja_Tous_Les_Ingredients"], LocalizationResourceManager.Instance["Dialog_Ok"]);
             return;
         }
 
-        bool confirm = await DisplayAlert(
-            "Ajouter à la liste",
-            "Ajouter ces ingrédients manquants ?\n- " + string.Join("\n- ", missing),
-            "Oui",
-            "Non");
+        bool confirm = await DisplayAlert(LocalizationResourceManager.Instance["Auto_Ajouter_A_La_Liste"], "Ajouter ces ingrédients manquants ?\n- " + string.Join("\n- ", missing), LocalizationResourceManager.Instance["Dialog_Yes"], LocalizationResourceManager.Instance["Dialog_No"]);
 
         if (!confirm) return;
 
         var ok = await _vm.SendMissingToShoppingAsync(missing);
 
         if (ok)
-            await DisplayAlert("Succès", $"{missing.Count} ingrédient(s) ajouté(s) à la liste de courses.", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["Auto_Succes"], $"{missing.Count} ingrédient(s) ajouté(s) à la liste de courses.", LocalizationResourceManager.Instance["Dialog_Ok"]);
         else
-            await DisplayAlert("Erreur", "Impossible d’ajouter à la liste de courses.", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Impossible_Dajouter_A_La_Liste_De"], LocalizationResourceManager.Instance["Dialog_Ok"]);
     }
 }

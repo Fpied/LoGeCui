@@ -28,7 +28,7 @@ public partial class SettingsPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erreur", ex.Message, "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.Message, LocalizationResourceManager.Instance["Dialog_Ok"]);
         }
     }
 
@@ -44,7 +44,7 @@ public partial class SettingsPage : ContentPage
 
             if (app.CurrentUserId == null || app.RestClient == null)
             {
-                await DisplayAlert("Erreur", "Tu dois être connecté.", "OK");
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Tu_Dois_Etre_Connecte"], LocalizationResourceManager.Instance["Dialog_Ok"]);
                 return;
             }
 
@@ -52,11 +52,11 @@ public partial class SettingsPage : ContentPage
             app.SetCurrentShoppingListId(myList.id);
 
             await RefreshSharingUiAsync();
-            await DisplayAlert("OK", $"Ton code de partage : {myList.share_code}", "OK");
+            await DisplayAlert("OK", $"{LocalizationResourceManager.Instance["Auto_Ton_Code_De_Partage"]} {myList.share_code}", LocalizationResourceManager.Instance["Dialog_Ok"]);
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erreur", ex.ToString(), "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], ex.ToString(), LocalizationResourceManager.Instance["Dialog_Ok"]);
         }
     }
 
@@ -66,14 +66,14 @@ public partial class SettingsPage : ContentPage
         {
             var code = LblShareCode?.Text?.Trim();
 
-            if (string.IsNullOrWhiteSpace(code) || code == "(aucun)")
+            if (string.IsNullOrWhiteSpace(code) || code == LocalizationResourceManager.Instance["Auto_Aucun"])
             {
-                await DisplayAlert("Info", "Aucun code à copier.", "OK");
+                await DisplayAlert(LocalizationResourceManager.Instance["Auto_Info"], LocalizationResourceManager.Instance["Auto_Aucun_Code_A_Copier"], LocalizationResourceManager.Instance["Dialog_Ok"]);
                 return;
             }
 
             await Clipboard.SetTextAsync(code);
-            await DisplayAlert("OK", "Code copié ✅", "OK");
+            await DisplayAlert("OK", LocalizationResourceManager.Instance["Auto_Code_Copie"], LocalizationResourceManager.Instance["Dialog_Ok"]);
         }
         catch (Exception ex)
         {
@@ -89,11 +89,11 @@ public partial class SettingsPage : ContentPage
 
             if (app.CurrentUserId == null || app.RestClient == null || !app.IsConnected)
             {
-                await DisplayAlert("Erreur", "Tu dois être connecté pour rejoindre une liste.", "OK");
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre"], LocalizationResourceManager.Instance["Dialog_Ok"]);
                 return;
             }
 
-            var code = await DisplayPromptAsync("Rejoindre une liste", "Entre le code de partage :");
+            var code = await DisplayPromptAsync(LocalizationResourceManager.Instance["Auto_Rejoindre_Une_Liste"], LocalizationResourceManager.Instance["Auto_Entre_Le_Code_De_Partage"]);
             if (string.IsNullOrWhiteSpace(code))
                 return;
 
@@ -103,14 +103,14 @@ public partial class SettingsPage : ContentPage
 
             if (joined == null)
             {
-                await DisplayAlert("Erreur", "Code invalide (liste introuvable).", "OK");
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Code_Invalide"], LocalizationResourceManager.Instance["Dialog_Ok"]);
                 return;
             }
 
             app.SetCurrentShoppingListId(joined.Value.listId);
 
             await RefreshSharingUiAsync();
-            await DisplayAlert("Succès", $"Tu as rejoint la liste : {joined.Value.name}", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["Auto_Succes"], $"{LocalizationResourceManager.Instance["Auto_Tu_As_Rejoint_La_Liste"]} {joined.Value.name}", LocalizationResourceManager.Instance["Dialog_Ok"]);
         }
         catch (Exception ex)
         {
@@ -126,7 +126,7 @@ public partial class SettingsPage : ContentPage
 
             if (app.CurrentUserId == null || app.RestClient == null)
             {
-                await DisplayAlert("Erreur", "Tu dois être connecté.", "OK");
+                await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Tu_Dois_Etre_Connecte"], LocalizationResourceManager.Instance["Dialog_Ok"]);
                 return;
             }
 
@@ -134,7 +134,7 @@ public partial class SettingsPage : ContentPage
 
             if (lists.Count == 0)
             {
-                await DisplayAlert("Info", "Tu n'as aucune liste partagée.", "OK");
+                await DisplayAlert(LocalizationResourceManager.Instance["Auto_Info"], LocalizationResourceManager.Instance["Auto_Tu_N_As_Aucune_Liste_Partagee"], LocalizationResourceManager.Instance["Dialog_Ok"]);
                 return;
             }
 
@@ -142,8 +142,8 @@ public partial class SettingsPage : ContentPage
                 .Select(l => $"{(string.IsNullOrWhiteSpace(l.name) ? "Liste partagée" : l.name)}  ({l.share_code})")
                 .ToArray();
 
-            var chosen = await DisplayActionSheet("Choisir la liste active", "Annuler", null, labels);
-            if (string.IsNullOrWhiteSpace(chosen) || chosen == "Annuler")
+            var chosen = await DisplayActionSheet(LocalizationResourceManager.Instance["Auto_Choisir_La_Liste_Active"], LocalizationResourceManager.Instance["Auto_Annuler"], null, labels);
+            if (string.IsNullOrWhiteSpace(chosen) || chosen == LocalizationResourceManager.Instance["Auto_Annuler"])
                 return;
 
             var idx = Array.IndexOf(labels, chosen);
@@ -167,7 +167,7 @@ public partial class SettingsPage : ContentPage
             app.SetCurrentShoppingListId(Guid.Empty);
 
             await RefreshSharingUiAsync();
-            await DisplayAlert("OK", "Retour à ta liste perso ✅", "OK");
+            await DisplayAlert("OK", LocalizationResourceManager.Instance["Auto_Retour_A_Ta_Liste_Perso"], LocalizationResourceManager.Instance["Dialog_Ok"]);
         }
         catch (Exception ex)
         {
@@ -182,10 +182,7 @@ public partial class SettingsPage : ContentPage
     private async void OnDesinscriptionClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            "Confirmation",
-            "Supprimer définitivement ton compte ? Cette action est irréversible.",
-            "Oui, supprimer",
-            "Annuler");
+            LocalizationResourceManager.Instance["Auto_Confirmation"], LocalizationResourceManager.Instance["Auto_Supprimer_Definitivement_Ton_Compte"], LocalizationResourceManager.Instance["Auto_Oui_Supprimer"], LocalizationResourceManager.Instance["Auto_Annuler"]);
 
         if (!confirm) return;
 
@@ -193,7 +190,7 @@ public partial class SettingsPage : ContentPage
 
         if (app.Supabase == null || app.CurrentAccessToken == null)
         {
-            await DisplayAlert("Erreur", "Session invalide. Reconnecte-toi d'abord.", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Session_Invalide_Reconnecte_Toi"], LocalizationResourceManager.Instance["Dialog_Ok"]);
             app.ShowLogin();
             return;
         }
@@ -201,7 +198,7 @@ public partial class SettingsPage : ContentPage
         var userId = app.CurrentUserId?.ToString();
         if (string.IsNullOrWhiteSpace(userId))
         {
-            await DisplayAlert("Erreur", "Session invalide.", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], LocalizationResourceManager.Instance["Auto_Session_Invalide"], LocalizationResourceManager.Instance["Dialog_Ok"]);
             app.ShowLogin();
             return;
         }
@@ -212,7 +209,7 @@ public partial class SettingsPage : ContentPage
 
         if (!ok)
         {
-            await DisplayAlert("Erreur", $"Suppression impossible : {err}", "OK");
+            await DisplayAlert(LocalizationResourceManager.Instance["ErrorTitle"], $"{LocalizationResourceManager.Instance["Auto_Suppression_Impossible"]} {err}", LocalizationResourceManager.Instance["Dialog_Ok"]);
 
             if (err?.Contains("JWT", StringComparison.OrdinalIgnoreCase) == true)
             {
@@ -221,7 +218,7 @@ public partial class SettingsPage : ContentPage
             return;
         }
 
-        await DisplayAlert("Succès", "Ton compte a été supprimé.", "OK");
+        await DisplayAlert(LocalizationResourceManager.Instance["Auto_Succes"], LocalizationResourceManager.Instance["Auto_Ton_Compte_A_Ete_Supprime"], LocalizationResourceManager.Instance["Dialog_Ok"]);
         app.Logout(silent: true);
     }
 

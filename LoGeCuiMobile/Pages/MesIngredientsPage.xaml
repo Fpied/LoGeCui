@@ -30,7 +30,7 @@
 
             <Button Grid.Column="1"
                     x:Name="BtnSupprimerSelectionIngredients"
-                    Text="Supprimer sélection"
+                    Text="{tr:Translate Auto_Supprimer_Selection}"
                     BackgroundColor="#E67E22"
                     TextColor="White"
                     Clicked="OnDeleteSelectedIngredientsClicked" />
@@ -40,7 +40,7 @@
         <HorizontalStackLayout Grid.Row="1" Spacing="10" Padding="4,0">
             <CheckBox x:Name="ChkToutSelectionnerIngredients"
                       CheckedChanged="ChkToutSelectionnerIngredients_CheckedChanged" />
-            <Label Text="Tout sélectionner"
+            <Label  Text="{tr:Translate Auto_Tout_Selectionner}"
                    VerticalTextAlignment="Center"
                    TextColor="Gray" />
         </HorizontalStackLayout>
@@ -51,7 +51,7 @@
                         SelectionMode="None">
 
             <CollectionView.EmptyView>
-                <Label Text="Aucun ingrédient."
+                <Label Text="{tr:Translate Auto_Aucun_Ingredient}"
                        HorizontalOptions="Center"
                        Margin="0,20,0,0"
                        TextColor="Gray"/>
@@ -92,7 +92,7 @@
                                 <!-- Sélection suppression -->
                                 <HorizontalStackLayout Spacing="6">
                                     <CheckBox IsChecked="{Binding IsSelectedForDelete}" />
-                                    <Label Text="Supprimer"
+                                    <Label Text="{tr:Translate Auto_Supprimer}"
                                            VerticalTextAlignment="Center"
                                            TextColor="Gray"/>
                                 </HorizontalStackLayout>

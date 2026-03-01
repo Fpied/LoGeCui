@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using LoGeCuiShared.Functions;
+using LoGeCuiShared.Functions.Account;
 using LoGeCuiShared.Models;
 using Supabase.Postgrest;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 
 namespace LoGeCuiShared.Services
@@ -99,119 +101,21 @@ namespace LoGeCuiShared.Services
 
         public async Task<(bool success, string? userId, string? error)> SignUpAsync(string email, string password)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-                    return (false, null, "Adresse email invalide");
-
-                if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
-                    return (false, null, "Le mot de passe doit contenir au moins 6 caractères");
-
-                var request = new { email = email.Trim(), password };
-
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _supabaseKey);
-
-                var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/signup", request);
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                    return (false, null, ExtractSupabaseError(content, response.StatusCode));
-
-                // Supabase renvoie souvent { user: { id: ... } }, parfois { id: ... }
-                try
-                {
-                    var json = JsonDocument.Parse(content);
-
-                    if (json.RootElement.TryGetProperty("user", out var userEl) &&
-                        userEl.TryGetProperty("id", out var uidEl))
-                    {
-                        var uid = uidEl.GetString();
-                        if (!string.IsNullOrWhiteSpace(uid))
-                            return (true, uid, null);
-                    }
-
-                    if (json.RootElement.TryGetProperty("id", out var idEl))
-                    {
-                        var uid = idEl.GetString();
-                        if (!string.IsNullOrWhiteSpace(uid))
-                            return (true, uid, null);
-                    }
-
-                    return (true, "unknown", null);
-                }
-                catch
-                {
-                    return (true, "unknown", null);
-                }
-            }
-            catch (HttpRequestException)
-            {
-                return (false, null, "Erreur de connexion au serveur. Vérifiez votre connexion internet.");
-            }
-            catch (TaskCanceledException)
-            {
-                return (false, null, "La requête a expiré. Vérifiez votre connexion internet.");
-            }
-            catch (Exception ex)
-            {
-                return (false, null, $"Erreur inattendue : {ex.Message}");
-            }
+            return await SignUpFunction.SignUpAsync(_httpClient, _supabaseUrl, _supabaseKey, email, password);
         }
 
         public async Task<(bool success, string? accessToken, string? userId, string? error)> SignInAsync(string email, string password)
         {
-            try
+            var result = await SignInFunction.SignInAsync(_httpClient, _supabaseUrl, _supabaseKey, email, password);
+
+            if (result.success && result.accessToken != null && result.userId != null)
             {
-                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-                    return (false, null, null, "Adresse email invalide");
-
-                if (string.IsNullOrWhiteSpace(password))
-                    return (false, null, null, "Le mot de passe est requis");
-
-                var request = new { email = email.Trim(), password };
-
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
-
-                var response = await _httpClient.PostAsJsonAsync(
-                    $"{_supabaseUrl}/auth/v1/token?grant_type=password",
-                    request);
-
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                    return (false, null, null, ExtractSupabaseError(content, response.StatusCode));
-
-                var json = JsonDocument.Parse(content);
-
-                var token = json.RootElement.GetProperty("access_token").GetString();
-                var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
-
-                if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(userId))
-                    return (false, null, null, "Réponse Supabase invalide (token/userId manquant).");
-
-                SetSession(token, userId);
-                return (true, token, userId, null);
+                SetSession(result.accessToken, result.userId);
             }
-            catch (HttpRequestException)
-            {
-                return (false, null, null, "Erreur de connexion au serveur. Vérifiez votre connexion internet.");
-            }
-            catch (TaskCanceledException)
-            {
-                return (false, null, null, "La requête a expiré. Vérifiez votre connexion internet.");
-            }
-            catch (Exception ex)
-            {
-                return (false, null, null, $"Erreur inattendue : {ex.Message}");
-            }
+            return result;
         }
 
-        public async Task<(bool success, string? accessToken, string? userId, string? error)>
-            SignUpThenSignInAsync(string email, string password)
+        public async Task<(bool success, string? accessToken, string? userId, string? error)> SignUpThenSignInAsync(string email, string password)
         {
             var (signUpSuccess, _, signUpError) = await SignUpAsync(email, password);
             if (!signUpSuccess)
@@ -226,58 +130,12 @@ namespace LoGeCuiShared.Services
 
         public async Task<(bool success, string? error)> SendPasswordResetAsync(string email)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-                    return (false, "Adresse email invalide");
-
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
-
-                var request = new
-                {
-                    email = email.Trim(),
-                    redirect_to = "https://logecui.fr/logecui-reset-password/index.html"
-                };
-
-                var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/recover", request);
-                var content = await response.Content.ReadAsStringAsync();
-
-                return response.IsSuccessStatusCode
-                    ? (true, null)
-                    : (false, ExtractSupabaseError(content, response.StatusCode));
-            }
-            catch
-            {
-                return (false, "Erreur réseau. Réessayez plus tard.");
-            }
+            return await SendPasswordResetFunction.SendPasswordResetAsync(_httpClient, _supabaseUrl, _supabaseKey, email);
         }
 
         public async Task<(bool success, string? error)> UpdatePasswordAsync(string accessToken, string newPassword)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
-                    return (false, "Le mot de passe doit contenir au moins 6 caractères.");
-
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
-                var response = await _httpClient.PutAsJsonAsync(
-                    $"{_supabaseUrl}/auth/v1/user",
-                    new { password = newPassword });
-
-                var content = await response.Content.ReadAsStringAsync();
-
-                return response.IsSuccessStatusCode
-                    ? (true, null)
-                    : (false, ExtractSupabaseError(content, response.StatusCode));
-            }
-            catch
-            {
-                return (false, "Erreur réseau.");
-            }
+            return await UpdatePasswordFunction.UpdatePasswordAsync(_httpClient, _supabaseUrl, _supabaseKey, accessToken, newPassword);
         }
 
         // =========================
@@ -286,49 +144,12 @@ namespace LoGeCuiShared.Services
 
         public async Task<(bool success, string? error)> DeleteAccountAsync()
         {
-            try
+            var result = await DeleteAccountFunction.DeleteAccountAsync(_httpClient, _supabaseUrl, _supabaseKey, _accessToken ?? "");
+            if (result.success)
             {
-                RequireAccessToken();
-
-                System.Diagnostics.Debug.WriteLine("=== DELETE ACCOUNT ===");
-
-                // ✅ IMPORTANT : Headers corrects pour RPC
-                var request = new HttpRequestMessage(HttpMethod.Post,
-                    $"{_supabaseUrl}/rest/v1/rpc/delete_user_account");
-
-                request.Headers.TryAddWithoutValidation("apikey", _supabaseKey);
-                request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {_accessToken}");
-                request.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.SendAsync(request);
-                var content = await response.Content.ReadAsStringAsync();
-
-                System.Diagnostics.Debug.WriteLine($"Response: {(int)response.StatusCode} - {content}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    return (false, $"Erreur : {content}");
-                }
-
-                var json = JsonDocument.Parse(content);
-                if (json.RootElement.TryGetProperty("success", out var success) && success.GetBoolean())
-                {
-                    ClearSession();
-                    return (true, null);
-                }
-
-                if (json.RootElement.TryGetProperty("error", out var error))
-                {
-                    return (false, error.GetString());
-                }
-
-                return (false, "Erreur inconnue");
+                ClearSession();
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
-                return (false, $"Erreur : {ex.Message}");
-            }
+            return result;
         }
 
 
@@ -339,95 +160,27 @@ namespace LoGeCuiShared.Services
 
         public async Task<List<ArticleCourse>> GetArticlesAsync()
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            var response = await _client
-                .Table<ArticleCourseDb>()
-                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                .Get();
-
-            return response.Models.Select(db => new ArticleCourse
-            {
-                Id = db.Id,
-                Nom = db.Nom ?? "",
-                Quantite = db.Quantite ?? "",
-                Unite = db.Unite ?? "",
-                EstAchete = db.EstAchete,
-                // IMPORTANT: si ton modèle ArticleCourse.UserId est Guid (non nullable),
-                // on protège avec ?? Guid.Empty
-                UserId = db.UserId ?? Guid.Empty
-            }).ToList();
+            return await ArticlesCoursesFunction.GetArticlesAsync(_client, RequireCurrentUserGuid());
         }
 
         public async Task<ArticleCourse?> AddArticleAsync(ArticleCourse article)
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            var dbArticle = new ArticleCourseDb
-            {
-                Nom = article.Nom,
-                Quantite = article.Quantite,
-                Unite = article.Unite,
-                EstAchete = article.EstAchete,
-                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
-            };
-
-            var response = await _client.Table<ArticleCourseDb>().Insert(dbArticle);
-            var inserted = response.Models.FirstOrDefault();
-            if (inserted == null) return null;
-
-            return new ArticleCourse
-            {
-                Id = inserted.Id,
-                Nom = inserted.Nom ?? "",
-                Quantite = inserted.Quantite ?? "",
-                Unite = inserted.Unite ?? "",
-                EstAchete = inserted.EstAchete,
-                UserId = inserted.UserId ?? Guid.Empty
-            };
+            return await ArticlesCoursesFunction.AddArticleAsync(_client, article, RequireCurrentUserGuid());
         }
 
         public async Task<bool> UpdateArticleAsync(int id, ArticleCourse article)
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            var dbArticle = new ArticleCourseDb
-            {
-                Id = id,
-                Nom = article.Nom,
-                Quantite = article.Quantite,
-                Unite = article.Unite,
-                EstAchete = article.EstAchete,
-                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
-            };
-
-            await _client.Table<ArticleCourseDb>().Update(dbArticle);
-            return true;
+            return await ArticlesCoursesFunction.UpdateArticleAsync(id, article, _client, RequireCurrentUserGuid());
         }
 
         public async Task<bool> DeleteArticleAsync(int id)
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            // Sécurise par user_id (sinon RLS peut bloquer ou pire, toucher autre chose si policy permissive)
-            await _client.Table<ArticleCourseDb>()
-                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id)
-                .Delete();
-
-            return true;
+            return await ArticlesCoursesFunction.DeleteArticleAsync(_client, id, RequireCurrentUserGuid());
         }
 
         public async Task<bool> DeleteAchetesAsync()
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            await _client.Table<ArticleCourseDb>()
-                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                .Filter("est_achete", Supabase.Postgrest.Constants.Operator.Equals, true)
-                .Delete();
-
-            return true;
+            return await ArticlesCoursesFunction.DeleteAchetesAsync(_client, RequireCurrentUserGuid());
         }
 
         // =========================
@@ -436,115 +189,28 @@ namespace LoGeCuiShared.Services
 
         public async Task<List<Ingredient>> GetIngredientsAsync()
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            var response = await _client
-                .Table<IngredientDb>()
-                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                .Get();
-
-            return response.Models.Select(db => new Ingredient
-            {
-                Id = db.Id,
-                // Si Ingredient.UserId est Guid (non nullable), on protège :
-                UserId = db.UserId ?? Guid.Empty,
-                Nom = db.Nom ?? "",
-                Quantite = db.Quantite ?? "",
-                Unite = db.Unite ?? "",
-                EstDisponible = db.EstDisponible
-            }).ToList();
+            return await IngredientFunction.GetIngredientsAsync(_client, RequireCurrentUserGuid());
         }
 
         public async Task<Ingredient?> AddIngredientAsync(Ingredient ingredient)
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            var db = new IngredientDb
-            {
-                Nom = ingredient.Nom,
-                Quantite = ingredient.Quantite,
-                Unite = ingredient.Unite,
-                EstDisponible = ingredient.EstDisponible,
-                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
-            };
-
-            var response = await _client.Table<IngredientDb>().Insert(db);
-            var inserted = response.Models.FirstOrDefault();
-            if (inserted == null) return null;
-
-            return new Ingredient
-            {
-                Id = inserted.Id,
-                UserId = inserted.UserId ?? Guid.Empty,
-                Nom = inserted.Nom ?? "",
-                Quantite = inserted.Quantite ?? "",
-                Unite = inserted.Unite ?? "",
-                EstDisponible = inserted.EstDisponible
-            };
+            return await IngredientFunction.AddIngredientAsync(_client, RequireCurrentUserGuid(), ingredient);
         }
 
         public async Task<bool> UpdateIngredientAsync(Ingredient ingredient)
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            if (ingredient.Id == Guid.Empty)
-                throw new InvalidOperationException("Id ingrédient manquant.");
-
-            var db = new IngredientDb
-            {
-                Id = ingredient.Id,
-                Nom = ingredient.Nom,
-                Quantite = ingredient.Quantite,
-                Unite = ingredient.Unite,
-                EstDisponible = ingredient.EstDisponible,
-                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
-            };
-
-            await _client.Table<IngredientDb>().Update(db);
-            return true;
+            return await IngredientFunction.UpdateIngredientAsync(_client, RequireCurrentUserGuid(), ingredient);
         }
 
         public async Task<bool> DeleteIngredientAsync(Guid id)
         {
-            var userGuid = RequireCurrentUserGuid();
-
-            if (id == Guid.Empty)
-                throw new InvalidOperationException("Id ingrédient manquant.");
-
-            await _client.Table<IngredientDb>()
-                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
-                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
-                .Delete();
-
-            return true;
-        }
-
-        // =========================
-        // UTIL
-        // =========================
-
-        private static string ExtractSupabaseError(string content, System.Net.HttpStatusCode code)
-        {
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                try
-                {
-                    var json = JsonDocument.Parse(content);
-
-                    if (json.RootElement.TryGetProperty("msg", out var msg)) return msg.GetString() ?? $"Erreur {code}";
-                    if (json.RootElement.TryGetProperty("error_description", out var ed)) return ed.GetString() ?? $"Erreur {code}";
-                    if (json.RootElement.TryGetProperty("message", out var m)) return m.GetString() ?? $"Erreur {code}";
-                    if (json.RootElement.TryGetProperty("error", out var e)) return e.GetString() ?? $"Erreur {code}";
-                }
-                catch
-                {
-                    if (content.Length < 400) return content;
-                }
-            }
-
-            return $"Erreur {code}";
+            return await IngredientFunction.DeleteIngredientAsync(_client, RequireCurrentUserGuid(), id);
         }
     }
+
+        
+
+        
 
     // =========================
     // MODELES DB

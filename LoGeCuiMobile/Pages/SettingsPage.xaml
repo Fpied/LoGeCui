@@ -11,7 +11,7 @@
             <!-- ========================= -->
             <!-- PARTAGE LISTE DE COURSES  -->
             <!-- ========================= -->
-            <Label Text="Liste de courses partagée"
+            <Label Text="{tr:Translate Auto_Liste_De_Courses_Partagee}"
                    FontSize="18"
                    FontAttributes="Bold" />
 
@@ -21,14 +21,14 @@
                    HasShadow="True">
                 <VerticalStackLayout Spacing="10">
 
-                    <Label Text="Liste active :"
+                    <Label Text="{tr:Translate Auto_Liste_Active}"
                            FontAttributes="Bold" />
 
                     <Label x:Name="LblActiveList"
                            Text="(aucune)"
                            TextColor="Gray" />
 
-                    <Label Text="Code de partage :"
+                    <Label Text="{tr:Translate Auto_Code_De_Partage}"
                            FontAttributes="Bold"
                            Margin="0,6,0,0"/>
 
@@ -37,22 +37,22 @@
                            TextColor="Gray" />
 
                     <HorizontalStackLayout Spacing="10">
-                        <Button Text="Créer/voir mon code"
+                        <Button Text="{tr:Translate Auto_Creer_Voir_Mon_Code}"
                                 Clicked="OnCreateOrShowMyCodeClicked"
                                 HorizontalOptions="FillAndExpand"/>
 
-                        <Button Text="Copier"
+                        <Button Text="{tr:Translate Auto_Copier}"
                                 Clicked="OnCopyCodeClicked"
                                 HorizontalOptions="End"/>
                     </HorizontalStackLayout>
 
-                    <Button Text="Rejoindre avec un code"
+                    <Button Text="{tr:Translate Auto_Rejoindre_Avec_Un_Code}"
                             Clicked="OnJoinWithCodeClicked" />
 
-                    <Button Text="Choisir une liste active"
+                    <Button Text="{tr:Translate Auto_Choisir_Une_Liste_Active}"
                             Clicked="OnPickActiveListClicked" />
 
-                    <Button Text="Revenir à ma liste perso"
+                    <Button Text="{tr:Translate Auto_Revenir_A_Ma_Liste_Perso}"
                             BackgroundColor="#E67E22"
                             TextColor="White"
                             Clicked="OnDisableSharedListClicked" />

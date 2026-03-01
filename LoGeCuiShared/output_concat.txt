@@ -1,0 +1,2053 @@
+# CONCAT OUTPUT
+# Root: C:\Users\Francois\source\repos\LoGeCui\LoGeCuiShared
+# Files: 20
+
+
+================================================================================
+FILE: Functions\SignInFunction.cs
+================================================================================
+
+﻿using Newtonsoft.Json.Linq;
+using Supabase.Gotrue;
+using System;
+using System.Collections.Generic;
+using System.Net.Http.Json;
+using System.Reflection.Metadata;
+using System.Text;
+using System.Text.Json;
+
+namespace LoGeCuiShared.Functions
+{
+    internal class SignInFunction
+    {
+        public static async Task<(bool success, string? accessToken, string? userId, string? error)> SignInAsync(HttpClient httpClient, string supabaseUrl, string supabaseKey, string email, string password)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                    return (false, null, null, "Adresse email invalide");
+
+                if (string.IsNullOrWhiteSpace(password))
+                    return (false, null, null, "Le mot de passe est requis");
+
+                var request = new { email = email.Trim(), password };
+
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Add("apikey", supabaseKey);
+
+                var response = await httpClient.PostAsJsonAsync(
+                    $"{supabaseUrl}/auth/v1/token?grant_type=password",
+                    request);
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                    return (false, null, null, ExtractSupabaseError(content, response.StatusCode));
+
+                var json = JsonDocument.Parse(content);
+
+                var token = json.RootElement.GetProperty("access_token").GetString();
+                var userId = json.RootElement.GetProperty("user").GetProperty("id").GetString();
+
+                if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(userId))
+                    return (false, null, null, "Réponse Supabase invalide (token/userId manquant).");
+
+                return (true, token, userId, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (false, null, null, "Erreur de connexion au serveur. Vérifiez votre connexion internet.");
+            }
+            catch (TaskCanceledException)
+            {
+                return (false, null, null, "La requête a expiré. Vérifiez votre connexion internet.");
+            }
+            catch (Exception ex)
+            {
+                return (false, null, null, $"Erreur inattendue : {ex.Message}");
+            }
+
+        
+        
+        }
+
+        private static string ExtractSupabaseError(string content, System.Net.HttpStatusCode code)
+        {
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                try
+                {
+                    var json = JsonDocument.Parse(content);
+
+                    if (json.RootElement.TryGetProperty("msg", out var msg)) return msg.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("error_description", out var ed)) return ed.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("message", out var m)) return m.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("error", out var e)) return e.GetString() ?? $"Erreur {code}";
+                }
+                catch
+                {
+                    if (content.Length < 400) return content;
+                }
+            }
+
+            return $"Erreur {code}";
+        }
+    }
+}
+
+
+================================================================================
+FILE: Functions\SignUpFunction.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+
+namespace LoGeCuiShared.Functions
+{
+    public static class SignUpFunction
+    {
+        public static async Task<(bool success, string? userId, string? error)> SignUpAsync(HttpClient httpClient, string supabaseUrl, string supabaseKey, string email, string password)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                    return (false, null, "Adresse email invalide");
+
+                if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+                    return (false, null, "Le mot de passe doit contenir au moins 6 caractères");
+
+                var request = new { email = email.Trim(), password };
+
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Add("apikey", supabaseKey);
+                httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", supabaseKey);
+
+                var response = await httpClient.PostAsJsonAsync($"{supabaseUrl}/auth/v1/signup", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                    return (false, null, ExtractSupabaseError(content, response.StatusCode));
+
+                // Supabase renvoie souvent { user: { id: ... } }, parfois { id: ... }
+                try
+                {
+                    var json = JsonDocument.Parse(content);
+
+                    if (json.RootElement.TryGetProperty("user", out var userEl) &&
+                        userEl.TryGetProperty("id", out var uidEl))
+                    {
+                        var uid = uidEl.GetString();
+                        if (!string.IsNullOrWhiteSpace(uid))
+                            return (true, uid, null);
+                    }
+
+                    if (json.RootElement.TryGetProperty("id", out var idEl))
+                    {
+                        var uid = idEl.GetString();
+                        if (!string.IsNullOrWhiteSpace(uid))
+                            return (true, uid, null);
+                    }
+
+                    return (true, "unknown", null);
+                }
+                catch
+                {
+                    return (true, "unknown", null);
+                }
+            }
+            catch (HttpRequestException)
+            {
+                return (false, null, "Erreur de connexion au serveur. Vérifiez votre connexion internet.");
+            }
+            catch (TaskCanceledException)
+            {
+                return (false, null, "La requête a expiré. Vérifiez votre connexion internet.");
+            }
+            catch (Exception ex)
+            {
+                return (false, null, $"Erreur inattendue : {ex.Message}");
+            }
+        }
+
+        private static string ExtractSupabaseError(string content, System.Net.HttpStatusCode code)
+        {
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                try
+                {
+                    var json = JsonDocument.Parse(content);
+                    if (json.RootElement.TryGetProperty("msg", out var msg)) return msg.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("error_description", out var ed)) return ed.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("message", out var m)) return m.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("error", out var e)) return e.GetString() ?? $"Erreur {code}";
+                }
+                catch
+                {
+                    if (content.Length < 400) return content;
+                }
+            }
+            return $"Erreur {code}";
+        }
+    }
+}
+
+================================================================================
+FILE: LoGeCuiShared.csproj
+================================================================================
+
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Supabase" Version="1.1.1" />
+    <PackageReference Include="Supabase.Core" Version="1.0.0" />
+    <PackageReference Include="Supabase.Postgrest" Version="4.1.0" />
+  </ItemGroup>
+
+</Project>
+
+================================================================================
+FILE: Models\ArticleCourse.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace LoGeCuiShared.Models
+{
+    public class ArticleCourse : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private int _id;
+        private Guid _userId;
+        private string _nom = "";
+        private string _quantite = "";
+        private string _unite = "";
+        private bool _estAchete;
+
+        [JsonPropertyName("id")]
+        public int Id
+        {
+            get => _id;
+            set { _id = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("user_id")]
+        public Guid UserId
+        {
+            get => _userId;
+            set { _userId = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("nom")]
+        public string Nom
+        {
+            get => _nom;
+            set { _nom = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("quantite")]
+        public string Quantite
+        {
+            get => _quantite;
+            set { _quantite = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("unite")]
+        public string Unite
+        {
+            get => _unite;
+            set { _unite = value; OnPropertyChanged(); }
+        }
+
+        [JsonPropertyName("est_achete")]
+        public bool EstAchete
+        {
+            get => _estAchete;
+            set { _estAchete = value; OnPropertyChanged(); }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+}
+
+================================================================================
+FILE: Models\Ingredient.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LoGeCuiShared.Models
+{
+    public class Ingredient
+    {
+        public bool EstFavori { get; set; }
+
+        public Guid Id { get; set; }          // id (uuid) dans Supabase
+        public Guid? UserId { get; set; }     // user_id (uuid) dans Supabase
+        public string Nom { get; set; }
+        public string Quantite { get; set; }
+        public string Unite { get; set; }
+        public bool EstDisponible { get; set; }
+
+        public Ingredient()
+        {
+            Nom = "";
+            Quantite = "";
+            Unite = "";
+            EstDisponible = true;
+        }
+    }
+}
+
+================================================================================
+FILE: Models\IngredientRecette.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LoGeCuiShared.Models
+{
+    public class IngredientRecette
+    {
+        public string Nom { get; set; }
+        public string Quantite { get; set; }
+        public string Unite { get; set; }
+
+        public IngredientRecette()
+        {
+            Nom = "";
+            Quantite = "";
+            Unite = "";
+        }
+
+        public override string ToString()
+        {
+            return $"{Nom} - {Quantite} {Unite}";
+        }
+    }
+}
+
+================================================================================
+FILE: Models\MenuJournalier.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LoGeCuiShared.Models
+{
+    public class MenuJournalier
+    {
+        public DateTime Date { get; set; }
+        public Recette? Entree { get; set; }
+        public Recette? Plat { get; set; }
+        public Recette? Dessert { get; set; }
+        public List<IngredientRecette> IngredientsManquants { get; set; }
+
+        public MenuJournalier()
+        {
+            Date = DateTime.Now;
+            IngredientsManquants = new List<IngredientRecette>();
+        }
+    }
+}
+
+================================================================================
+FILE: Models\Recette.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+namespace LoGeCuiShared.Models
+{
+    public enum TypePlat
+    {
+        Entree,
+        Plat,
+        Dessert
+    }
+
+    public class Recette
+    {
+        // ----------------------------
+        // Champs DB / JSON (Supabase)
+        // ----------------------------
+
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }
+
+        [JsonPropertyName("created_at")]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        [JsonPropertyName("owner_user_id")]
+        public Guid? OwnerUserId { get; set; }
+
+        [JsonPropertyName("external_id")]
+        public string? ExternalId { get; set; }
+
+        [JsonPropertyName("nom")]
+        public string Nom { get; set; } = "";
+
+        [JsonPropertyName("categorie")]
+        public string CategorieDb
+        {
+            get => Type switch
+            {
+                TypePlat.Entree => "Entree",
+                TypePlat.Plat => "Plat",
+                TypePlat.Dessert => "Dessert",
+                _ => "Plat"
+            };
+            set
+            {
+                Type = value switch
+                {
+                    "Entree" => TypePlat.Entree,
+                    "Plat" => TypePlat.Plat,
+                    "Dessert" => TypePlat.Dessert,
+                    _ => TypePlat.Plat
+                };
+            }
+        }
+
+        // Colonne DB: temps_minutes
+        [JsonPropertyName("temps_minutes")]
+        public int TempsMinutesDb
+        {
+            get => TempsPreparation;
+            set => TempsPreparation = value;
+        }
+
+        // Colonne DB: note (1..5)
+        [JsonPropertyName("note")]
+        public int? NoteDb
+        {
+            get => Difficulte;
+            set => Difficulte = Math.Clamp(value ?? 1, 1, 5);
+        }
+
+        [JsonPropertyName("is_favorite")]
+        public bool IsFavorite { get; set; }
+
+        [JsonPropertyName("instructions")]
+        public string InstructionsDb
+        {
+            get => Instructions;
+            set => Instructions = value ?? "";
+        }
+
+        // ✅ Photo synchronisée (DB Supabase: photo_url)
+        [JsonPropertyName("photo_url")]
+        public string? PhotoUrl { get; set; }
+
+        // ✅ Photo locale (cache sur l'appareil) - NON envoyée à Supabase
+        [JsonIgnore]
+        public string? PhotoLocalPath { get; set; }
+
+        // ----------------------------
+        // Propriétés métier (non DB)
+        // ----------------------------
+
+        [JsonIgnore]
+        public TypePlat Type { get; set; } = TypePlat.Plat;
+
+        [JsonIgnore]
+        public int TempsPreparation { get; set; } = 0;
+
+        [JsonIgnore]
+        public int Difficulte { get; set; } = 1;
+
+        [JsonIgnore]
+        public List<IngredientRecette> Ingredients { get; set; } = new();
+
+        [JsonIgnore]
+        public string Instructions { get; set; } = "";
+
+        [JsonIgnore]
+        public string TypeTexte => Type switch
+        {
+            TypePlat.Entree => "Entrée",
+            TypePlat.Plat => "Plat",
+            TypePlat.Dessert => "Dessert",
+            _ => "Inconnu"
+        };
+
+        [JsonIgnore]
+        public string DifficulteTexte => new string('⭐', Math.Clamp(Difficulte, 1, 5));
+    }
+}
+
+================================================================================
+FILE: Services\ConfigurationHelper.cs
+================================================================================
+
+﻿using System;
+
+namespace LoGeCuiShared.Services
+{
+    public static class ConfigurationHelper
+    {
+        private static Func<string, string?>? _get;
+
+        // Appelé 1 fois au démarrage par le projet MAUI
+        public static void Configure(Func<string, string?> getValue)
+        {
+            _get = getValue ?? throw new ArgumentNullException(nameof(getValue));
+        }
+
+        private static string Get(string key)
+        {
+            if (_get == null)
+                throw new InvalidOperationException("ConfigurationHelper n'est pas configuré. Appelez ConfigurationHelper.Configure(...) au démarrage.");
+
+            return _get(key) ?? throw new InvalidOperationException($"Clé manquante : {key}");
+        }
+
+        // Versions sûres qui renvoient null si la clé est absente (pour permettre un démarrage sans crash)
+        public static string? GetSupabaseUrlSafe() => _get?.Invoke("Supabase:Url");
+        public static string? GetSupabaseKeySafe() => _get?.Invoke("Supabase:AnonKey");
+        public static string? GetOcrApiKeySafe() => _get?.Invoke("OCR:ApiKey");
+
+        // Les anciennes méthodes conservent le comportement strict (throw) — vous pouvez les remplacer par les versions Safe si nécessaire.
+        public static string GetSupabaseUrl() => Get("Supabase:Url");
+        public static string GetSupabaseKey() => Get("Supabase:AnonKey");
+        public static string GetOcrApiKey() => Get("OCR:ApiKey");
+    }
+}
+
+
+
+================================================================================
+FILE: Services\IngredientsService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LoGeCuiShared.Models;
+using Supabase;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class IngredientsService
+    {
+        private readonly SupabaseRestClient _client;
+        private const string Table = "ingredients";
+
+        public IngredientsService(SupabaseRestClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        public async Task<List<Ingredient>> GetIngredientsAsync(Guid userId)
+        {
+            var q =
+                $"{Table}?" +
+                "select=id,user_id,nom,quantite,unite,est_disponible,est_favori,created_at" +
+                $"&user_id=eq.{userId}" +
+                "&order=created_at.desc";
+
+            return await _client.GetAsync<List<Ingredient>>(q) ?? new List<Ingredient>();
+        }
+
+        public async Task<Ingredient?> CreateIngredientAsync(Guid userId, Ingredient i)
+        {
+            var payload = new
+            {
+                user_id = userId,
+                nom = i.Nom,
+                quantite = string.IsNullOrWhiteSpace(i.Quantite) ? null : i.Quantite,
+                unite = string.IsNullOrWhiteSpace(i.Unite) ? null : i.Unite,
+                est_disponible = i.EstDisponible,
+                est_favori = i.EstFavori
+            };
+
+            var created = await _client.PostAsync<List<Ingredient>>(
+                $"{Table}?select=id,user_id,nom,quantite,unite,est_disponible,est_favori,created_at",
+                payload,
+                returnRepresentation: true);
+
+            return created?.Count > 0 ? created[0] : null;
+        }
+
+
+        public async Task UpdateDisponibiliteAsync(Guid ingredientId, bool estDisponible)
+        {
+            var payload = new { est_disponible = estDisponible };
+            await _client.PatchAsync($"{Table}?id=eq.{ingredientId}", payload);
+        }
+
+        public async Task DeleteIngredientAsync(Guid ingredientId)
+        {
+            await _client.DeleteAsync($"{Table}?id=eq.{ingredientId}");
+        }
+
+        public async Task UpdateFavoriAsync(Guid ingredientId, bool estFavori)
+        {
+            var payload = new { est_favori = estFavori };
+            await _client.PatchAsync($"{Table}?id=eq.{ingredientId}", payload);
+        }
+
+    }
+}
+
+
+
+================================================================================
+FILE: Services\ListeCoursesService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Text.Json;
+using LoGeCuiShared.Models;
+
+namespace LoGeCuiShared.Services
+{
+    public class ListeCoursesService
+    {
+        private readonly string _cheminFichier;
+
+        public ListeCoursesService(string cheminFichier)
+        {
+            _cheminFichier = cheminFichier;
+        }
+
+        public List<ArticleCourse> ChargerListeCourses()
+        {
+            try
+            {
+                if (!File.Exists(_cheminFichier))
+                {
+                    return new List<ArticleCourse>();
+                }
+
+                string json = File.ReadAllText(_cheminFichier);
+                var liste = JsonSerializer.Deserialize<List<ArticleCourse>>(json);
+                return liste ?? new List<ArticleCourse>();
+            }
+            catch (Exception)
+            {
+                return new List<ArticleCourse>();
+            }
+        }
+
+        public void SauvegarderListeCourses(List<ArticleCourse> articles)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string json = JsonSerializer.Serialize(articles, options);
+
+                // Créer le dossier si nécessaire
+                var dossier = Path.GetDirectoryName(_cheminFichier);
+                if (!string.IsNullOrEmpty(dossier) && !Directory.Exists(dossier))
+                {
+                    Directory.CreateDirectory(dossier);
+                }
+
+                File.WriteAllText(_cheminFichier, json);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+    }
+}
+
+================================================================================
+FILE: Services\ListeCoursesSupabaseService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Supabase;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class ListeCoursesSupabaseService
+    {
+        private readonly SupabaseRestClient _client;
+        private const string Table = "articles_courses";
+
+        public ListeCoursesSupabaseService(SupabaseRestClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        private static bool IsShared(Guid? listId) => listId.HasValue && listId.Value != Guid.Empty;
+
+        // =========================
+        // GET
+        // =========================
+        public async Task<List<ArticleCourseRow>> GetArticlesAsync(Guid userId, Guid? listId = null)
+        {
+            var q = IsShared(listId)
+                ? $"{Table}?select=id,created_at,nom,quantite,unite,est_achete,user_id,list_id" +
+                  $"&list_id=eq.{listId!.Value}" +
+                  "&order=created_at.desc"
+                : $"{Table}?select=id,created_at,nom,quantite,unite,est_achete,user_id,list_id" +
+                  $"&user_id=eq.{userId}" +
+                  "&order=created_at.desc";
+
+            return await _client.GetAsync<List<ArticleCourseRow>>(q) ?? new List<ArticleCourseRow>();
+        }
+
+        // =========================
+        // INSERT
+        // ✅ IMPORTANT: on envoie user_id explicitement => évite 403 RLS
+        // =========================
+        public async Task<ArticleCourseRow?> AddArticleAsync(Guid userId, string nom, string? quantite, string? unite, Guid? listId = null)
+        {
+            if (string.IsNullOrWhiteSpace(nom))
+                throw new ArgumentException("nom requis", nameof(nom));
+
+            if (listId == null || listId == Guid.Empty)
+                throw new InvalidOperationException("Aucune liste active (list_id requis).");
+
+            var payloadRow = new
+            {
+                user_id = userId,
+                list_id = listId.Value,
+                nom = nom.Trim(),
+                quantite = quantite,
+                unite = unite,
+                est_achete = false
+            };
+
+            var created = await _client.PostAsync<List<ArticleCourseRow>>(
+                $"{Table}?select=id,created_at,nom,quantite,unite,est_achete,user_id,list_id",
+                new[] { payloadRow },
+                returnRepresentation: true);
+
+            return created?.FirstOrDefault();
+        }
+
+
+        // =========================
+        // UPDATE (PATCH)
+        // =========================
+        public async Task UpdateArticleAsync(long id, bool estAchete)
+        {
+            var q = $"{Table}?id=eq.{id}";
+            var payload = new { est_achete = estAchete };
+            await _client.PatchAsync(q, payload);
+        }
+
+        // =========================
+        // DELETE
+        // =========================
+        public async Task DeleteArticleAsync(long id)
+        {
+            await _client.DeleteAsync($"{Table}?id=eq.{id}");
+        }
+
+        // =========================
+        // ADD MISSING (batch)
+        // ✅ Envoie user_id + list_id si partagé
+        // =========================
+        public async Task AddMissingAsync(Guid userId, IEnumerable<string> missingNames, Guid? listId = null)
+        {
+            if (listId == null || listId == Guid.Empty)
+                throw new InvalidOperationException("Aucune liste active (list_id requis).");
+
+            var names = (missingNames ?? Enumerable.Empty<string>())
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Select(n => n.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (names.Count == 0)
+                return;
+
+            bool shared = IsShared(listId);
+
+            // 1) Lire ce qui existe déjà (non acheté)
+            string existingQuery = shared
+                ? $"{Table}?select=nom&list_id=eq.{listId!.Value}&est_achete=eq.false"
+                : $"{Table}?select=nom&user_id=eq.{userId}&est_achete=eq.false";
+
+            var existingRows = await _client.GetAsync<List<NomRow>>(existingQuery) ?? new List<NomRow>();
+
+            var existing = existingRows
+                .Where(r => !string.IsNullOrWhiteSpace(r.nom))
+                .Select(r => r.nom!.Trim())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // 2) Construire payload
+            var payload = new List<object>();
+
+            foreach (var n in names)
+            {
+                if (existing.Contains(n))
+                    continue;
+
+                if (shared)
+                {
+                    payload.Add(new
+                    {
+                        user_id = userId,
+                        list_id = listId!.Value,
+                        nom = n,
+                        quantite = (string?)null,
+                        unite = (string?)null,
+                        est_achete = false
+                    });
+                }
+                else
+                {
+                    payload.Add(new
+                    {
+                        user_id = userId,
+                        nom = n,
+                        quantite = (string?)null,
+                        unite = (string?)null,
+                        est_achete = false
+                    });
+                }
+            }
+
+            if (payload.Count == 0)
+                return;
+
+            await _client.PostAsync<object>(
+                Table,
+                payload.ToArray(),
+                returnRepresentation: false);
+        }
+
+        // =========================
+        // RPC: join shared list
+        // =========================
+        public async Task<(Guid listId, string name, string code)?> JoinByCodeAsync(string shareCode)
+        {
+            if (string.IsNullOrWhiteSpace(shareCode))
+                return null;
+
+            var payload = new { p_share_code = shareCode.Trim() };
+
+            var result = await _client.PostAsync<List<JoinResult>>(
+                "rpc/join_shopping_list",
+                payload,
+                returnRepresentation: true);
+
+            var row = result?.FirstOrDefault();
+            if (row == null)
+                return null;
+
+            return (row.list_id, row.name ?? "Liste partagée", row.share_code ?? shareCode.Trim());
+        }
+
+        // =========================
+        // DTOs
+        // =========================
+        private sealed class NomRow
+        {
+            public string? nom { get; set; }
+        }
+
+        private sealed class JoinResult
+        {
+            public Guid list_id { get; set; }
+            public string? name { get; set; }
+            public string? share_code { get; set; }
+        }
+
+        public sealed class ArticleCourseRow
+        {
+            public long id { get; set; }
+            public DateTimeOffset created_at { get; set; }
+            public string? nom { get; set; }
+            public string? quantite { get; set; }
+            public string? unite { get; set; }
+            public bool est_achete { get; set; }
+            public Guid user_id { get; set; }
+            public Guid? list_id { get; set; }
+        }
+    }
+}
+
+================================================================================
+FILE: Services\RecetteIngredientsService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Supabase;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class RecetteIngredientsService
+    {
+        private readonly SupabaseRestClient _client;
+        private const string Table = "recette_ingredients";
+
+        public RecetteIngredientsService(SupabaseRestClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        // DTO conforme au schéma DB
+        private sealed class Row
+        {
+            public string? ingredient_nom { get; set; }
+            public string? quantite { get; set; }
+            public string? unite { get; set; }
+        }
+
+        public async Task<List<(string nom, string? quantite, string? unite)>> GetForRecetteAsync(Guid recetteId)
+        {
+            var q = $"{Table}?select=ingredient_nom,quantite,unite&recette_id=eq.{recetteId}&order=created_at.asc";
+            var rows = await _client.GetAsync<List<Row>>(q) ?? new List<Row>();
+
+            return rows
+                .Where(r => !string.IsNullOrWhiteSpace(r.ingredient_nom))
+                .Select(r => (r.ingredient_nom!.Trim(), r.quantite, r.unite))
+                .ToList();
+        }
+
+        // Remplace la liste complète (simple et robuste)
+        public async Task ReplaceForRecetteAsync(Guid recetteId, IEnumerable<(string nom, string? quantite, string? unite)> items)
+        {
+            // 1) delete
+            await _client.DeleteAsync($"{Table}?recette_id=eq.{recetteId}");
+
+            // 2) insert
+            var payload = items
+                .Where(i => !string.IsNullOrWhiteSpace(i.nom))
+                .Select(i => new
+                {
+                    recette_id = recetteId,
+                    ingredient_nom = i.nom.Trim(),
+                    quantite = string.IsNullOrWhiteSpace(i.quantite) ? null : i.quantite.Trim(),
+                    unite = string.IsNullOrWhiteSpace(i.unite) ? null : i.unite.Trim()
+                })
+                .ToArray();
+
+            if (payload.Length == 0)
+                return;
+
+            await _client.PostAsync<object>(Table, payload, returnRepresentation: false);
+        }
+    }
+}
+
+================================================================================
+FILE: Services\RecipesService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using LoGeCuiShared.Models;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class RecipesService
+    {
+        private readonly SupabaseRestClient _client;
+
+        public RecipesService(SupabaseRestClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        // ✅ Toujours sélectionner ces colonnes (sinon: pas de photo + pas d'external_id)
+        private const string SelectCols =
+            "id,created_at,owner_user_id,nom,categorie,temps_minutes,note,is_favorite,instructions,external_id,photo_url";
+
+        /// <summary>
+        /// Récupère TOUTES les recettes de l’utilisateur courant
+        /// </summary>
+        public async Task<List<Recette>> GetRecettesAsync(Guid userId)
+        {
+            var q =
+                "recettes?" +
+                $"select={SelectCols}" +
+                $"&owner_user_id=eq.{userId}" +
+                "&order=created_at.desc";
+
+            return await _client.GetAsync<List<Recette>>(q)
+                   ?? new List<Recette>();
+        }
+
+        /// <summary>
+        /// Récupère les recettes (optionnellement filtrées par catégorie)
+        /// </summary>
+        public async Task<List<Recette>> GetMyRecettesAsync(Guid userId, string? categorie = null)
+        {
+            var q =
+                "recettes?" +
+                $"select={SelectCols}" +
+                $"&owner_user_id=eq.{userId}" +
+                "&order=created_at.desc";
+
+            if (!string.IsNullOrWhiteSpace(categorie) &&
+                !string.Equals(categorie, "Toutes", StringComparison.OrdinalIgnoreCase))
+            {
+                q += $"&categorie=eq.{Uri.EscapeDataString(categorie)}";
+            }
+
+            return await _client.GetAsync<List<Recette>>(q)
+                   ?? new List<Recette>();
+        }
+
+        /// <summary>
+        /// Crée une recette et retourne la recette créée
+        /// </summary>
+        public async Task<Recette?> CreateRecetteAsync(Guid ownerUserId, Recette r)
+        {
+            if (r == null) throw new ArgumentNullException(nameof(r));
+
+            // ✅ external_id obligatoire pour éviter les futurs doublons
+            if (string.IsNullOrWhiteSpace(r.ExternalId))
+                r.ExternalId = Guid.NewGuid().ToString("N");
+
+            var payload = new
+            {
+                owner_user_id = ownerUserId,
+                external_id = r.ExternalId,
+                nom = r.Nom,
+                categorie = r.CategorieDb,
+                temps_minutes = r.TempsMinutesDb,
+                note = r.NoteDb,
+                is_favorite = r.IsFavorite,
+                instructions = r.InstructionsDb,
+                photo_url = r.PhotoUrl
+            };
+
+            var created = await _client.PostAsync<List<Recette>>(
+                $"recettes?select={SelectCols}",
+                payload,
+                returnRepresentation: true);
+
+            return created?.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Supprime une recette
+        /// </summary>
+        public async Task DeleteRecetteAsync(Guid recetteId)
+        {
+            await _client.DeleteAsync($"recettes?id=eq.{recetteId}");
+        }
+
+        /// <summary>
+        /// Insert ou met à jour une recette via (owner_user_id, external_id)
+        /// ✅ évite les doublons si external_id n'est pas unique globalement
+        /// </summary>
+        public async Task UpsertRecetteAsync(Guid ownerUserId, Recette r)
+        {
+            if (r == null) throw new ArgumentNullException(nameof(r));
+
+            if (string.IsNullOrWhiteSpace(r.ExternalId))
+                throw new ArgumentException("ExternalId est requis pour upsert.", nameof(r));
+
+            var payload = new[]
+            {
+                new
+                {
+                    owner_user_id = ownerUserId,
+                    external_id = r.ExternalId,
+                    nom = r.Nom,
+                    categorie = r.CategorieDb,
+                    temps_minutes = r.TempsMinutesDb,
+                    note = r.NoteDb,
+                    is_favorite = r.IsFavorite,
+                    instructions = r.InstructionsDb,
+                    photo_url = r.PhotoUrl
+                }
+            };
+
+            // ✅ IMPORTANT :
+            // nécessite une contrainte unique sur (owner_user_id, external_id) côté DB.
+            await _client.PostAsync<object>(
+                "recettes?on_conflict=owner_user_id,external_id",
+                payload,
+                returnRepresentation: false,
+                mergeDuplicates: true);
+        }
+
+        public async Task<Guid?> GetRecetteIdByExternalIdAsync(Guid userId, string externalId)
+        {
+            if (string.IsNullOrWhiteSpace(externalId))
+                throw new ArgumentException("externalId requis", nameof(externalId));
+
+            var q =
+                "recettes?" +
+                "select=id" +
+                $"&owner_user_id=eq.{userId}" +
+                $"&external_id=eq.{Uri.EscapeDataString(externalId)}" +
+                "&limit=1";
+
+            var rows = await _client.GetAsync<List<RecetteIdRow>>(q);
+
+            return rows?.FirstOrDefault()?.id;
+        }
+
+        private sealed class RecetteIdRow
+        {
+            public Guid id { get; set; }
+        }
+    }
+}
+
+================================================================================
+FILE: Services\ShoppingListBootstrapService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class ShoppingListBootstrapService
+    {
+        private readonly SupabaseRestClient _client;
+
+        public ShoppingListBootstrapService(SupabaseRestClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        private sealed class Row
+        {
+            public Guid list_id { get; set; }
+        }
+
+        public async Task<Guid?> GetFirstListIdForUserAsync(Guid userId)
+        {
+            var q =
+                "shopping_list_members?select=list_id" +
+                $"&user_id=eq.{userId}" +
+                "&limit=1";
+
+            var rows = await _client.GetAsync<List<Row>>(q);
+            return rows?.FirstOrDefault()?.list_id;
+        }
+    }
+}
+
+
+================================================================================
+FILE: Services\ShoppingListsService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Supabase;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class ShoppingListsService
+    {
+        private readonly SupabaseRestClient _client;
+
+        public ShoppingListsService(SupabaseRestClient client)
+        {
+            _client = client;
+        }
+
+        private sealed class ShoppingListRow
+        {
+            public Guid id { get; set; }
+            public Guid owner_user_id { get; set; }
+            public string? name { get; set; }
+            public string? share_code { get; set; }
+        }
+
+        public async Task<Guid> EnsurePersonalListIdAsync(Guid userId)
+        {
+            // 1) Chercher une liste existante
+            var q = "shopping_lists?select=id,owner_user_id,name,share_code" +
+                    $"&owner_user_id=eq.{userId}" +
+                    "&order=created_at.asc&limit=1";
+
+            var existing = await _client.GetAsync<List<ShoppingListRow>>(q);
+            var row = existing?.FirstOrDefault();
+            if (row != null)
+                return row.id;
+
+            // 2) Sinon créer une liste perso
+            var payload = new[]
+            {
+                new
+                {
+                    owner_user_id = userId,
+                    name = "Ma liste"
+                    // share_code généré automatiquement par le trigger SQL
+                }
+            };
+
+            var created = await _client.PostAsync<List<ShoppingListRow>>(
+                "shopping_lists?select=id,owner_user_id,name,share_code",
+                payload,
+                returnRepresentation: true);
+
+            return created!.First().id;
+        }
+    }
+}
+
+================================================================================
+FILE: Services\SupabaseRestClient.cs
+================================================================================
+
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+
+namespace LoGeCuiShared.Services
+{
+    public sealed class SupabaseRestClient
+    {
+        private readonly HttpClient _http;
+        private readonly string _baseRestUrl;
+
+        public SupabaseRestClient(string supabaseUrl, string supabaseAnonKey)
+        {
+            if (string.IsNullOrWhiteSpace(supabaseUrl)) throw new ArgumentException("supabaseUrl is required");
+            if (string.IsNullOrWhiteSpace(supabaseAnonKey)) throw new ArgumentException("supabaseAnonKey is required");
+
+            _baseRestUrl = supabaseUrl.TrimEnd('/') + "/rest/v1/";
+
+            _http = new HttpClient();
+            _http.DefaultRequestHeaders.Add("apikey", supabaseAnonKey);
+            _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        public void SetBearerToken(string accessToken)
+        {
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        }
+
+        public async Task<T?> GetAsync<T>(string pathAndQuery)
+        {
+            var url = _baseRestUrl + pathAndQuery;
+
+            using var resp = await _http.GetAsync(url);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+                throw new Exception($"Supabase GET failed: {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
+
+            return JsonSerializer.Deserialize<T>(body, JsonOptions());
+        }
+
+        public async Task<T?> PostAsync<T>(string pathAndQuery, object payload, bool returnRepresentation = false)
+        {
+            var url = _baseRestUrl + pathAndQuery;
+            var json = JsonSerializer.Serialize(payload, JsonOptions());
+
+            using var req = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            if (returnRepresentation)
+                req.Headers.Add("Prefer", "return=representation");
+
+            using var resp = await _http.SendAsync(req);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+                throw new Exception($"Supabase POST failed: {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
+
+            if (string.IsNullOrWhiteSpace(body))
+                return default;
+
+            return JsonSerializer.Deserialize<T>(body, JsonOptions());
+        }
+
+        public async Task PatchAsync(string pathAndQuery, object payload)
+        {
+            var url = _baseRestUrl + pathAndQuery;
+            var json = JsonSerializer.Serialize(payload, JsonOptions());
+
+            using var req = new HttpRequestMessage(new HttpMethod("PATCH"), url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            using var resp = await _http.SendAsync(req);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+                throw new Exception($"Supabase PATCH failed: {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
+        }
+
+        public async Task DeleteAsync(string pathAndQuery)
+        {
+            var url = _baseRestUrl + pathAndQuery;
+
+            using var resp = await _http.DeleteAsync(url);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+                throw new Exception($"Supabase DELETE failed: {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
+        }
+
+        private static JsonSerializerOptions JsonOptions() => new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        public async Task<T?> PostAsync<T>(
+        string pathAndQuery,
+        object payload,
+        bool returnRepresentation = false,
+        bool mergeDuplicates = false)
+        {
+            var url = _baseRestUrl + pathAndQuery;
+            var json = JsonSerializer.Serialize(payload, JsonOptions());
+
+            using var req = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            // PostgREST Prefer headers
+            if (returnRepresentation)
+                req.Headers.Add("Prefer", "return=representation");
+
+            if (mergeDuplicates)
+                req.Headers.Add("Prefer", "resolution=merge-duplicates");
+
+            using var resp = await _http.SendAsync(req);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+                throw new Exception($"Supabase POST failed: {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
+
+            if (string.IsNullOrWhiteSpace(body))
+                return default;
+
+            return JsonSerializer.Deserialize<T>(body, JsonOptions());
+        }
+
+    }
+}
+
+
+================================================================================
+FILE: Services\SupabaseService.cs
+================================================================================
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading.Tasks;
+using LoGeCuiShared.Models;
+using Supabase.Postgrest;
+using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
+using System.Net.Http.Headers;
+using LoGeCuiShared.Functions;
+
+
+namespace LoGeCuiShared.Services
+{
+    public class SupabaseService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly string _supabaseUrl;
+        private readonly string _supabaseKey;
+
+        // Session courante (après login)
+        private string? _accessToken;    // JWT utilisateur
+        private string? _currentUserId;  // GUID string
+
+        private readonly Client _client;
+
+        public SupabaseService(string url, string key)
+        {
+            _supabaseUrl = url ?? throw new ArgumentNullException(nameof(url));
+            _supabaseKey = key ?? throw new ArgumentNullException(nameof(key));
+
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+
+            var options = new ClientOptions
+            {
+                Headers = new Dictionary<string, string>
+                {
+                    { "apikey", key },
+                    // Tant qu'on n'est pas connecté, on reste en "anon"
+                    { "Authorization", $"Bearer {key}" }
+                }
+            };
+
+            _client = new Client($"{url}/rest/v1", options);
+        }
+
+        // =========================
+        // SESSION
+        // =========================
+
+        public void SetSession(string accessToken, string userId)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
+                throw new ArgumentException("accessToken manquant", nameof(accessToken));
+
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("userId manquant", nameof(userId));
+
+            _accessToken = accessToken;
+            _currentUserId = userId;
+
+            // IMPORTANT: PostgREST doit utiliser le JWT utilisateur pour RLS
+            _client.Options.Headers["Authorization"] = $"Bearer {_accessToken}";
+        }
+
+        public void ClearSession()
+        {
+            _accessToken = null;
+            _currentUserId = null;
+
+            // Retour "anon"
+            _client.Options.Headers["Authorization"] = $"Bearer {_supabaseKey}";
+        }
+
+        public string? GetCurrentUserId() => _currentUserId;
+
+        private Guid RequireCurrentUserGuid()
+        {
+            if (string.IsNullOrWhiteSpace(_currentUserId))
+                throw new InvalidOperationException("Utilisateur non connecté. Veuillez vous reconnecter.");
+
+            if (!Guid.TryParse(_currentUserId, out var guid))
+                throw new InvalidOperationException("Identifiant utilisateur invalide. Veuillez vous reconnecter.");
+
+            return guid;
+        }
+
+        private void RequireAccessToken()
+        {
+            if (string.IsNullOrWhiteSpace(_accessToken))
+                throw new InvalidOperationException("Session invalide. Veuillez vous reconnecter.");
+        }
+
+        // =========================
+        // AUTH REST
+        // =========================
+
+        public async Task<(bool success, string? userId, string? error)> SignUpAsync(string email, string password)
+        {
+            return await SignUpFunction.SignUpAsync(_httpClient, _supabaseUrl, _supabaseKey, email, password);
+        }
+
+        public async Task<(bool success, string? accessToken, string? userId, string? error)> SignInAsync(string email, string password)
+        {
+            var result = await SignInFunction.SignInAsync(_httpClient, _supabaseUrl, _supabaseKey, email, password);
+
+            if(result.success && result.accessToken != null && result.userId != null)
+            {
+                SetSession(result.accessToken, result.userId);
+            }
+            return result;
+        }
+
+        public async Task<(bool success, string? accessToken, string? userId, string? error)>
+            SignUpThenSignInAsync(string email, string password)
+        {
+            var (signUpSuccess, _, signUpError) = await SignUpAsync(email, password);
+            if (!signUpSuccess)
+                return (false, null, null, signUpError);
+
+            var (signInSuccess, accessToken, userId, signInError) = await SignInAsync(email, password);
+            if (!signInSuccess)
+                return (false, null, null, signInError);
+
+            return (true, accessToken, userId, null);
+        }
+
+        public async Task<(bool success, string? error)> SendPasswordResetAsync(string email)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                    return (false, "Adresse email invalide");
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
+
+                var request = new
+                {
+                    email = email.Trim(),
+                    redirect_to = "https://logecui.fr/logecui-reset-password/index.html"
+                };
+
+                var response = await _httpClient.PostAsJsonAsync($"{_supabaseUrl}/auth/v1/recover", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                return response.IsSuccessStatusCode
+                    ? (true, null)
+                    : (false, ExtractSupabaseError(content, response.StatusCode));
+            }
+            catch
+            {
+                return (false, "Erreur réseau. Réessayez plus tard.");
+            }
+        }
+
+        public async Task<(bool success, string? error)> UpdatePasswordAsync(string accessToken, string newPassword)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+                    return (false, "Le mot de passe doit contenir au moins 6 caractères.");
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+
+                var response = await _httpClient.PutAsJsonAsync(
+                    $"{_supabaseUrl}/auth/v1/user",
+                    new { password = newPassword });
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                return response.IsSuccessStatusCode
+                    ? (true, null)
+                    : (false, ExtractSupabaseError(content, response.StatusCode));
+            }
+            catch
+            {
+                return (false, "Erreur réseau.");
+            }
+        }
+
+        // =========================
+        // EDGE FUNCTION : DELETE ACCOUNT
+        // =========================
+
+        public async Task<(bool success, string? error)> DeleteAccountAsync()
+        {
+            try
+            {
+                RequireAccessToken();
+
+                System.Diagnostics.Debug.WriteLine("=== DELETE ACCOUNT ===");
+
+                // ✅ IMPORTANT : Headers corrects pour RPC
+                var request = new HttpRequestMessage(HttpMethod.Post,
+                    $"{_supabaseUrl}/rest/v1/rpc/delete_user_account");
+
+                request.Headers.TryAddWithoutValidation("apikey", _supabaseKey);
+                request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {_accessToken}");
+                request.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Response: {(int)response.StatusCode} - {content}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (false, $"Erreur : {content}");
+                }
+
+                var json = JsonDocument.Parse(content);
+                if (json.RootElement.TryGetProperty("success", out var success) && success.GetBoolean())
+                {
+                    ClearSession();
+                    return (true, null);
+                }
+
+                if (json.RootElement.TryGetProperty("error", out var error))
+                {
+                    return (false, error.GetString());
+                }
+
+                return (false, "Erreur inconnue");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
+                return (false, $"Erreur : {ex.Message}");
+            }
+        }
+
+
+
+        // =========================
+        // ARTICLES (Liste de courses)
+        // =========================
+
+        public async Task<List<ArticleCourse>> GetArticlesAsync()
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            var response = await _client
+                .Table<ArticleCourseDb>()
+                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
+                .Get();
+
+            return response.Models.Select(db => new ArticleCourse
+            {
+                Id = db.Id,
+                Nom = db.Nom ?? "",
+                Quantite = db.Quantite ?? "",
+                Unite = db.Unite ?? "",
+                EstAchete = db.EstAchete,
+                // IMPORTANT: si ton modèle ArticleCourse.UserId est Guid (non nullable),
+                // on protège avec ?? Guid.Empty
+                UserId = db.UserId ?? Guid.Empty
+            }).ToList();
+        }
+
+        public async Task<ArticleCourse?> AddArticleAsync(ArticleCourse article)
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            var dbArticle = new ArticleCourseDb
+            {
+                Nom = article.Nom,
+                Quantite = article.Quantite,
+                Unite = article.Unite,
+                EstAchete = article.EstAchete,
+                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
+            };
+
+            var response = await _client.Table<ArticleCourseDb>().Insert(dbArticle);
+            var inserted = response.Models.FirstOrDefault();
+            if (inserted == null) return null;
+
+            return new ArticleCourse
+            {
+                Id = inserted.Id,
+                Nom = inserted.Nom ?? "",
+                Quantite = inserted.Quantite ?? "",
+                Unite = inserted.Unite ?? "",
+                EstAchete = inserted.EstAchete,
+                UserId = inserted.UserId ?? Guid.Empty
+            };
+        }
+
+        public async Task<bool> UpdateArticleAsync(int id, ArticleCourse article)
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            var dbArticle = new ArticleCourseDb
+            {
+                Id = id,
+                Nom = article.Nom,
+                Quantite = article.Quantite,
+                Unite = article.Unite,
+                EstAchete = article.EstAchete,
+                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
+            };
+
+            await _client.Table<ArticleCourseDb>().Update(dbArticle);
+            return true;
+        }
+
+        public async Task<bool> DeleteArticleAsync(int id)
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            // Sécurise par user_id (sinon RLS peut bloquer ou pire, toucher autre chose si policy permissive)
+            await _client.Table<ArticleCourseDb>()
+                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id)
+                .Delete();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAchetesAsync()
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            await _client.Table<ArticleCourseDb>()
+                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
+                .Filter("est_achete", Supabase.Postgrest.Constants.Operator.Equals, true)
+                .Delete();
+
+            return true;
+        }
+
+        // =========================
+        // INGREDIENTS
+        // =========================
+
+        public async Task<List<Ingredient>> GetIngredientsAsync()
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            var response = await _client
+                .Table<IngredientDb>()
+                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
+                .Get();
+
+            return response.Models.Select(db => new Ingredient
+            {
+                Id = db.Id,
+                // Si Ingredient.UserId est Guid (non nullable), on protège :
+                UserId = db.UserId ?? Guid.Empty,
+                Nom = db.Nom ?? "",
+                Quantite = db.Quantite ?? "",
+                Unite = db.Unite ?? "",
+                EstDisponible = db.EstDisponible
+            }).ToList();
+        }
+
+        public async Task<Ingredient?> AddIngredientAsync(Ingredient ingredient)
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            var db = new IngredientDb
+            {
+                Nom = ingredient.Nom,
+                Quantite = ingredient.Quantite,
+                Unite = ingredient.Unite,
+                EstDisponible = ingredient.EstDisponible,
+                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
+            };
+
+            var response = await _client.Table<IngredientDb>().Insert(db);
+            var inserted = response.Models.FirstOrDefault();
+            if (inserted == null) return null;
+
+            return new Ingredient
+            {
+                Id = inserted.Id,
+                UserId = inserted.UserId ?? Guid.Empty,
+                Nom = inserted.Nom ?? "",
+                Quantite = inserted.Quantite ?? "",
+                Unite = inserted.Unite ?? "",
+                EstDisponible = inserted.EstDisponible
+            };
+        }
+
+        public async Task<bool> UpdateIngredientAsync(Ingredient ingredient)
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            if (ingredient.Id == Guid.Empty)
+                throw new InvalidOperationException("Id ingrédient manquant.");
+
+            var db = new IngredientDb
+            {
+                Id = ingredient.Id,
+                Nom = ingredient.Nom,
+                Quantite = ingredient.Quantite,
+                Unite = ingredient.Unite,
+                EstDisponible = ingredient.EstDisponible,
+                UserId = (Guid?)userGuid // ✅ Guid -> Guid?
+            };
+
+            await _client.Table<IngredientDb>().Update(db);
+            return true;
+        }
+
+        public async Task<bool> DeleteIngredientAsync(Guid id)
+        {
+            var userGuid = RequireCurrentUserGuid();
+
+            if (id == Guid.Empty)
+                throw new InvalidOperationException("Id ingrédient manquant.");
+
+            await _client.Table<IngredientDb>()
+                .Filter("user_id", Supabase.Postgrest.Constants.Operator.Equals, userGuid.ToString())
+                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id.ToString())
+                .Delete();
+
+            return true;
+        }
+
+        // =========================
+        // UTIL
+        // =========================
+
+        private static string ExtractSupabaseError(string content, System.Net.HttpStatusCode code)
+        {
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                try
+                {
+                    var json = JsonDocument.Parse(content);
+
+                    if (json.RootElement.TryGetProperty("msg", out var msg)) return msg.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("error_description", out var ed)) return ed.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("message", out var m)) return m.GetString() ?? $"Erreur {code}";
+                    if (json.RootElement.TryGetProperty("error", out var e)) return e.GetString() ?? $"Erreur {code}";
+                }
+                catch
+                {
+                    if (content.Length < 400) return content;
+                }
+            }
+
+            return $"Erreur {code}";
+        }
+    }
+
+    // =========================
+    // MODELES DB
+    // =========================
+
+    [Table("articles_courses")]
+    public class ArticleCourseDb : BaseModel
+    {
+        [PrimaryKey("id", false)]
+        public int Id { get; set; }
+
+        [Column("nom")]
+        public string? Nom { get; set; }
+
+        [Column("quantite")]
+        public string? Quantite { get; set; }
+
+        [Column("unite")]
+        public string? Unite { get; set; }
+
+        [Column("est_achete")]
+        public bool EstAchete { get; set; }
+
+        [Column("user_id")]
+        public Guid? UserId { get; set; } // DB nullable -> mapping protège avec ?? Guid.Empty
+    }
+
+    [Table("ingredients")]
+    public class IngredientDb : BaseModel
+    {
+        [PrimaryKey("id", false)]
+        public Guid Id { get; set; }
+
+        [Column("nom")]
+        public string? Nom { get; set; }
+
+        [Column("quantite")]
+        public string? Quantite { get; set; }
+
+        [Column("unite")]
+        public string? Unite { get; set; }
+
+        [Column("est_disponible")]
+        public bool EstDisponible { get; set; }
+
+        [Column("user_id")]
+        public Guid? UserId { get; set; } // DB nullable -> mapping protège avec ?? Guid.Empty
+    }
+}
+
+
+
+================================================================================
+FILE: Services\updateService.cs
+================================================================================
+
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Supabase.Postgrest;
+using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
+
+namespace LoGeCuiShared.Services
+{
+    public class UpdateService
+    {
+        private readonly Client _client;
+
+        public UpdateService(string url, string key)
+        {
+            var options = new ClientOptions
+            {
+                Headers = new Dictionary<string, string>
+                {
+                    { "apikey", key },
+                    { "Authorization", $"Bearer {key}" }
+                }
+            };
+
+            _client = new Client($"{url}/rest/v1", options);
+        }
+
+        public async Task<AppVersionInfo?> CheckForUpdateAsync(string platform, string currentVersion)
+        {
+            try
+            {
+                var response = await _client
+                    .Table<AppVersionDb>()
+                    .Filter("platform", Supabase.Postgrest.Constants.Operator.Equals, platform)
+                    .Order("created_at", Supabase.Postgrest.Constants.Ordering.Descending)
+                    .Limit(1)
+                    .Get();
+
+                var latestVersion = response.Models.FirstOrDefault();
+
+                if (latestVersion == null)
+                    return null;
+
+                // Comparer les versions
+                if (IsNewerVersion(latestVersion.Version, currentVersion))
+                {
+                    return new AppVersionInfo
+                    {
+                        Version = latestVersion.Version ?? "",
+                        DownloadUrl = latestVersion.DownloadUrl ?? "",
+                        IsMandatory = latestVersion.IsMandatory,
+                        ReleaseNotes = latestVersion.ReleaseNotes ?? ""
+                    };
+                }
+
+                return null; // Pas de mise à jour disponible
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private bool IsNewerVersion(string? latestVersion, string currentVersion)
+        {
+            if (string.IsNullOrEmpty(latestVersion))
+                return false;
+
+            try
+            {
+                var latest = new Version(latestVersion);
+                var current = new Version(currentVersion);
+                return latest > current;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
+    // Modèle pour la table app_versions
+    [Table("app_versions")]
+    public class AppVersionDb : BaseModel
+    {
+        [PrimaryKey("id", false)]
+        public int Id { get; set; }
+
+        [Column("platform")]
+        public string? Platform { get; set; }
+
+        [Column("version")]
+        public string? Version { get; set; }
+
+        [Column("download_url")]
+        public string? DownloadUrl { get; set; }
+
+        [Column("is_mandatory")]
+        public bool IsMandatory { get; set; }
+
+        [Column("release_notes")]
+        public string? ReleaseNotes { get; set; }
+
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
+    }
+
+    // Classe pour retourner les infos de version
+    public class AppVersionInfo
+    {
+        public string Version { get; set; } = "";
+        public string DownloadUrl { get; set; } = "";
+        public bool IsMandatory { get; set; }
+        public string ReleaseNotes { get; set; } = "";
+    }
+}
+
+================================================================================
+FILE: Utils\IngredientNormalizer.cs
+================================================================================
+
+﻿using System.Globalization;
+using System.Text;
+
+namespace LoGeCuiShared.Utils
+{
+    public static class IngredientNormalizer
+    {
+        public static string Normalize(string? s)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+                return "";
+
+            s = s.Trim().ToLowerInvariant();
+
+            // 🔹 Enlever les accents
+            s = s.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder(s.Length);
+            foreach (var ch in s)
+            {
+                var uc = CharUnicodeInfo.GetUnicodeCategory(ch);
+                if (uc != UnicodeCategory.NonSpacingMark)
+                    sb.Append(ch);
+            }
+            s = sb.ToString().Normalize(NormalizationForm.FormC);
+
+            // 🔹 Remplacer la ponctuation par des espaces
+            var sb2 = new StringBuilder(s.Length);
+            foreach (var ch in s)
+            {
+                if (char.IsLetterOrDigit(ch) || ch == ' ')
+                    sb2.Append(ch);
+                else
+                    sb2.Append(' ');
+            }
+            s = sb2.ToString();
+
+            // 🔹 Nettoyer espaces multiples
+            while (s.Contains("  "))
+                s = s.Replace("  ", " ");
+
+            s = s.Trim();
+
+            // 🔹 Pluriels simples
+            if (s.EndsWith("s") && s.Length > 3)
+                s = s[..^1];
+
+            // 🔹 Pluriels irréguliers courants
+            if (s == "oeufs") return "oeuf";
+
+            return s;
+        }
+    }
+}

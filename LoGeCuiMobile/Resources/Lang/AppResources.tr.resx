@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -10,304 +9,304 @@
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" use="required" type="xsd:string" />
               <xs:attribute name="type" type="xsd:string" />
               <xs:attribute name="mimetype" type="xsd:string" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="assembly">
             <xs:complexType>
               <xs:attribute name="alias" type="xsd:string" />
               <xs:attribute name="name" type="xsd:string" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="data">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
                 <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
               <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
               <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
               <xs:attribute ref="xml:space" />
-            </xs:complexType>
-          </xs:element>
+              </xs:complexType>
+            </xs:element>
           <xs:element name="resheader">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
-              </xs:sequence>
+                </xs:sequence>
               <xs:attribute name="name" type="xsd:string" use="required" />
-            </xs:complexType>
-          </xs:element>
-        </xs:choice>
-      </xs:complexType>
-    </xs:element>
-  </xs:schema>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>E-posta</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Şifre</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Bağlantıda kalmak</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Oturum aç</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Bir hesap oluşturun</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Şifrenizi mi unuttunuz?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Hata</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Yanlış şifre</value>
-  </data>
+    </data>
   <data name="Connecting" xml:space="preserve">
     <value>Bağlantı devam ediyor...</value>
-  </data>
+    </data>
   <data name="FillAllFields" xml:space="preserve">
     <value>Lütfen tüm alanları doldurun</value>
-  </data>
+    </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Bağlantı hatası</value>
-  </data>
+    </data>
   <data name="CreatingAccount" xml:space="preserve">
     <value>Bir hesap oluşturmak...</value>
-  </data>
+    </data>
   <data name="SignupError" xml:space="preserve">
     <value>Kayıt hatası</value>
-  </data>
+    </data>
   <data name="Shopping_Title" xml:space="preserve">
     <value>🛒 Irkların listesi</value>
-  </data>
+    </data>
   <data name="Shopping_Header" xml:space="preserve">
     <value>Alışveriş listem</value>
-  </data>
+    </data>
   <data name="Shopping_AddItem" xml:space="preserve">
     <value>➕ Bir öğe ekleyin</value>
-  </data>
+    </data>
   <data name="Shopping_DeleteSelection" xml:space="preserve">
     <value>🗑️ Seçimi sil</value>
-  </data>
+    </data>
   <data name="Shopping_Empty" xml:space="preserve">
     <value>Henüz bir makale yok.</value>
-  </data>
+    </data>
   <data name="Shopping_Bought" xml:space="preserve">
     <value>Satın alındı</value>
-  </data>
+    </data>
   <data name="Shopping_Delete" xml:space="preserve">
     <value>Silme</value>
-  </data>
+    </data>
   <data name="Nav_ShoppingList" xml:space="preserve">
     <value>Alışveriş listesi</value>
-  </data>
+    </data>
   <data name="Nav_Recipes" xml:space="preserve">
     <value>Benim tariflerim</value>
-  </data>
+    </data>
   <data name="Nav_RandomMenu" xml:space="preserve">
     <value>Rastgele menü</value>
-  </data>
+    </data>
   <data name="Nav_Ingredients" xml:space="preserve">
     <value>İçindekiler</value>
-  </data>
+    </data>
   <data name="Nav_Settings" xml:space="preserve">
     <value>Parametreler</value>
-  </data>
+    </data>
   <data name="Dialog_Ok" xml:space="preserve">
     <value>TAMAM.</value>
-  </data>
+    </data>
   <data name="Dialog_Yes" xml:space="preserve">
     <value>Evet</value>
-  </data>
+    </data>
   <data name="Dialog_No" xml:space="preserve">
     <value>Hayır</value>
-  </data>
+    </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>İptal</value>
-  </data>
+    </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>✅ TAMAM</value>
-  </data>
+    </data>
   <data name="PermissionTitle" xml:space="preserve">
     <value>🔒 İzin</value>
-  </data>
+    </data>
   <data name="OcrTitle" xml:space="preserve">
     <value>OCR</value>
-  </data>
+    </data>
   <data name="UnknownError" xml:space="preserve">
     <value>Bilinmeyen hata.</value>
-  </data>
+    </data>
   <data name="ServiceUnavailable" xml:space="preserve">
     <value>Servis kullanılamıyor.</value>
-  </data>
+    </data>
   <data name="LoginRequired" xml:space="preserve">
     <value>Giriş yapmış olmalısınız.</value>
-  </data>
+    </data>
   <data name="SessionTitle" xml:space="preserve">
     <value>Oturum</value>
-  </data>
+    </data>
   <data name="SessionExpired" xml:space="preserve">
     <value>Oturum kaçırıldı veya süresi doldu. Lütfen tekrar giriş yapın.</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Title" xml:space="preserve">
     <value>Bir bileşen ekleyin</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
     <value>İçerik adı</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
     <value>Miktar (örn. 10)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
     <value>Birim (örn. kg, adet)</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Available" xml:space="preserve">
     <value>Şu adresten ulaşılabilir</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_Save" xml:space="preserve">
     <value>💾 Kayıt</value>
-  </data>
+    </data>
   <data name="Ingredients_Add_NameRequired" xml:space="preserve">
     <value>İsim zorunludur.</value>
-  </data>
+    </data>
   <data name="Ingredients_Title" xml:space="preserve">
     <value>Bileşenlerin yönetilmesi</value>
-  </data>
+    </data>
   <data name="Ingredients_AddButton" xml:space="preserve">
     <value>➕ Bir malzeme ekleyin</value>
-  </data>
+    </data>
   <data name="Ingredients_QuantityFormat" xml:space="preserve">
     <value>Miktar: {0} {1}</value>
-  </data>
+    </data>
   <data name="Ingredients_Available" xml:space="preserve">
     <value>Şu adresten ulaşılabilir</value>
-  </data>
+    </data>
   <data name="Ingredients_DialogTitle" xml:space="preserve">
     <value>Malzeme</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Title" xml:space="preserve">
     <value>Bir tarif ekleyin</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameLabel" xml:space="preserve">
     <value>İsim</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
     <value>Tarifin adı</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
     <value>Kategori</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
     <value>Bir kategori seçin</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimeLabel" xml:space="preserve">
     <value>Zaman (dakika)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
     <value>Ex : 30</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
     <value>Malzemeler (satır başına 1 adet)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
     <value>Örn:
 2 yumurta
 100g un
 1 tutam tuz</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
     <value>Talimatlar</value>
-  </data>
+    </data>
   <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
     <value>Örn: Karıştır, 10 dakika pişir...</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanOcr" xml:space="preserve">
     <value>Tarama (OCR)</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Save" xml:space="preserve">
     <value>Kayıt Olun</value>
-  </data>
+    </data>
   <data name="Recipes_Add_LoginRequired" xml:space="preserve">
     <value>Giriş yapmış olmalısınız.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
     <value>RecipeIngredientsService başlatılmadı.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NameRequired" xml:space="preserve">
     <value>İsim zorunludur.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_IdNotFound" xml:space="preserve">
     <value>Kaydettikten sonra tarif kimliğini bulmak imkansız.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_Saved" xml:space="preserve">
     <value>✅ Makbuz kaydedildi.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ScanTitle" xml:space="preserve">
     <value>📸 Bir tarif tarayın</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CameraPermission" xml:space="preserve">
     <value>Tarama için kameraya erişim gereklidir.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
     <value>Fotoğraf çekimi bu cihazda desteklenmiyor.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
     <value>Görüntü OCR için çok ağır. Görüntüyü daha sıkı kırpmayı veya çözünürlüğü düşürmeyi deneyin.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
     <value>Metin algılanmadı. Daha fazla ışıkla ve bulanıklık olmadan deneyin.</value>
-  </data>
+    </data>
   <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
     <value>✅ Taranmış metin ve önceden doldurulmuş alanlar. Kontrol edin ve gerekirse düzeltin.</value>
-  </data>
+    </data>
   <data name="Recipes_Title" xml:space="preserve">
     <value>Benim tariflerim</value>
-  </data>
+    </data>
   <data name="Recipes_Category" xml:space="preserve">
     <value>Kategori</value>
-  </data>
+    </data>
   <data name="Recipes_Refresh" xml:space="preserve">
     <value>Yenile</value>
-  </data>
+    </data>
   <data name="Recipes_Add" xml:space="preserve">
     <value>Bir tarif ekleyin</value>
-  </data>
+    </data>
   <data name="Recipes_Empty" xml:space="preserve">
     <value>Henüz tarifi yok.</value>
-  </data>
+    </data>
   <data name="Recipes_TimeFormat" xml:space="preserve">
     <value>Zaman : {0} dk</value>
-  </data>
+    </data>
   <data name="Recipes_ServiceNull" xml:space="preserve">
     <value>RecipesService NULL'dur (oturum açıldıktan sonra InitRestServices çağrılmamıştır).</value>
-  </data>
+    </data>
   <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
     <value>RecipeIngredientsService başlatılmadı.</value>
-  </data>
+    </data>
   <data name="Recipes_NoIngredients" xml:space="preserve">
     <value>(içerik verilmemiştir)</value>
-  </data>
+    </data>
   <data name="Recipes_DetailsFormat" xml:space="preserve">
     <value>Kategori: {0}
 Zaman: {1} dakika
@@ -317,139 +316,362 @@ Malzemeler:
 
 Talimatlar:
 {3}</value>
-  </data>
+    </data>
   <data name="RandomMenu_Title" xml:space="preserve">
     <value>🎲 Rastgele menü</value>
-  </data>
+    </data>
   <data name="RandomMenu_GenerateButton" xml:space="preserve">
     <value>🎲 Rastgele menü</value>
-  </data>
+    </data>
   <data name="RandomMenu_DefaultText" xml:space="preserve">
     <value>Bir menü oluşturmak için düğmesine basın</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
     <value>🛒 Alışveriş listesindeki eksik malzemeleri gönderin</value>
-  </data>
+    </data>
   <data name="RandomMenu_OpenShopping" xml:space="preserve">
     <value>🛒 Alışveriş listesini açın</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
     <value>Göndermek mi?</value>
-  </data>
+    </data>
   <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
     <value>Kayıp:</value>
-  </data>
+    </data>
   <data name="RandomMenu_SentButton" xml:space="preserve">
     <value>🛒 Gönderilen malzemeler</value>
-  </data>
+    </data>
   <data name="RandomMenu_Generating" xml:space="preserve">
     <value>⏳ Menü oluşturma (Başlangıç / Ana yemek / Tatlı)...</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoRecipes" xml:space="preserve">
     <value>Tarif mevcut değil.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotGenerate" xml:space="preserve">
     <value>Başlangıç/Ana Yemek/Tatlı menüsü oluşturulamıyor.</value>
-  </data>
+    </data>
   <data name="RandomMenu_CountsFormat" xml:space="preserve">
     <value>Başlangıçlar: {0}
 Ana yemekler: {1}
 Tatlılar: {2}</value>
-  </data>
+    </data>
   <data name="RandomMenu_CheckCategories" xml:space="preserve">
     <value>Tariflerinizin DB'de 'kategori' = Ana yemek / Ana yemek / Tatlı olup olmadığını kontrol edin.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
     <value>✅ Menü oluşturuldu :</value>
-  </data>
+    </data>
   <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
     <value>Malzemeler : (bu tarif için malzeme listelenmemiştir)</value>
-  </data>
+    </data>
   <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
     <value>İçindekiler:</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingNone" xml:space="preserve">
     <value>Kayıp: yok</value>
-  </data>
+    </data>
   <data name="RandomMenu_MissingHeader" xml:space="preserve">
     <value>Kayıp:</value>
-  </data>
+    </data>
   <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
     <value>Eksik malzemeleri hesaplamak imkansız: bazı tariflerde hiç malzeme kaydedilmemiş.</value>
-  </data>
+    </data>
   <data name="RandomMenu_AllAvailable" xml:space="preserve">
     <value>Her şey mevcut. Eksik malzeme yok.</value>
-  </data>
+    </data>
   <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
     <value>Eksik bileşenlerin global listesi :</value>
-  </data>
+    </data>
   <data name="Reset_Title" xml:space="preserve">
     <value>Sıfırla</value>
-  </data>
+    </data>
   <data name="Reset_Header" xml:space="preserve">
     <value>Şifrenizi sıfırlayın</value>
-  </data>
+    </data>
   <data name="Reset_NewPassword" xml:space="preserve">
     <value>Yeni şifre</value>
-  </data>
+    </data>
   <data name="Reset_ConfirmPassword" xml:space="preserve">
     <value>Şifreyi onayla</value>
-  </data>
+    </data>
   <data name="Reset_Submit" xml:space="preserve">
     <value>Onaylayın</value>
-  </data>
+    </data>
   <data name="Reset_PwdMinLength" xml:space="preserve">
     <value>Parola en az 6 karakter içermelidir.</value>
-  </data>
+    </data>
   <data name="Reset_PwdMismatch" xml:space="preserve">
     <value>Şifreler eşleşmiyor.</value>
-  </data>
+    </data>
   <data name="Reset_Updating" xml:space="preserve">
     <value>⏳ Güncelleme devam ediyor...</value>
-  </data>
+    </data>
   <data name="Reset_DoneTitle" xml:space="preserve">
     <value>Bitti</value>
-  </data>
+    </data>
   <data name="Reset_DoneBody" xml:space="preserve">
     <value>Şifreniz değiştirildi. Artık giriş yapabilirsiniz.</value>
-  </data>
+    </data>
   <data name="Reset_Failed" xml:space="preserve">
     <value>Şifre değiştirilemiyor.</value>
-  </data>
+    </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Parametreler</value>
-  </data>
+    </data>
   <data name="Settings_Account" xml:space="preserve">
     <value>Hesap</value>
-  </data>
+    </data>
   <data name="Settings_Logout" xml:space="preserve">
     <value>Bağlantının Kesilmesi</value>
-  </data>
+    </data>
   <data name="Settings_DangerZone" xml:space="preserve">
     <value>Tehlikeli alan</value>
-  </data>
+    </data>
   <data name="Settings_Unsubscribe" xml:space="preserve">
     <value>Abonelikten çık</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
     <value>Abonelikten çık</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmBody" xml:space="preserve">
     <value>Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteConfirmYes" xml:space="preserve">
     <value>Evet, silin</value>
-  </data>
+    </data>
   <data name="Settings_SupabaseNull" xml:space="preserve">
     <value>Supabase başlatılmadı. Yeniden bağlan.</value>
-  </data>
+    </data>
   <data name="Settings_DeleteFailed" xml:space="preserve">
     <value>Silinemez: {0}</value>
-  </data>
+    </data>
   <data name="Settings_DeleteSuccess" xml:space="preserve">
     <value>✅ Hesabınız silindi.</value>
-  </data>
+    </data>
   <data name="Dialog_DeleteConfirm" xml:space="preserve">
     <value>Bu maddeyi çıkaralım mı?</value>
-  </data>
-</root>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Oturum süresi doldu</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Oturumun süresi doldu. Lütfen yeniden bağlan.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR: appsettings.json dosyasında ApiKey eksik</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>MAUI paketinden appsettings.json dosyasını yükleyemiyorum.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: appsettings.json dosyasında eksik URL</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: appsettings.json dosyasında eksik anahtar</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>E-posta adresi</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Şifremi unuttum</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Gönder</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Geri dön</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Sıfırlama bağlantısını almak için e-posta adresinizi girin.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>E-posta gönderildi ✅ E-posta kutunuzu (ve spam kutunuzu) kontrol edin.</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Hata:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Arayüz başlatılmamış (XAML). x:Class ve x:Name'i kontrol edin.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Gönderiliyor...</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Lütfen geçerli bir e-posta adresi girin.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Giriş</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Dil</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Beni tıkla</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>.NET Çoklu Platform Uygulama Kullanıcı Arayüzüne Hoş Geldiniz
+.NET Çoklu Platform Uygulama Kullanıcı Arayüzüne Hoş Geldiniz</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>Merhaba, Dünya!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Fotoğraf</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Fotoğraf çekmek</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Fotoğraf seçin</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Fotoğrafı sil</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Oturum geçersiz, yeniden bağlan.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Tümünü seç</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Ekle</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Miktar (isteğe bağlı):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>Seçilen ürün yok.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Birim (isteğe bağlı):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Bilgi</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Ürün adı:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>En az bir kategori işaretleyin.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Bilgi</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Kategorileri seç</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Hiçbir içerik maddesi.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Seçimi sil</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>Seçilen tarif yok.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>Alışveriş listesine eklemek mümkün değil.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>Malzemeleri hesaplayamıyorum (çevrimdışı veya eksik veriler).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>Bu tarif için gerekli tüm malzemeler zaten elinde var ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Listeye ekle</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Etkin bir liste seçin</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(yok)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Kod ile katılmak</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Paylaşılan alışveriş listesi</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Paylaşım kodu:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(yok)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Kişisel listeme dön</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Aktif liste:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Kopyala</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Etkin listeyi seçin</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>Paylaşılan listeniz yok.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Benim listem</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Geçersiz oturum.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Hesabın silindi.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Geçersiz kod (liste bulunamadı).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Başarı</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Giriş yapmalısın.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>Hesabını kalıcı olarak silmek mi istiyorsun? Bu işlem geri alınamaz.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Bir listeye katılmak için oturum açmalısın.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(çevrimdışı mod)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>Kopyalanacak kod yok.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Kişisel listenize geri dönün ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>Liste oluşturulamıyor.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Kod kopyalandı ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Onay</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Listeye katılmak</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Paylaşım kodunu girin:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Kişisel liste (paylaşılmayan)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Oturum geçersiz. Önce yeniden bağlan.</value>
+    </data>
+  </root>

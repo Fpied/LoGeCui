@@ -1,144 +1,651 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+                </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Mot de passe</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Rester connecté</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Se connecter</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Créer un compte</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Mot de passe oublié ?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Erreur</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Mauvais mot de passe</value>
-  </data>
-</root>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>De acuerdo.</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>Sí.</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>No.</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ De acuerdo.</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 Permiso</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Error desconocido.</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>Servicio no disponible.</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>Debe iniciar sesión.</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>Sesión</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Sesión ausente o caducada. Vuelva a conectarse.</value>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 Lista de la compra</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>Mi lista de la compra</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ Añadir un artículo</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ Eliminar selección</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>No hay artículos por el momento.</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>Comprado</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>Eliminar</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>Añadir un ingrediente</value>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>Nombre del ingrediente</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>Cantidad (por ejemplo: 10)</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>Unidad (por ejemplo: kg, piezas)</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>Disponible</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 Grabar</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>El nombre es obligatorio.</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>Gestión de ingredientes</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ Añadir un ingrediente</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>Cantidad:{0}  {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>Disponible</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>Ingrediente</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>Añadir una receta</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>Nombre</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>Nombre de la receta</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>Categoría</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>Seleccionar una categoría</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>Tiempo (minutos)</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>Ejemplo: 30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>Ingredientes (1 por línea)</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>Ejemplo:
+2 huevos
+100 g de harina
+1 pizca de sal</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>Instrucciones</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>Ejemplo: Mezclar, cocinar durante 10 minutos...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>Escáner (OCR)</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>Registrar</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>Debe iniciar sesión.</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>RecetaIngredientesServicio no inicializado.</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>El nombre es obligatorio.</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>No se puede encontrar el ID de la receta después de guardarla.</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ Receta guardada.</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 Escanear una receta</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>Se requiere acceso a la cámara para escanear.</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>La captura de fotos no es compatible con este dispositivo.</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>La imagen es demasiado pesada para el OCR. Intente encuadrarla más de cerca o reduzca la resolución.</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>No se ha detectado ningún texto. Inténtelo con más luz y sin desenfoque.</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ Texto escaneado y campos rellenados previamente. Compruébelo y corríjalo si es necesario.</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>Mis recetas</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>Categoría</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>Añadir una receta</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>No hay recetas por el momento.</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>Tiempo:{0}  min</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesService es NULL (no se ha llamado a InitRestServices después del inicio de sesión).</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>RecetaIngredientesServicio no inicializado.</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>(sin ingredientes especificados)</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>Categoría: 
+{0}
+
+Tiempo:  min{1}
+
+
+
+Ingredientes:
+{2}
+
+Instrucciones:
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 Menú aleatorio</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 Menú aleatorio</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>Pulse el botón para generar un menú.</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 Enviar los ingredientes que faltan en la lista de la compra</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 Abrir la lista de la compra</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>¿Enviar?</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>Falta:</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 Ingredientes enviados</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ Creación del menú (entrante / plato principal / postre)…</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>No hay recetas disponibles.</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>No se puede generar un menú Entrante/Plato principal/Postre.</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>Entrantes: 
+Platos{0} principales: 
+{1}Postres: {2}</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>Comprueba que tus recetas tienen correctamente asignada la «categoría» = Entrante / Plato principal / Postre en la base de datos.</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ Menú generado:</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>Ingredientes: (no hay ingredientes registrados para esta receta)</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>Ingredientes:</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>Faltan: ninguno</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>Faltan:</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>No se pueden calcular los ingredientes que faltan: algunas recetas no tienen ingredientes registrados.</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ Todo está disponible. No falta ningún ingrediente.</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>Lista global de ingredientes que faltan:</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>Reinicio</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>Restablecer su contraseña</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>Nueva contraseña</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>Confirmar contraseña</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>Validar</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>La contraseña debe contener al menos 6 caracteres.</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>Las contraseñas no coinciden.</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ Actualización en curso...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ Terminado</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>Tu contraseña ha sido modificada. Puedes iniciar sesión.</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>No se puede cambiar la contraseña.</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Parámetros</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>Cuenta</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>Desconexión</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>Zona peligrosa</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>Cancelar suscripción</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>Cancelar suscripción</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>Sí, eliminar</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>Supabase no inicializado. Vuelva a conectarse.</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>Imposible eliminar: {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>✅ Tu cuenta ha sido eliminada.</value>
+    </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>¿Eliminar este ingrediente?</value>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>Sesión caducada</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>Tu sesión ha caducado. Vuelve a conectarte.</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR: Falta ApiKey en appsettings.json</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>No se puede cargar appsettings.json desde el paquete MAUI.</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: falta la URL en appsettings.json</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase: Falta una clave en appsettings.json</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>Dirección de correo electrónico</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>Contraseña olvidada</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>Enviar</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>Volver</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>Introduzca su correo electrónico para recibir un enlace de restablecimiento.</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>Correo electrónico enviado ✅ Comprueba tu bandeja de entrada (y la carpeta de spam).</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>Error:</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>Interfaz no inicializada (XAML). Comprueba x:Class y x:Name.</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>Enviando...</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>Introduzca una dirección de correo electrónico válida.</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - Conexión</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 Idioma</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>Haga clic aquí</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>Bienvenido a 
+.NET Multi-platform App UI</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>¡Hola, mundo!</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>Foto</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>Tomar una foto</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>Elegir una foto</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>Eliminar la foto</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>Sesión no válida, vuelve a conectarte.</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>Seleccionar todo</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>Añadir</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>Cantidad (opcional):</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>No se ha seleccionado ningún artículo.</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>Unidad (opcional):</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>Información</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>Nombre del artículo:</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>Marca al menos una categoría.</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>Información</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>Elige las categorías</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>Sin ingredientes.</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>Eliminar selección</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>No hay recetas seleccionadas.</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>No se puede añadir a la lista de la compra.</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>No se pueden calcular los ingredientes (sin conexión o datos faltantes).</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>Ya tienes todos los ingredientes para esta receta ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>Añadir a la lista</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>Seleccionar una lista activa</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(ninguno)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>Unirse con un código</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>Lista de la compra compartida</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>Código para compartir:</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(ninguna)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>Volver a mi lista personal</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>Lista activa:</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>Copiar</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>Seleccionar la lista activa</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>No tienes ninguna lista compartida.</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>Mi lista</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>Sesión no válida.</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>Tu cuenta ha sido eliminada.</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>Código no válido (lista no encontrada).</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>Éxito</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>Debes estar conectado.</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>¿Quieres eliminar tu cuenta definitivamente? Esta acción es irreversible.</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>Debes estar conectado para unirte a una lista.</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(modo sin conexión)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>No hay que copiar ningún código.</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>Volver a tu lista personal ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>No se puede crear la lista.</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>Código copiado ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>Confirmación</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>Unirse a una lista</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>Introduce el código compartido:</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>Lista personal (no compartida)</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>Sesión no válida. Vuelve a conectarte primero.</value>
+    </data>
+  </root>

@@ -37,7 +37,7 @@
             <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
                 <CheckBox x:Name="ChkToutSelectionnerRecettes"
                           CheckedChanged="ChkToutSelectionnerRecettes_CheckedChanged"/>
-                <Label Text="Tout sélectionner"
+                <Label Text="{tr:Translate Auto_Tout_Selectionner}"
                        VerticalTextAlignment="Center"
                        TextColor="Gray"/>
             </HorizontalStackLayout>
@@ -50,7 +50,7 @@
 
             <Button Grid.Column="2"
                     x:Name="BtnSupprimerSelection"
-                    Text="Supprimer sélection"
+                    Text="{tr:Translate Auto_Supprimer_Selection}"
                     BackgroundColor="#E67E22"
                     TextColor="White"
                     Clicked="BtnSupprimerSelection_Clicked"/>

@@ -1,144 +1,651 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+                </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+              </xs:complexType>
+            </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
-  </resheader>
+    </resheader>
   <resheader name="version">
     <value>2.0</value>
-  </resheader>
+    </resheader>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    </resheader>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
-  </data>
+    </data>
   <data name="Password" xml:space="preserve">
     <value>Mot de passe</value>
-  </data>
+    </data>
   <data name="StayConnected" xml:space="preserve">
     <value>Rester connecté</value>
-  </data>
+    </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Se connecter</value>
-  </data>
+    </data>
   <data name="SignupButton" xml:space="preserve">
     <value>Créer un compte</value>
-  </data>
+    </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Mot de passe oublié ?</value>
-  </data>
+    </data>
   <data name="ErrorTitle" xml:space="preserve">
     <value>Erreur</value>
-  </data>
+    </data>
   <data name="BadPassword" xml:space="preserve">
     <value>Mauvais mot de passe</value>
-  </data>
-</root>
+    </data>
+  <data name="Ingredients_Add_NamePlaceholder" xml:space="preserve">
+    <value>成分名稱</value>
+    </data>
+  <data name="Ingredients_Add_QuantityPlaceholder" xml:space="preserve">
+    <value>數量（例如：10）</value>
+    </data>
+  <data name="Ingredients_Add_UnitPlaceholder" xml:space="preserve">
+    <value>單位（例如：公斤、件）</value>
+    </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>好的</value>
+    </data>
+  <data name="Dialog_Yes" xml:space="preserve">
+    <value>是的</value>
+    </data>
+  <data name="Dialog_No" xml:space="preserve">
+    <value>不</value>
+    </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+    </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>✅ 好</value>
+    </data>
+  <data name="PermissionTitle" xml:space="preserve">
+    <value>🔒 許可</value>
+    </data>
+  <data name="OcrTitle" xml:space="preserve">
+    <value>OCR</value>
+    </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>未知錯誤。</value>
+    </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>服務暫停。</value>
+    </data>
+  <data name="LoginRequired" xml:space="preserve">
+    <value>您必須登入。</value>
+    </data>
+  <data name="SessionTitle" xml:space="preserve">
+    <value>會期</value>
+    </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>會話不存在或已過期。請重新登入。</value>
+    </data>
+  <data name="Shopping_Title" xml:space="preserve">
+    <value>🛒 購物清單</value>
+    </data>
+  <data name="Shopping_Header" xml:space="preserve">
+    <value>我的購物清單</value>
+    </data>
+  <data name="Shopping_AddItem" xml:space="preserve">
+    <value>➕ 添加文章</value>
+    </data>
+  <data name="Shopping_DeleteSelection" xml:space="preserve">
+    <value>🗑️ 刪除選取項目</value>
+    </data>
+  <data name="Shopping_Empty" xml:space="preserve">
+    <value>目前尚無文章。</value>
+    </data>
+  <data name="Shopping_Bought" xml:space="preserve">
+    <value>購買</value>
+    </data>
+  <data name="Shopping_Delete" xml:space="preserve">
+    <value>刪除</value>
+    </data>
+  <data name="Ingredients_Add_Title" xml:space="preserve">
+    <value>添加一種食材</value>
+    </data>
+  <data name="Ingredients_Add_Available" xml:space="preserve">
+    <value>可用</value>
+    </data>
+  <data name="Ingredients_Add_Save" xml:space="preserve">
+    <value>💾 錄製</value>
+    </data>
+  <data name="Ingredients_Add_NameRequired" xml:space="preserve">
+    <value>姓名為必填欄位。</value>
+    </data>
+  <data name="Ingredients_Title" xml:space="preserve">
+    <value>原料管理</value>
+    </data>
+  <data name="Ingredients_AddButton" xml:space="preserve">
+    <value>➕ 添加食材</value>
+    </data>
+  <data name="Ingredients_QuantityFormat" xml:space="preserve">
+    <value>數量：{0}  {1}</value>
+    </data>
+  <data name="Ingredients_Available" xml:space="preserve">
+    <value>可用</value>
+    </data>
+  <data name="Ingredients_DialogTitle" xml:space="preserve">
+    <value>成分</value>
+    </data>
+  <data name="Recipes_Add_Title" xml:space="preserve">
+    <value>新增食譜</value>
+    </data>
+  <data name="Recipes_Add_NameLabel" xml:space="preserve">
+    <value>姓名</value>
+    </data>
+  <data name="Recipes_Add_NamePlaceholder" xml:space="preserve">
+    <value>食譜名稱</value>
+    </data>
+  <data name="Recipes_Add_CategoryLabel" xml:space="preserve">
+    <value>類別</value>
+    </data>
+  <data name="Recipes_Add_CategoryPlaceholder" xml:space="preserve">
+    <value>選擇類別</value>
+    </data>
+  <data name="Recipes_Add_TimeLabel" xml:space="preserve">
+    <value>時間（分鐘）</value>
+    </data>
+  <data name="Recipes_Add_TimePlaceholder" xml:space="preserve">
+    <value>例：30</value>
+    </data>
+  <data name="Recipes_Add_IngredientsLabel" xml:space="preserve">
+    <value>成分（每行一項）</value>
+    </data>
+  <data name="Recipes_Add_IngredientsPlaceholder" xml:space="preserve">
+    <value>例：
+2顆雞蛋
+100克麵粉
+1撮鹽</value>
+    </data>
+  <data name="Recipes_Add_InstructionsLabel" xml:space="preserve">
+    <value>說明</value>
+    </data>
+  <data name="Recipes_Add_InstructionsPlaceholder" xml:space="preserve">
+    <value>例如：混合，烹煮10分鐘...</value>
+    </data>
+  <data name="Recipes_Add_ScanOcr" xml:space="preserve">
+    <value>掃描器（OCR）</value>
+    </data>
+  <data name="Recipes_Add_Save" xml:space="preserve">
+    <value>儲存</value>
+    </data>
+  <data name="Recipes_Add_LoginRequired" xml:space="preserve">
+    <value>您必須登入。</value>
+    </data>
+  <data name="Recipes_Add_ServiceNotReady" xml:space="preserve">
+    <value>食譜未初始化的服務。</value>
+    </data>
+  <data name="Recipes_Add_NameRequired" xml:space="preserve">
+    <value>姓名為必填欄位。</value>
+    </data>
+  <data name="Recipes_Add_IdNotFound" xml:space="preserve">
+    <value>無法在儲存後找到食譜的ID。</value>
+    </data>
+  <data name="Recipes_Add_Saved" xml:space="preserve">
+    <value>✅ 配方已儲存。</value>
+    </data>
+  <data name="Recipes_Add_ScanTitle" xml:space="preserve">
+    <value>📸 掃描食譜</value>
+    </data>
+  <data name="Recipes_Add_CameraPermission" xml:space="preserve">
+    <value>掃描時需要存取相機權限。</value>
+    </data>
+  <data name="Recipes_Add_CaptureNotSupported" xml:space="preserve">
+    <value>此裝置不支援拍照功能。</value>
+    </data>
+  <data name="Recipes_Add_ImageTooLarge" xml:space="preserve">
+    <value>圖片過於龐大，無法進行OCR處理。請嘗試縮緊取景範圍或降低解析度。</value>
+    </data>
+  <data name="Recipes_Add_NoTextDetected" xml:space="preserve">
+    <value>未偵測到任何文字。請嘗試在更明亮且無模糊的環境下拍攝。</value>
+    </data>
+  <data name="Recipes_Add_OcrSuccess" xml:space="preserve">
+    <value>✅ 掃描文字與預填欄位。請核對並視需要修正。</value>
+    </data>
+  <data name="Recipes_Title" xml:space="preserve">
+    <value>我的食譜</value>
+    </data>
+  <data name="Recipes_Category" xml:space="preserve">
+    <value>類別</value>
+    </data>
+  <data name="Recipes_Refresh" xml:space="preserve">
+    <value>刷新</value>
+    </data>
+  <data name="Recipes_Add" xml:space="preserve">
+    <value>新增食譜</value>
+    </data>
+  <data name="Recipes_Empty" xml:space="preserve">
+    <value>目前尚無食譜。</value>
+    </data>
+  <data name="Recipes_TimeFormat" xml:space="preserve">
+    <value>時間： {0}分鐘</value>
+    </data>
+  <data name="Recipes_ServiceNull" xml:space="preserve">
+    <value>RecipesService 為 NULL（登入後未呼叫 InitRestServices）。</value>
+    </data>
+  <data name="Recipes_IngredientsServiceNull" xml:space="preserve">
+    <value>食譜未初始化的服務。</value>
+    </data>
+  <data name="Recipes_NoIngredients" xml:space="preserve">
+    <value>（未提供任何成分資訊）</value>
+    </data>
+  <data name="Recipes_DetailsFormat" xml:space="preserve">
+    <value>類別：
+{0}
+
+時間：  分鐘{1}
+
+
+
+食材：
+{2}
+
+步驟：
+{3}</value>
+    </data>
+  <data name="RandomMenu_Title" xml:space="preserve">
+    <value>🎲 隨機選單</value>
+    </data>
+  <data name="RandomMenu_GenerateButton" xml:space="preserve">
+    <value>🎲 隨機選單</value>
+    </data>
+  <data name="RandomMenu_DefaultText" xml:space="preserve">
+    <value>按下按鈕以產生選單</value>
+    </data>
+  <data name="RandomMenu_SendMissingToShopping" xml:space="preserve">
+    <value>🛒 將購物清單中缺失的食材發送出去</value>
+    </data>
+  <data name="RandomMenu_OpenShopping" xml:space="preserve">
+    <value>🛒 打開購物清單</value>
+    </data>
+  <data name="RandomMenu_SendConfirmTitle" xml:space="preserve">
+    <value>發送？</value>
+    </data>
+  <data name="RandomMenu_SendConfirmBody" xml:space="preserve">
+    <value>缺少：</value>
+    </data>
+  <data name="RandomMenu_SentButton" xml:space="preserve">
+    <value>🛒 已寄送的食材</value>
+    </data>
+  <data name="RandomMenu_Generating" xml:space="preserve">
+    <value>⏳ 生成菜單（前菜／主菜／甜點）…</value>
+    </data>
+  <data name="RandomMenu_NoRecipes" xml:space="preserve">
+    <value>沒有可用的食譜。</value>
+    </data>
+  <data name="RandomMenu_CannotGenerate" xml:space="preserve">
+    <value>無法生成前菜/主菜/甜點的菜單。</value>
+    </data>
+  <data name="RandomMenu_CountsFormat" xml:space="preserve">
+    <value>前菜：
+{0}主菜：
+{1}甜點： {2}</value>
+    </data>
+  <data name="RandomMenu_CheckCategories" xml:space="preserve">
+    <value>請確認你的食譜在資料庫中是否正確標示了「類別」= 前菜 / 主菜 / 甜點。</value>
+    </data>
+  <data name="RandomMenu_GeneratedHeader" xml:space="preserve">
+    <value>✅ 生成選單：</value>
+    </data>
+  <data name="RandomMenu_NoIngredientsForRecipe" xml:space="preserve">
+    <value>成分：（此食譜未記錄任何成分）</value>
+    </data>
+  <data name="RandomMenu_IngredientsHeader" xml:space="preserve">
+    <value>成分：</value>
+    </data>
+  <data name="RandomMenu_MissingNone" xml:space="preserve">
+    <value>缺件：無</value>
+    </data>
+  <data name="RandomMenu_MissingHeader" xml:space="preserve">
+    <value>缺失：</value>
+    </data>
+  <data name="RandomMenu_CannotComputeMissing" xml:space="preserve">
+    <value>無法計算缺少的食材：某些食譜沒有記錄食材。</value>
+    </data>
+  <data name="RandomMenu_AllAvailable" xml:space="preserve">
+    <value>✅ 所有食材皆已備齊。無任何成分遺漏。</value>
+    </data>
+  <data name="RandomMenu_GlobalMissingHeader" xml:space="preserve">
+    <value>缺失成分的完整清單：</value>
+    </data>
+  <data name="Reset_Title" xml:space="preserve">
+    <value>重置</value>
+    </data>
+  <data name="Reset_Header" xml:space="preserve">
+    <value>重設您的密碼</value>
+    </data>
+  <data name="Reset_NewPassword" xml:space="preserve">
+    <value>新密碼</value>
+    </data>
+  <data name="Reset_ConfirmPassword" xml:space="preserve">
+    <value>確認密碼</value>
+    </data>
+  <data name="Reset_Submit" xml:space="preserve">
+    <value>確認</value>
+    </data>
+  <data name="Reset_PwdMinLength" xml:space="preserve">
+    <value>密碼必須至少包含6個字元。</value>
+    </data>
+  <data name="Reset_PwdMismatch" xml:space="preserve">
+    <value>密碼不符。</value>
+    </data>
+  <data name="Reset_Updating" xml:space="preserve">
+    <value>⏳ 更新中...</value>
+    </data>
+  <data name="Reset_DoneTitle" xml:space="preserve">
+    <value>✅ 完成</value>
+    </data>
+  <data name="Reset_DoneBody" xml:space="preserve">
+    <value>您的密碼已變更。您可以登入。</value>
+    </data>
+  <data name="Reset_Failed" xml:space="preserve">
+    <value>無法修改密碼。</value>
+    </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>參數</value>
+    </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>帳戶</value>
+    </data>
+  <data name="Settings_Logout" xml:space="preserve">
+    <value>斷開連接</value>
+    </data>
+  <data name="Settings_DangerZone" xml:space="preserve">
+    <value>危險區域</value>
+    </data>
+  <data name="Settings_Unsubscribe" xml:space="preserve">
+    <value>取消訂閱</value>
+    </data>
+  <data name="Settings_DeleteConfirmTitle" xml:space="preserve">
+    <value>取消訂閱</value>
+    </data>
+  <data name="Settings_DeleteConfirmBody" xml:space="preserve">
+    <value>您確定要刪除您的帳戶嗎？此操作無法撤銷。</value>
+    </data>
+  <data name="Settings_DeleteConfirmYes" xml:space="preserve">
+    <value>是的，刪除</value>
+    </data>
+  <data name="Settings_SupabaseNull" xml:space="preserve">
+    <value>Supabase 未初始化。請重新登入。</value>
+    </data>
+  <data name="Settings_DeleteFailed" xml:space="preserve">
+    <value>無法刪除： {0}</value>
+    </data>
+  <data name="Settings_DeleteSuccess" xml:space="preserve">
+    <value>✅ 您的帳戶已被刪除。</value>
+    </data>
+  <data name="Dialog_DeleteConfirm" xml:space="preserve">
+    <value>刪除此成分？</value>
+    </data>
+  <data name="Auto_Session_Expiree" xml:space="preserve">
+    <value>會話已過期</value>
+    </data>
+  <data name="Auto_Ta_Session_A_Expire_Merci_De" xml:space="preserve">
+    <value>您的會話已過期。請重新登入。</value>
+    </data>
+  <data name="Auto_Ocrapikey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>OCR：appsettings.json 中缺少 ApiKey</value>
+    </data>
+  <data name="Auto_Impossible_De_Charger_Appsettingsjson_Depuis_Le" xml:space="preserve">
+    <value>無法從 MAUI 套件載入 appsettings.json。</value>
+    </data>
+  <data name="Auto_Supabaseurl_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase：appsettings.json 中缺少網址</value>
+    </data>
+  <data name="Auto_Supabasekey_Manquant_Dans_Appsettingsjson" xml:space="preserve">
+    <value>Supabase：appsettings.json 中缺少 Key</value>
+    </data>
+  <data name="Auto_Adresse_Email" xml:space="preserve">
+    <value>電子郵件地址</value>
+    </data>
+  <data name="Auto_Mot_De_Passe_Oublie" xml:space="preserve">
+    <value>忘記密碼</value>
+    </data>
+  <data name="Auto_Envoyer" xml:space="preserve">
+    <value>發送</value>
+    </data>
+  <data name="Auto_Retour" xml:space="preserve">
+    <value>返回</value>
+    </data>
+  <data name="Auto_Entrez_Votre_Email_Pour_Recevoir_Un" xml:space="preserve">
+    <value>請輸入您的電子郵件地址以接收重設連結。</value>
+    </data>
+  <data name="Auto_Email_Envoye_Verifiez_Votre_Boite_Mail" xml:space="preserve">
+    <value>已發送電子郵件 ✅ 請檢查您的收件匣（及垃圾郵件）。</value>
+    </data>
+  <data name="Auto_Erreur" xml:space="preserve">
+    <value>錯誤：</value>
+    </data>
+  <data name="Auto_Interface_Non_Initialisee_Xaml_Verifie_Xclass" xml:space="preserve">
+    <value>介面未初始化（XAML）。請檢查 x:Class 和 x:Name。</value>
+    </data>
+  <data name="Auto_Envoi_En_Cours" xml:space="preserve">
+    <value>正在發送中…</value>
+    </data>
+  <data name="Auto_Veuillez_Saisir_Une_Adresse_Email_Valide" xml:space="preserve">
+    <value>請輸入有效的電子郵件地址。</value>
+    </data>
+  <data name="Auto_Logecui_Connexion" xml:space="preserve">
+    <value>LoGeCui - 登入</value>
+    </data>
+  <data name="Auto_" xml:space="preserve">
+    <value>••••••••</value>
+    </data>
+  <data name="Auto_Language" xml:space="preserve">
+    <value>🌍 語言</value>
+    </data>
+  <data name="Auto_Logecui" xml:space="preserve">
+    <value>🛒 LoGeCui</value>
+    </data>
+  <data name="Auto_Click_Me" xml:space="preserve">
+    <value>點擊我</value>
+    </data>
+  <data name="Auto_Welcome_To_10net_Multiplatform_App_Ui" xml:space="preserve">
+    <value>歡迎來到
+.NET 多平台應用程式使用者介面</value>
+    </data>
+  <data name="Auto_Hello_World" xml:space="preserve">
+    <value>你好，世界！</value>
+    </data>
+  <data name="Auto_Photo" xml:space="preserve">
+    <value>照片</value>
+    </data>
+  <data name="Auto_Prendre_Une_Photo" xml:space="preserve">
+    <value>拍照</value>
+    </data>
+  <data name="Auto_Choisir_Une_Photo" xml:space="preserve">
+    <value>選擇一張照片</value>
+    </data>
+  <data name="Auto_Supprimer_La_Photo" xml:space="preserve">
+    <value>刪除照片</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi" xml:space="preserve">
+    <value>會話無效，請重新登入。</value>
+    </data>
+  <data name="Auto_Tout_Selectionner" xml:space="preserve">
+    <value>全選</value>
+    </data>
+  <data name="Auto_Ajouter" xml:space="preserve">
+    <value>添加</value>
+    </data>
+  <data name="Auto_Quantite_Optionnel" xml:space="preserve">
+    <value>數量（可選）：</value>
+    </data>
+  <data name="Auto_Aucun_Article_Selectionne" xml:space="preserve">
+    <value>未選取任何文章。</value>
+    </data>
+  <data name="Auto_Unite_Optionnel" xml:space="preserve">
+    <value>單位（可選）：</value>
+    </data>
+  <data name="Auto_Information" xml:space="preserve">
+    <value>資訊</value>
+    </data>
+  <data name="Auto_Nom_De_Larticle" xml:space="preserve">
+    <value>商品名稱：</value>
+    </data>
+  <data name="Auto_Coche_Au_Moins_Une_Categorie" xml:space="preserve">
+    <value>至少勾選一個類別。</value>
+    </data>
+  <data name="Auto_Info" xml:space="preserve">
+    <value>資訊</value>
+    </data>
+  <data name="Auto_Choisis_Les_Categories" xml:space="preserve">
+    <value>選擇類別</value>
+    </data>
+  <data name="Auto_Aucun_Ingredient" xml:space="preserve">
+    <value>無任何成分。</value>
+    </data>
+  <data name="Auto_Supprimer_Selection" xml:space="preserve">
+    <value>刪除選取項目</value>
+    </data>
+  <data name="Auto_Aucune_Recette_Selectionnee" xml:space="preserve">
+    <value>未選取任何食譜。</value>
+    </data>
+  <data name="Auto_Impossible_Dajouter_A_La_Liste_De" xml:space="preserve">
+    <value>無法將商品加入購物清單。</value>
+    </data>
+  <data name="Auto_Impossible_De_Calculer_Les_Ingredients_Offline" xml:space="preserve">
+    <value>無法計算成分（離線或資料缺失）。</value>
+    </data>
+  <data name="Auto_Tu_As_Deja_Tous_Les_Ingredients" xml:space="preserve">
+    <value>你已經備齊了這道食譜的所有材料 ✅</value>
+    </data>
+  <data name="Auto_Ajouter_A_La_Liste" xml:space="preserve">
+    <value>加入清單</value>
+    </data>
+  <data name="Auto_Choisir_Une_Liste_Active" xml:space="preserve">
+    <value>選擇一個活動清單</value>
+    </data>
+  <data name="Auto_Aucun" xml:space="preserve">
+    <value>(無)</value>
+    </data>
+  <data name="Auto_Rejoindre_Avec_Un_Code" xml:space="preserve">
+    <value>使用代碼加入</value>
+    </data>
+  <data name="Auto_Liste_De_Courses_Partagee" xml:space="preserve">
+    <value>共享購物清單</value>
+    </data>
+  <data name="Auto_Code_De_Partage" xml:space="preserve">
+    <value>分享代碼：</value>
+    </data>
+  <data name="Auto_Aucune" xml:space="preserve">
+    <value>(無)</value>
+    </data>
+  <data name="Auto_Revenir_A_Ma_Liste_Perso" xml:space="preserve">
+    <value>返回我的個人清單</value>
+    </data>
+  <data name="Auto_Liste_Active" xml:space="preserve">
+    <value>有效清單：</value>
+    </data>
+  <data name="Auto_Copier" xml:space="preserve">
+    <value>複製</value>
+    </data>
+  <data name="Auto_Choisir_La_Liste_Active" xml:space="preserve">
+    <value>選擇活動清單</value>
+    </data>
+  <data name="Auto_Tu_Nas_Aucune_Liste_Partagee" xml:space="preserve">
+    <value>你沒有任何共享清單。</value>
+    </data>
+  <data name="Auto_Ma_Liste" xml:space="preserve">
+    <value>我的清單</value>
+    </data>
+  <data name="Auto_Session_Invalide" xml:space="preserve">
+    <value>無效的會話。</value>
+    </data>
+  <data name="Auto_Ton_Compte_A_Ete_Supprime" xml:space="preserve">
+    <value>您的帳戶已被刪除。</value>
+    </data>
+  <data name="Auto_Code_Invalide_Liste_Introuvable" xml:space="preserve">
+    <value>無效代碼（無法找到清單）。</value>
+    </data>
+  <data name="Auto_Succes" xml:space="preserve">
+    <value>成功</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte" xml:space="preserve">
+    <value>您必須登入。</value>
+    </data>
+  <data name="Auto_Supprimer_Definitivement_Ton_Compte_Cette_Action" xml:space="preserve">
+    <value>永久刪除您的帳戶？此操作無法撤銷。</value>
+    </data>
+  <data name="Auto_Tu_Dois_Etre_Connecte_Pour_Rejoindre" xml:space="preserve">
+    <value>您必須登入才能加入清單。</value>
+    </data>
+  <data name="Auto_Mode_Hors_Ligne" xml:space="preserve">
+    <value>(離線模式)</value>
+    </data>
+  <data name="Auto_Aucun_Code_A_Copier" xml:space="preserve">
+    <value>無需複製任何代碼。</value>
+    </data>
+  <data name="Auto_Retour_A_Ta_Liste_Perso" xml:space="preserve">
+    <value>返回您的個人清單 ✅</value>
+    </data>
+  <data name="Auto_Creation_De_Liste_Impossible" xml:space="preserve">
+    <value>無法建立清單。</value>
+    </data>
+  <data name="Auto_Code_Copie" xml:space="preserve">
+    <value>代碼已複製 ✅</value>
+    </data>
+  <data name="Auto_Confirmation" xml:space="preserve">
+    <value>確認</value>
+    </data>
+  <data name="Auto_Rejoindre_Une_Liste" xml:space="preserve">
+    <value>加入名單</value>
+    </data>
+  <data name="Auto_Entre_Le_Code_De_Partage" xml:space="preserve">
+    <value>輸入分享代碼：</value>
+    </data>
+  <data name="Auto_Liste_Perso_Non_Partagee" xml:space="preserve">
+    <value>個人清單（未共享）</value>
+    </data>
+  <data name="Auto_Session_Invalide_Reconnectetoi_Dabord" xml:space="preserve">
+    <value>無效的會話。請先重新登入。</value>
+    </data>
+  </root>
